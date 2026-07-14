@@ -68,6 +68,7 @@ const Hero = () => {
   const stickyRef     = useRef(null)
   const videoRef      = useRef(null)
   const overlayRef    = useRef(null)
+  const overlayBRef   = useRef(null)
   const titleRef      = useRef(null)
   const subtitleRef   = useRef(null)
   const bodyRef       = useRef(null)
@@ -167,13 +168,14 @@ const Hero = () => {
         onUpdate: (self) => {
           // video scrub
           const t = self.progress * duration
-          if (Math.abs(video.currentTime - t) > 0.04) {
-            video.currentTime = t
+          if (!video.seeking && Math.abs(video.currentTime - t) > 0.04) {
+            if (video.fastSeek) video.fastSeek(t)
+            else video.currentTime = t
           }
 
           // progress bar
           if (progressRef.current) {
-            progressRef.current.style.width = `${self.progress * 100}%`
+            progressRef.current.style.transform = `scaleX(${self.progress})`
           }
 
           // chapter detection
@@ -190,9 +192,20 @@ const Hero = () => {
       },
     })
 
-    // Subtle overlay colour shift across scroll
+    // Subtle overlay colour shift across scroll — crossfade two static
+    // gradient layers (opacity is compositor-only; animating `background`
+    // repaints the full screen every frame)
     gsap.to(overlayRef.current, {
-      background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.0) 55%)',
+      opacity: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top top',
+        end: `+=${scrollHeight}`,
+        scrub: 2,
+      },
+    })
+    gsap.to(overlayBRef.current, {
+      opacity: 1,
       scrollTrigger: {
         trigger: containerRef.current,
         start: 'top top',
@@ -254,7 +267,7 @@ const Hero = () => {
           <video
             ref={videoRef}
             className="got-video"
-            src="/video/one.mp4"
+            src={`${import.meta.env.BASE_URL}video/one.mp4`}
             playsInline
             muted
             preload="auto"
@@ -263,6 +276,7 @@ const Hero = () => {
           {/* Layers */}
           <div ref={vignetteRef} className="got-vignette" />
           <div ref={overlayRef}  className="got-overlay" />
+          <div ref={overlayBRef} className="got-overlay got-overlay-b" />
           <div className="got-grain" />
 
           {/* Corner ornaments */}

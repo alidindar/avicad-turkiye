@@ -154,7 +154,7 @@ const HouseCard = ({ house, index }) => {
         {!imgError ? (
           <img
             className="house-sigil-img"
-            src={house.sigil_url}
+            src={import.meta.env.BASE_URL + house.sigil_url.replace(/^\//, '')}
             alt={`House ${house.name} sigil`}
             onError={() => setImgError(true)}
           />

@@ -67,6 +67,7 @@ body {
   background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%);
   pointer-events: none;
   z-index: 2;
+  will-change: opacity;
 }
 
 /* ── Overlay gradient ── */
@@ -76,6 +77,12 @@ body {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 50%);
   z-index: 3;
   pointer-events: none;
+  will-change: opacity;
+}
+
+.got-overlay-b {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0) 55%);
+  opacity: 0;
 }
 
 /* ── Film grain texture ── */
@@ -317,10 +324,13 @@ body {
 
 .got-progress-bar-fill {
   height: 100%;
-  width: 0%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
   background: linear-gradient(to right, var(--gold-dim), var(--gold));
-  transition: width 0.1s linear;
+  transition: transform 0.1s linear;
   box-shadow: 0 0 10px var(--gold);
+  will-change: transform;
 }
 
 /* ── Rune / tick bar (decorative, below nav) ── */

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Throne Saga nasıl yapıldı? Scroll-scrub video rehberi</title>
+<meta name="description" content="Kaydırdıkça ilerleyen sinematik video deneyimi adım adım nasıl kurulur: GSAP ScrollTrigger, video scrubbing ve ffmpeg keyframe encode." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+  :root{
+    --bg:#0a0a0c; --bg2:#111014; --card:#16151a; --line:#2a2830;
+    --text:#e8e4da; --muted:#a09a8c; --accent:#c9a227; --accent2:#e3c766;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.7}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:80px 0 48px;text-align:center;background:radial-gradient(ellipse at top,#1c1a12 0%,var(--bg) 65%)}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+  h1{font-family:'Cinzel',serif;font-size:clamp(30px,5.5vw,52px);font-weight:700;line-height:1.15;color:var(--accent2)}
+  .lead{max-width:640px;margin:20px auto 0;color:var(--muted);font-size:17px}
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;transition:transform .2s,box-shadow .2s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-gold{background:linear-gradient(135deg,var(--accent),#8a6d15);color:#0a0a0c;box-shadow:0 6px 24px rgba(201,162,39,.25)}
+  .btn-ghost{border:1px solid var(--line);color:var(--text)}
+  main{padding:56px 0 40px}
+  section{margin-bottom:56px}
+  .step{display:flex;gap:16px;align-items:baseline;margin-bottom:16px}
+  .num{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--accent);border:1px solid var(--line);border-radius:50%;min-width:38px;height:38px;display:grid;place-items:center;align-self:center}
+  h2{font-family:'Cinzel',serif;font-size:24px;color:var(--accent2)}
+  p{color:var(--muted);margin-bottom:14px}
+  p strong,li strong{color:var(--text)}
+  ul{color:var(--muted);padding-left:22px;margin-bottom:14px}
+  li{margin-bottom:8px}
+  pre{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0;font-size:13px}
+  code{font-family:'JetBrains Mono',monospace;color:#d8cfa8}
+  p code,li code{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:13px}
+  .note{background:linear-gradient(135deg,rgba(201,162,39,.08),rgba(201,162,39,.02));border:1px solid rgba(201,162,39,.3);border-radius:12px;padding:18px 20px;margin:20px 0}
+  .note .t{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+  .note p{margin:0}
+  footer{border-top:1px solid var(--line);padding:36px 0 60px;text-align:center;color:var(--muted);font-size:14px}
+  footer a{color:var(--accent2);text-decoration:none}
+  @media(max-width:600px){header{padding:56px 0 36px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="kicker">Perde arkası</span>
+    <h1>Bu deneyim nasıl yapıldı?</h1>
+    <p class="lead">Kaydırdıkça videonun kare kare ilerlediği sinematik sayfanın tüm tarifi. Kod açık, teknik burada, aynısını sen de kurabilirsin.</p>
+    <div class="btns">
+      <a class="btn btn-gold" href="https://github.com/Eneslexi/got-scroll-site" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        Açık kaynak kod
+      </a>
+      <a class="btn btn-ghost" href="./">Deneyime dön</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="step"><span class="num">1</span><h2>Fikir ve teknoloji</h2></div>
+    <p>Sayfa tek bir numara üzerine kurulu: <strong>video kendi kendine oynamıyor, scroll videoyu sarıyor.</strong> Sayfayı kaydırdıkça video ileri gidiyor, geri kaydırınca video geri sarıyor. Böylece ziyaretçi sahneyi kendi hızında yaşıyor.</p>
+    <ul>
+      <li><strong>Vite + React 19:</strong> proje iskeleti</li>
+      <li><strong>GSAP ScrollTrigger:</strong> scroll takibi, bölüm sabitleme ve metin animasyonları</li>
+      <li><strong>ffmpeg:</strong> videoyu scrub için yeniden encode etmek (en kritik adım)</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">2</span><h2>Scroll'u videoya bağlamak</h2></div>
+    <p>Hero bölümü <code>pin: true</code> ile ekrana sabitleniyor ve <code>end: '+=500%'</code> ile 5 ekran boyu scroll alanı açılıyor. Her scroll karesinde ScrollTrigger 0 ile 1 arasında bir <code>progress</code> veriyor. Bu değeri video süresiyle çarpıp <code>currentTime</code>'a yazmak yetiyor:</p>
+    <pre><code>ScrollTrigger.create({
+  trigger: container,
+  start: 'top top',
+  end: '+=500%',
+  pin: true,
+  scrub: 0.5,
+  onUpdate: (self) => {
+    if (video.duration && !video.seeking) {
+      video.currentTime = self.progress * video.duration;
+    }
+  },
+});</code></pre>
+    <p><code>!video.seeking</code> kontrolü önemli: tarayıcı henüz önceki kareye giderken üstüne yeni seek istekleri yığarsanız kuyruk birikir ve takılma başlar.</p>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">3</span><h2>İşin sırrı: video encode</h2></div>
+    <p>İlk denemede scroll fena kasıyordu. Sebep kod değil, videonun kendisiydi. Sıradan mp4'lerde keyframe birkaç saniyede bir gelir. <code>currentTime</code> ile rastgele bir kareye atladığınızda tarayıcı en yakın keyframe'e gidip oradan itibaren tüm kareleri çözmek zorunda kalır. Scroll başına yüzlerce kare çözmek demek, donma demek.</p>
+    <div class="note">
+      <div class="t">Altın kural</div>
+      <p>Scroll-scrub video mutlaka sık keyframe ile encode edilmeli. Keyframe aralığını <code>-g</code> parametresi belirler.</p>
+    </div>
+    <pre><code># Gelistirme icin: her kare keyframe, en akici sonuc
+ffmpeg -i kaynak.mp4 -c:v libx264 -g 1 -crf 19 -preset fast \
+  -pix_fmt yuv420p -an -movflags +faststart public/video/one.mp4
+
+# Web icin: 2 karede bir keyframe, daha kucuk dosya
+ffmpeg -i kaynak.mp4 -c:v libx264 -g 2 -crf 22 -preset fast \
+  -pix_fmt yuv420p -an -movflags +faststart one-web.mp4</code></pre>
+    <p><code>-an</code> sesi atar (scrub'da ses kullanılmaz), <code>+faststart</code> metadata'yı dosyanın başına taşır ve video ilk saniyede oynamaya hazır olur.</p>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">4</span><h2>Sahne metinleri</h2></div>
+    <p>Metinler videodan bağımsız birer katman. Her sahnenin bir progress aralığı var (örneğin 0.18 ile 0.36 arası). Progress o aralığa girince sahnenin GSAP timeline'ı oynuyor, aralıktan çıkınca tersine sarıyor. Başlıklar blur ve yukarı kayma ile beliriyor:</p>
+    <pre><code>const SCENES = [
+  { id: 'scene-1', start: 0,    end: 0.18 },
+  { id: 'scene-2', start: 0.18, end: 0.36 },
+  // ...
+];
+
+tl.fromTo(heading,
+  { opacity: 0, y: 50, filter: 'blur(16px)' },
+  { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, ease: 'power3.out' }
+);</code></pre>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">5</span><h2>Performans dersleri</h2></div>
+    <ul>
+      <li>Overlay karartmayı gradient animasyonu ile değil, <strong>iki katmanın opacity crossfade'i</strong> ile yap. Gradient'i her karede yeniden boyamak pahalı.</li>
+      <li>Progress bar'ı <code>width</code> ile değil <code>transform: scaleX()</code> ile büyüt. Transform layout tetiklemez, GPU'da çalışır.</li>
+      <li>Animasyon yapılan katmanlara <code>will-change</code> ipucu ver.</li>
+      <li>Videoyu <code>muted</code> ve <code>playsInline</code> yap, <code>preload="auto"</code> ile baştan yüklet.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="step"><span class="num">6</span><h2>Kendin kur</h2></div>
+    <pre><code>git clone https://github.com/Eneslexi/got-scroll-site.git
+cd got-scroll-site/vite-project
+npm install
+# videoyu 3. adimdaki gibi encode edip public/video/one.mp4 olarak koy
+npm run dev</code></pre>
+    <p>Yayına almak için <code>npm run build</code> sonrası <code>dist</code> klasörünü herhangi bir statik sunucuya at. Alt dizinde yayınlayacaksan <code>vite.config.js</code> içindeki <code>base</code> değerini kendi yoluna göre değiştir.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Kodun tamamı açık: <a href="https://github.com/Eneslexi/got-scroll-site" target="_blank" rel="noopener">github.com/Eneslexi/got-scroll-site</a></p>
+    <p style="margin-top:6px">Orijinal tasarım: <a href="https://github.com/divyashrma18/GOT" target="_blank" rel="noopener">divyashrma18/GOT</a> · Optimizasyon ve rehber: <a href="https://enesayd.in">Enes Aydın</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
