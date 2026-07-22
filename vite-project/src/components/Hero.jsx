@@ -1,9 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './Hero.css'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// ─── Tunables ────────────────────────────────────────────────────────────────
+// Scroll mesafesi = SCROLL_VIEWPORTS × pencere yuksekligi. Bu tek sabit hem pin
+// bitisini hem de container yuksekligini besler (onceden kod 6, container 7,
+// README 5 diyordu — uc farkli sayi dolasiyordu).
+const SCROLL_VIEWPORTS = 6
+const SEEK_THRESHOLD   = 0.04   // s — bundan kucuk fark icin video'yu seek etme
+const SCRUB_SMOOTH     = 1.2    // video/metin scrub yumusatmasi
+const OVERLAY_SCRUB    = 2      // overlay crossfade yumusatmasi
+// Yavas ilk-kare cozumunu (agir/-g 1 dev videosu) yanlislikla stall saymamak
+// icin genis tutuldu. Asil guvence: stall TERMINAL degil — video gec de olsa
+// hazir olunca onReady toparlar (asagidaki setup effect).
+const STALL_TIMEOUT_MS = 30000
+const RUNE_TICKS       = 80
 
 // ─── Chapter data ────────────────────────────────────────────────────────────
 const CHAPTERS = [
@@ -57,10 +71,9 @@ const CHAPTERS = [
   },
 ]
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-const lerp = (a, b, t) => a + (b - a) * t
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
-const invlerp = (a, b, v) => clamp((v - a) / (b - a), 0, 1)
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // ─── Component ───────────────────────────────────────────────────────────────
 const Hero = () => {
@@ -80,29 +93,44 @@ const Hero = () => {
 
   const [activeChapter, setActiveChapter] = useState(0)
   const [videoReady, setVideoReady]       = useState(false)
+  const [videoError, setVideoError]       = useState(null)  // terminal: gercek yukleme hatasi
+  const [videoSlow, setVideoSlow]         = useState(false)  // gecici: yavas yukleniyor
+  const [viewportH, setViewportH]         = useState(
+    typeof window !== 'undefined' ? window.innerHeight : 800
+  )
+
+  const chapter = CHAPTERS[activeChapter]
 
   // ─── Chapter transition ───────────────────────────────────────────────────
   const prevChapter = useRef(-1)
+  const chapterTl   = useRef(null)
   const transitionChapter = (idx) => {
     if (prevChapter.current === idx) return
     prevChapter.current = idx
-    setActiveChapter(idx)
 
-    const ch = CHAPTERS[idx]
+    // Reduced-motion: fade/kaydirma yok, metni aninda degistir.
+    if (prefersReducedMotion()) {
+      setActiveChapter(idx)
+      return
+    }
+
+    // Hizli scroll'da bolumler pes pese degisir. Onceki timeline'i oldurmezsek
+    // ayni ref'ler uzerinde iki timeline carpisir ve metin fade-out'un bitis
+    // degerlerinde (opacity 0) takili kalir.
+    if (chapterTl.current) chapterTl.current.kill()
+
     const tl = gsap.timeline()
+    chapterTl.current = tl
 
-    // fade out old text
-    tl.to([titleRef.current, subtitleRef.current, bodyRef.current, sigilRef.current], {
+    const textEls = [titleRef.current, subtitleRef.current, bodyRef.current, sigilRef.current]
+
+    // fade out old text → metni React state uzerinden degistir → fade in.
+    // Metin artik JSX'ten geliyor; setActiveChapter fade'in ortasinda cagrilinca
+    // React yeni metni basar, GSAP yalnizca opacity/transform'u yonetir.
+    tl.to(textEls, {
       y: -24, opacity: 0, duration: 0.35, ease: 'power2.in', stagger: 0.04,
     })
-    // update DOM mid-fade via callback
-    .call(() => {
-      if (titleRef.current)    titleRef.current.textContent    = ch.title
-      if (subtitleRef.current) subtitleRef.current.textContent = ch.subtitle
-      if (bodyRef.current)     bodyRef.current.textContent     = ch.body
-      if (sigilRef.current)    sigilRef.current.textContent    = ch.sigil
-    })
-    // fade in new text
+    .call(() => setActiveChapter(idx))
     .fromTo(
       [sigilRef.current, subtitleRef.current, titleRef.current, bodyRef.current],
       { y: 32, opacity: 0 },
@@ -115,27 +143,73 @@ const Hero = () => {
         { opacity: 0, x: 12 },
         { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' }
       )
-      chapterLabelRef.current.textContent = `${String(idx + 1).padStart(2, '0')} / ${String(CHAPTERS.length).padStart(2, '0')}`
     }
   }
 
   // ─── Setup ───────────────────────────────────────────────────────────────
   useEffect(() => {
+    // Reload'da tarayici eski scroll konumunu geri yukluyor. Video gec yuklenip
+    // pin kurulunca ScrollTrigger o konumu okuyup progress~1 hesapliyor ve video
+    // son kareye atliyor ("donmus" gorunum). Deneyim her zaman Hero'nun tepesinden
+    // (kitap kapali, ilk bolum) baslasin diye geri yuklemeyi kapatip basa aliyoruz.
+    // NOT: video ref'inden bagimsiz; asagidaki `if (!video) return` guard'inin
+    // ONUNDE olmali, yoksa video henuz yoksa hic calismaz.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+    window.scrollTo(0, 0)
+
     const video = videoRef.current
     if (!video) return
 
-    const onReady = () => setTimeout(() => setVideoReady(true), 1000)
-        video.addEventListener('loadedmetadata', onReady)
-    if (video.readyState >= 1) onReady()
+    let settled = false
 
-    // Initial chapter text
-    const ch0 = CHAPTERS[0]
-    if (titleRef.current)    titleRef.current.textContent    = ch0.title
-    if (subtitleRef.current) subtitleRef.current.textContent = ch0.subtitle
-    if (bodyRef.current)     bodyRef.current.textContent     = ch0.body
-    if (sigilRef.current)    sigilRef.current.textContent    = ch0.sigil
+    // 'loadeddata'/'canplay' = readyState>=2, ilk kare cozuldu. Onceki hal sabit
+    // 1sn bekliyordu; bu hem hizli cihazda gereksiz hem yavas cihazda yetersizdi.
+    // Ilk karenin hazir oldugu an tam olarak bu event.
+    // NOT: onReady terminal olmayan "yavas" notunu da temizler — video gec de
+    // olsa hazir olunca deneyim hatadan otomatik toparlanir.
+    const onReady = () => {
+      if (settled) return
+      settled = true
+      setVideoSlow(false)
+      setVideoError(null)
+      setVideoReady(true)
+    }
+    // Gercek yukleme hatasi (dosya yok/bozuk): terminal.
+    const failTerminal = () => {
+      if (settled) return
+      settled = true
+      setVideoError('Video yüklenemedi. public/video/one.mp4 dosyasını kontrol edin.')
+    }
 
-    return () => video.removeEventListener('loadedmetadata', onReady)
+    // Zaman asimi TERMINAL DEGIL. Sure dolunca ger cek durumu olc: yalnizca video
+    // gercekten basarisizsa (MediaError ya da NETWORK_NO_SOURCE=3) terminal hataya
+    // gec. Aksi halde video hala yukleniyordur ( agir/-g 1 encode ilk kareyi gec
+    // cozer) — sadece yumusak bir "yukleniyor" notu goster, settled'a DOKUNMA ki
+    // loadeddata gelince onReady toparlayabilsin. Onceki hal burada onError'i
+    // kalici yapip onReady'yi sonsuza dek blokluyor, tum siteyi kilitliyordu.
+    const stallTimer = setTimeout(() => {
+      if (settled) return
+      if (video.error || video.networkState === 3 /* NETWORK_NO_SOURCE */) {
+        failTerminal()
+      } else if (video.readyState < 2) {
+        setVideoSlow(true)
+      }
+    }, STALL_TIMEOUT_MS)
+
+    video.addEventListener('loadeddata', onReady)
+    video.addEventListener('canplay', onReady)
+    video.addEventListener('error', failTerminal)
+    if (video.readyState >= 2) onReady()
+
+    return () => {
+      video.removeEventListener('loadeddata', onReady)
+      video.removeEventListener('canplay', onReady)
+      video.removeEventListener('error', failTerminal)
+      clearTimeout(stallTimer)
+      if (chapterTl.current) chapterTl.current.kill()
+    }
   }, [])
 
   // ─── GSAP ScrollTrigger ───────────────────────────────────────────────────
@@ -144,101 +218,115 @@ const Hero = () => {
 
     const video    = videoRef.current
     const duration = video.duration || 1
+    const reduced  = prefersReducedMotion()
 
-    // Scroll distance = 5× viewport so we have plenty of room to scrub
-    const scrollHeight = window.innerHeight * 6
+    // Pin bitisi fonksiyon olarak veriliyor: ScrollTrigger.refresh() bunu yeniden
+    // hesaplar, boylece resize'da pin mesafesi guncel innerHeight'e uyar.
+    const endFn = () => '+=' + (window.innerHeight * SCROLL_VIEWPORTS)
 
-    // Pin the sticky wrapper
-    const pinTrigger = ScrollTrigger.create({
-      trigger: containerRef.current,
-      start:   'top top',
-      end:     `+=${scrollHeight}`,
-      pin:     stickyRef.current,
-      pinSpacing: true,
-      anticipatePin: 1,
-    })
-
-    // Main scrub timeline — drives video time + rune bar
-    const scrubTl = gsap.timeline({
-      scrollTrigger: {
+    // gsap.context bu blokta olusan her tween ve ScrollTrigger'i kaydeder;
+    // ctx.revert() cleanup'ta yalnizca bunlari geri alir. Onceki hal
+    // ScrollTrigger.getAll() ile sayfadaki *tum* trigger'lari olduruyordu.
+    const ctx = gsap.context(() => {
+      // Pin the sticky wrapper
+      ScrollTrigger.create({
         trigger: containerRef.current,
         start:   'top top',
-        end:     `+=${scrollHeight}`,
-        scrub:   1.2,
-        onUpdate: (self) => {
-          // video scrub
-          const t = self.progress * duration
-          if (!video.seeking && Math.abs(video.currentTime - t) > 0.04) {
-            if (video.fastSeek) video.fastSeek(t)
-            else video.currentTime = t
-          }
+        end:     endFn,
+        pin:     stickyRef.current,
+        pinSpacing: true,
+        anticipatePin: 1,
+      })
 
-          // progress bar
-          if (progressRef.current) {
-            progressRef.current.style.transform = `scaleX(${self.progress})`
-          }
+      // Main scrub timeline — drives video time + rune bar
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start:   'top top',
+          end:     endFn,
+          scrub:   SCRUB_SMOOTH,
+          onUpdate: (self) => {
+            // video scrub
+            const t = self.progress * duration
+            if (!video.seeking && Math.abs(video.currentTime - t) > SEEK_THRESHOLD) {
+              if (video.fastSeek) video.fastSeek(t)
+              else video.currentTime = t
+            }
 
-          // chapter detection
-          const p = self.progress
-          const idx = CHAPTERS.findIndex(c => p >= c.progress[0] && p < c.progress[1])
-          transitionChapter(idx === -1 ? CHAPTERS.length - 1 : idx)
+            // progress bar
+            if (progressRef.current) {
+              progressRef.current.style.transform = `scaleX(${self.progress})`
+            }
 
-          // vignette intensity
-          const vinInt = 0.55 + Math.sin(p * Math.PI) * 0.2
-          if (vignetteRef.current) {
-            vignetteRef.current.style.opacity = String(vinInt)
-          }
+            // chapter detection
+            const p = self.progress
+            const idx = CHAPTERS.findIndex(c => p >= c.progress[0] && p < c.progress[1])
+            transitionChapter(idx === -1 ? CHAPTERS.length - 1 : idx)
+
+            // vignette intensity
+            const vinInt = 0.55 + Math.sin(p * Math.PI) * 0.2
+            if (vignetteRef.current) {
+              vignetteRef.current.style.opacity = String(vinInt)
+            }
+          },
         },
-      },
-    })
+      })
 
-    // Subtle overlay colour shift across scroll — crossfade two static
-    // gradient layers (opacity is compositor-only; animating `background`
-    // repaints the full screen every frame)
-    gsap.to(overlayRef.current, {
-      opacity: 0,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top top',
-        end: `+=${scrollHeight}`,
-        scrub: 2,
-      },
-    })
-    gsap.to(overlayBRef.current, {
-      opacity: 1,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top top',
-        end: `+=${scrollHeight}`,
-        scrub: 2,
-      },
-    })
+      // Subtle overlay colour shift across scroll — crossfade two static
+      // gradient layers (opacity is compositor-only; animating `background`
+      // repaints the full screen every frame)
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        scrollTrigger: { trigger: containerRef.current, start: 'top top', end: endFn, scrub: OVERLAY_SCRUB },
+      })
+      gsap.to(overlayBRef.current, {
+        opacity: 1,
+        scrollTrigger: { trigger: containerRef.current, start: 'top top', end: endFn, scrub: OVERLAY_SCRUB },
+      })
 
-    // Rune bar decorative tick animation
-    if (runeBarRef.current) {
-      const ticks = runeBarRef.current.querySelectorAll('.rune-tick')
-      gsap.fromTo(ticks,
-        { scaleY: 0, opacity: 0 },
-        {
-          scaleY: 1, opacity: 1, stagger: 0.06, duration: 0.6, ease: 'elastic.out(1,0.5)',
-          scrollTrigger: { trigger: containerRef.current, start: 'top 80%' }
-        }
-      )
+      // Rune bar decorative tick animation (reduced-motion'da atlanir)
+      if (runeBarRef.current && !reduced) {
+        const ticks = runeBarRef.current.querySelectorAll('.rune-tick')
+        gsap.fromTo(ticks,
+          { scaleY: 0, opacity: 0 },
+          {
+            scaleY: 1, opacity: 1, stagger: 0.06, duration: 0.6, ease: 'elastic.out(1,0.5)',
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%' }
+          }
+        )
+      }
+
+      // Entrance animation (reduced-motion'da atlanir)
+      if (!reduced) {
+        gsap.fromTo(
+          [sigilRef.current, subtitleRef.current, titleRef.current, bodyRef.current],
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.1, delay: 0.3 }
+        )
+      }
+    }, containerRef)
+
+    // Resize: pin mesafesini ve container yuksekligini guncel tut. Mobilde adres
+    // cubugu inip ciktikca innerHeight surekli oynar; 150ms debounce + 100px esik
+    // ile bu gurultuyu suzup gereksiz refresh'i onluyoruz.
+    let resizeTimer = null
+    let lastH = window.innerHeight
+    const onResize = () => {
+      if (Math.abs(window.innerHeight - lastH) < 100) return
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        lastH = window.innerHeight
+        setViewportH(window.innerHeight)
+        ScrollTrigger.refresh()
+      }, 150)
     }
-
-    // Entrance animation
-    gsap.fromTo(
-      [sigilRef.current, subtitleRef.current, titleRef.current, bodyRef.current],
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.1, delay: 0.3 }
-    )
+    window.addEventListener('resize', onResize)
 
     return () => {
-      scrubTl.kill()
-      pinTrigger.kill()
-      ScrollTrigger.getAll().forEach(t => t.kill())
+      window.removeEventListener('resize', onResize)
+      clearTimeout(resizeTimer)
+      ctx.revert()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoReady])
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -246,24 +334,31 @@ const Hero = () => {
     <>
 
       {/* ── Loading overlay ── */}
+      {/* Uc durum: terminal hata (kirmizi), yavas yukleniyor (notlu, cubuk devam),
+          normal yukleniyor. Yalnizca terminal hata cubugu gizler. */}
       <div className={`got-loading ${videoReady ? 'hidden' : ''}`}>
-        <div className="got-loading-logo">Game of Thrones</div>
-        <div className="got-loading-sub">The Chronicles of Westeros</div>
-        <div className="got-loading-bar-wrap">
-          <div className="got-loading-bar-fill" />
+        <div className="got-loading-logo">AviCAD Türkiye</div>
+        <div className={videoError ? 'got-loading-error' : 'got-loading-sub'}>
+          {videoError
+            || (videoSlow ? 'Video yükleniyor, bu biraz sürebilir…' : 'The Chronicles of Westeros')}
         </div>
+        {!videoError && (
+          <div className="got-loading-bar-wrap">
+            <div className="got-loading-bar-fill" />
+          </div>
+        )}
       </div>
 
       {/* ── Main scroll container ── */}
       <div
         ref={containerRef}
         className="got-container"
-        style={{ height: `${window.innerHeight * 6 + window.innerHeight}px` }}
+        style={{ height: `${viewportH * (SCROLL_VIEWPORTS + 1)}px` }}
       >
         {/* ── Sticky viewport ── */}
         <div ref={stickyRef} className="got-sticky">
 
-          {/* Video */}
+          {/* Video — sesi yok, dekoratif arka plan; ekran okuyuculardan gizli */}
           <video
             ref={videoRef}
             className="got-video"
@@ -271,17 +366,19 @@ const Hero = () => {
             playsInline
             muted
             preload="auto"
+            aria-hidden="true"
+            tabIndex={-1}
           />
 
-          {/* Layers */}
-          <div ref={vignetteRef} className="got-vignette" />
-          <div ref={overlayRef}  className="got-overlay" />
-          <div ref={overlayBRef} className="got-overlay got-overlay-b" />
-          <div className="got-grain" />
+          {/* Layers (dekoratif) */}
+          <div ref={vignetteRef} className="got-vignette" aria-hidden="true" />
+          <div ref={overlayRef}  className="got-overlay" aria-hidden="true" />
+          <div ref={overlayBRef} className="got-overlay got-overlay-b" aria-hidden="true" />
+          <div className="got-grain" aria-hidden="true" />
 
-          {/* Corner ornaments */}
+          {/* Corner ornaments (dekoratif) */}
           {['tl','tr','bl','br'].map(pos => (
-            <div key={pos} className={`got-corner got-corner-${pos}`}>
+            <div key={pos} className={`got-corner got-corner-${pos}`} aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 2 L2 20 M2 2 L20 2" stroke="#c9a84c" strokeWidth="1" strokeOpacity="0.5"/>
                 <path d="M2 2 L8 8" stroke="#c9a84c" strokeWidth="0.5" strokeOpacity="0.4"/>
@@ -291,44 +388,67 @@ const Hero = () => {
           ))}
 
           {/* Nav */}
-          <nav className="got-nav">
-            <div className="got-nav-logo">Game of Thrones</div>
+          <nav className="got-nav" aria-label="Ana menü">
+            <div className="got-nav-logo">AviCAD Türkiye</div>
             <ul className="got-nav-links">
-              {['The World','Characters','Houses','History'].map(l => (
-                <li key={l}><a href="#0">{l}</a></li>
+              {['The World','Characters','Hakkımızda','İletişim'].map(l => (
+                <li key={l}>
+                  <a
+                    href={l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`}
+                    onClick={
+                      l === 'The World' ? (e) => {
+                        // "The World" sayfanin en basina (Hero baslangici) kaydirir
+                        e.preventDefault()
+                        window.scrollTo({
+                          top: 0,
+                          behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+                        })
+                      } : l === 'İletişim' ? (e) => {
+                        // "İletişim" alttaki iletisim formuna kaydirir
+                        e.preventDefault()
+                        document.getElementById('iletisim')?.scrollIntoView({
+                          behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+                        })
+                      } : undefined
+                    }
+                  >
+                    {l}
+                  </a>
+                </li>
               ))}
             </ul>
           </nav>
 
-          {/* Rune bar */}
-          <div ref={runeBarRef} className="got-rune-bar">
-            {Array.from({ length: 80 }).map((_, i) => (
+          {/* Rune bar (dekoratif) */}
+          <div ref={runeBarRef} className="got-rune-bar" aria-hidden="true">
+            {Array.from({ length: RUNE_TICKS }).map((_, i) => (
               <div key={i} className="rune-tick" />
             ))}
           </div>
 
-   
-          <div className="got-content">
-            <span ref={sigilRef} className="got-sigil" />
-            <div className="got-divider">
+          {/* Bolum metni. Icerik state'ten geliyor; aria-live degisimi bildiriyor. */}
+          <div className="got-content" aria-live="polite">
+            <span ref={sigilRef} className="got-sigil" aria-hidden="true">{chapter.sigil}</span>
+            <div className="got-divider" aria-hidden="true">
               <div className="got-divider-line" />
               <div className="got-divider-diamond" />
               <div className="got-divider-line right" />
             </div>
-            <span ref={subtitleRef} className="got-subtitle" />
-            <h1 ref={titleRef} className="got-title" />
-            <p ref={bodyRef} className="got-body" />
+            <span ref={subtitleRef} className="got-subtitle">{chapter.subtitle}</span>
+            <h1 ref={titleRef} className="got-title">{chapter.title}</h1>
+            <p ref={bodyRef} className="got-body">{chapter.body}</p>
             <div className="got-cta-row">
-              <button className="got-cta-btn">Begin the Journey</button>
-              <button className="got-cta-ghost">Explore the Realm</button>
+              <button type="button" className="got-cta-btn">Begin the Journey</button>
+              <button type="button" className="got-cta-ghost">Explore the Realm</button>
             </div>
           </div>
 
-         
           <div className="got-right-panel">
-            <div ref={chapterLabelRef} className="got-chapter-label">01 / 06</div>
-            <div className="got-vert-line" />
-            <div className="got-dots">
+            <div ref={chapterLabelRef} className="got-chapter-label">
+              {String(activeChapter + 1).padStart(2, '0')} / {String(CHAPTERS.length).padStart(2, '0')}
+            </div>
+            <div className="got-vert-line" aria-hidden="true" />
+            <div className="got-dots" aria-hidden="true">
               {CHAPTERS.map((_, i) => (
                 <div
                   key={i}

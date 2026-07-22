@@ -1,0 +1,218 @@
+/* İletişim bölümü — Section1 ile ayni tasarim dili (font, renk, süsleme).
+   Renk değişkenleri Hero.css :root'tan gelir; fontlar global yüklü. */
+
+.contact {
+  position: relative;
+  width: 100%;
+  background: #050403;
+  padding: 40px 60px 120px;
+  overflow: hidden;
+}
+
+/* ─── Background (Section1 ile ayni) ─────────────────────────────────────── */
+.contact-bg-texture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+  pointer-events: none;
+}
+
+.contact-bg-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.contact-header {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.contact-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: #c9a84c;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.contact-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.contact-ornament .ornament-line {
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.5));
+}
+.contact-ornament .ornament-line:last-child {
+  background: linear-gradient(to left, transparent, rgba(201,168,76,0.5));
+}
+
+.contact-ornament .ornament-rune {
+  font-size: 14px;
+  color: #c9a84c;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.7));
+}
+
+.contact-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(38px, 6vw, 80px);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #f5e6c8;
+  text-shadow: 0 0 60px rgba(201,168,76,0.12), 0 4px 30px rgba(0,0,0,0.9);
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+
+.contact-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-style: italic;
+  color: #8a8070;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* ─── Form ───────────────────────────────────────────────────────────────── */
+.contact-form {
+  position: relative;
+  z-index: 2;
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.contact-row {
+  display: flex;
+  gap: 20px;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.contact-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  margin-bottom: 10px;
+}
+
+.contact-input,
+.contact-textarea {
+  width: 100%;
+  background: rgba(10, 7, 5, 0.6);
+  border: 1px solid #7a6130;
+  color: #f5e6c8;
+  font-family: 'IM Fell English', serif;
+  font-size: 16px;
+  padding: 13px 16px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+  border-color: #c9a84c;
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.25);
+}
+
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+  color: rgba(200, 191, 176, 0.35);
+}
+
+/* ─── Submit (Hero got-cta-btn görünümü) ─────────────────────────────────── */
+.contact-submit {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #0a0705;
+  background: #c9a84c;
+  border: none;
+  padding: 14px 40px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.25s ease;
+}
+
+.contact-submit:hover {
+  background: #e8c97a;
+  transform: translateY(-2px);
+}
+
+/* ─── Fade-up (Section1 ile ayni) ────────────────────────────────────────── */
+.contact .fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1),
+              transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+
+.contact .fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Footer ornament ────────────────────────────────────────────────────── */
+.contact-footer-ornament {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 72px;
+}
+
+.contact-footer-ornament .footer-line {
+  display: block;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,168,76,0.3));
+}
+.contact-footer-ornament .footer-line:last-child {
+  background: linear-gradient(to left, transparent, rgba(201,168,76,0.3));
+}
+
+.contact-footer-ornament .footer-sigil {
+  font-size: 20px;
+  color: rgba(201,168,76,0.4);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .contact { padding: 28px 24px 90px; }
+  .contact-row { flex-direction: column; gap: 22px; }
+  .contact-submit { align-self: stretch; text-align: center; }
+}

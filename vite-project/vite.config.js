@@ -5,4 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/got/',
   plugins: [react()],
+  server: {
+    watch: {
+      // Video dosyalari surum kontrolune girmiyor ve buyuk; chokidar bunlari
+      // izlerken Windows'ta EBUSY alip dev sunucusunu tamamen dusuruyor.
+      ignored: ['**/public/video/**'],
+    },
+  },
 })

@@ -4,8 +4,6 @@ Game of Thrones temalı, kaydırdıkça videonun kare kare ilerlediği bir hikay
 
 **Canlı demo:** https://enesayd.in/got/
 
-**Nasıl yapıldığının adım adım anlatımı:** https://enesayd.in/got/nasil-yapildi.html
-
 Orijinal tasarım [divyashrma18/GOT](https://github.com/divyashrma18/GOT) reposundan alındı. Bu repo, o tasarımın performans için optimize edilmiş halidir.
 
 ## Teknik: scroll-scrub video nasıl çalışır

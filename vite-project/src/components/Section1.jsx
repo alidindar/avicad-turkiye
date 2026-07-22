@@ -1,5 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './Section1.css'
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const HOUSES = [
   {
@@ -9,7 +13,6 @@ const HOUSES = [
     words: '"Winter Is Coming"',
     region: 'The North',
     sigil: 'Grey Direwolf',
-    colors: ['#6b7a8d', '#c8d4e0'],
     accent: '#8fafc4',
     description:
       'Wardens of the North, the Starks trace their blood to the First Men. Honour is their sword and the frozen wind their banner. They endure where others fall — patient as winter itself.',
@@ -24,7 +27,6 @@ const HOUSES = [
     words: '"Hear Me Roar"',
     region: 'The Westerlands',
     sigil: 'Golden Lion',
-    colors: ['#c9a84c', '#e8c97a'],
     accent: '#d4a84b',
     description:
       'The wealthiest house in Westeros. Their lion does not merely roar — it devours. Power is their birthright, gold their language, and debt a weapon they wield with surgical precision.',
@@ -39,7 +41,6 @@ const HOUSES = [
     words: '"Fire and Blood"',
     region: 'The Crownlands',
     sigil: 'Three-Headed Dragon',
-    colors: ['#c41e3a', '#ff4466'],
     accent: '#c0392b',
     description:
       'Blood of Old Valyria. They did not conquer Westeros — they burned it into submission. Dragon riders, dynasty builders, and the last of a world consumed by fire.',
@@ -54,7 +55,6 @@ const HOUSES = [
     words: '"Ours Is The Fury"',
     region: 'The Stormlands',
     sigil: 'Crowned Black Stag',
-    colors: ['#e8c97a', '#f5e6c8'],
     accent: '#c9a84c',
     description:
       'Born of storms, tempered by battle. The Baratheons seized the Iron Throne not through cunning but through iron will and a war hammer. Fury is not their weakness — it is their crown.',
@@ -69,7 +69,6 @@ const HOUSES = [
     words: '"We Do Not Sow"',
     region: 'The Iron Islands',
     sigil: 'Golden Kraken',
-    colors: ['#d4af37', '#8b8b6b'],
     accent: '#b8a040',
     description:
       'Reavers of the sea. Iron men who bow to no king but the Drowned God. What they cannot make, they take. What they cannot take, they burn. The sea is their kingdom — all else is plunder.',
@@ -84,7 +83,6 @@ const HOUSES = [
     words: '"Growing Strong"',
     region: 'The Reach',
     sigil: 'Golden Rose',
-    colors: ['#4a7c3f', '#7ab648'],
     accent: '#5a9e48',
     description:
       'The richest lords of the Reach, whose roses feed the realm. Behind beauty and abundance lies a house of ruthless ambition — growing strong in gardens, and stronger still in schemes.',
@@ -104,17 +102,19 @@ const HouseCard = ({ house, index }) => {
   useEffect(() => {
     const el = cardRef.current
     if (!el) return
+    const stagger = prefersReducedMotion() ? 0 : index * 120
+    let timer = null
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => el.classList.add('visible'), index * 120)
+          timer = setTimeout(() => el.classList.add('visible'), stagger)
           obs.disconnect()
         }
       },
       { threshold: 0.15 }
     )
     obs.observe(el)
-    return () => obs.disconnect()
+    return () => { obs.disconnect(); clearTimeout(timer) }
   }, [index])
 
   // Sigil tilt on hover
@@ -202,11 +202,13 @@ const Section1 = () => {
 
   useEffect(() => {
     const els = [headingRef.current, subRef.current].filter(Boolean)
+    const step = prefersReducedMotion() ? 0 : 150
+    const timers = []
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           els.forEach((el, i) =>
-            setTimeout(() => el.classList.add('visible'), i * 150)
+            timers.push(setTimeout(() => el.classList.add('visible'), i * step))
           )
           obs.disconnect()
         }
@@ -214,7 +216,7 @@ const Section1 = () => {
       { threshold: 0.2 }
     )
     if (sectionRef.current) obs.observe(sectionRef.current)
-    return () => obs.disconnect()
+    return () => { obs.disconnect(); timers.forEach(clearTimeout) }
   }, [])
 
   return (

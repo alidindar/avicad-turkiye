@@ -8,6 +8,22 @@
   padding: 0;
 }
 
+/* Reduced-motion: CSS kaynakli tum animasyon ve gecisleri neredeyse aninda
+   bitir. JS tarafinda GSAP giris/rune animasyonlari ve stagger'lar zaten
+   atlaniyor; bu blok CSS keyframe/transition'lari icin guvenlik agi. Scroll-
+   scrub kaldirilmiyor (kullanicinin dogrudan kontrolu), sadece kendiliginden
+   oynayan hareketler susturuluyor. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 :root {
   --gold:       #c9a84c;
   --gold-light: #e8c97a;
@@ -452,6 +468,19 @@ body {
   letter-spacing: 0.6em;
   color: var(--gold-dim);
   text-transform: uppercase;
+}
+
+/* Hata mesaji: got-loading-sub'in genis harf araligi ve 9px'i bilgi metni
+   icin uygun ama hata icin okunmuyor. Daha buyuk, dar aralikli, kor rengi. */
+.got-loading-error {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: #b5503f;
+  max-width: 34ch;
+  text-align: center;
+  padding: 0 24px;
 }
 
 .got-loading-bar-wrap {
