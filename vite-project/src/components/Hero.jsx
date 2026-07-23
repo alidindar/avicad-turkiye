@@ -398,11 +398,16 @@ const Hero = () => {
                           behavior: prefersReducedMotion() ? 'auto' : 'smooth',
                         })
                       } : l === 'İletişim' ? (e) => {
-                        // "İletişim" alttaki iletisim formuna kaydirir
+                        // "İletişim" alttaki iletisim formuna kaydirir.
+                        // NOT: agir video decode ana thread'i bogdugu icin smooth
+                        // scroll (rAF tabanli) bu sayfada ilerlemiyor; 'auto' (aninda)
+                        // her kosulda guvenilir calisir.
                         e.preventDefault()
-                        document.getElementById('iletisim')?.scrollIntoView({
-                          behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-                        })
+                        const el = document.getElementById('iletisim')
+                        if (el) {
+                          const top = el.getBoundingClientRect().top + window.scrollY
+                          window.scrollTo({ top, behavior: 'auto' })
+                        }
                       } : undefined
                     }
                   >
