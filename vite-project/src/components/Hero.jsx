@@ -20,54 +20,48 @@ const STALL_TIMEOUT_MS = 30000
 const RUNE_TICKS       = 80
 
 // ─── Chapter data ────────────────────────────────────────────────────────────
+// Bolum araliklari 5 video klibine hizali (M1=5.04s, M2-M5=8.04s / toplam 37.21s):
+// M1 0-0.1355 | M2 0.1355-0.3516 | M3 0.3516-0.5678 | M4 0.5678-0.7839 | M5 0.7839-1.0
 const CHAPTERS = [
   {
-    id: 'prologue',
-    progress: [0, 0.12],
-    title: 'The Ancient Chronicles',
-    subtitle: 'A SONG OF ICE AND FIRE',
-    body: 'In the beginning, there were only the words of the Maesters — secrets sealed within ancient tomes, waiting for a hand brave enough to open them.',
+    id: 'intro',
+    progress: [0, 0.1355],
+    title: 'DWG ile sorunsuz çalışan, tanıdık gelen bir AutoCAD alternatifi mi arıyorsunuz?',
+    subtitle: '2010\'dan beri güvenilen AutoCAD® alternatifi',
+    body: 'AViCAD, pratik bir AutoCAD alternatifi olarak tasarlanmış DWG tabanlı bir CAD yazılımıdır — tanıdık komutlar, tam dosya uyumluluğu ve sorunsuz çalışan bir iş akışı sunar.',
     sigil: '✦',
   },
   {
-    id: 'winterfell',
-    progress: [0.12, 0.30],
-    title: 'The North Remembers',
-    subtitle: 'HOUSE STARK — WINTERFELL',
-    body: 'Winter is coming. Beyond the ancient walls, the cold whispers of the North carry stories older than the Wall itself.',
-    sigil: '⚔',
+    id: 'model',
+    progress: [0.1355, 0.3516],
+    title: 'Fikirlerinizi hassas 3B modellere dönüştürün',
+    subtitle: '2B\'DEN 3B\'YE',
+    body: 'AViCAD ile 2B çizimden 3B modele geçin — katmanlar, bloklar ve DWG geometrisi bozulmadan, alıştığınız komutlarla.',
+    sigil: '◈',
   },
   {
-    id: 'westeros',
-    progress: [0.30, 0.52],
-    title: 'The Seven Kingdoms',
-    subtitle: 'THE REALM OF WESTEROS',
-    body: 'From the Eyrie\'s clouded peaks to the red sands of Dorne — seven kingdoms, one throne, a thousand reasons to bleed.',
-    sigil: '♜',
+    id: 'reality',
+    progress: [0.3516, 0.5678],
+    title: 'Çizim gerçeğe dönüşürken her detay yerli yerinde',
+    subtitle: 'MODELLEME',
+    body: 'Tel kafesten malzemeye, ölçüden dokuya — AViCAD tasarımınızı milimetrik doğrulukla gerçek bir projeye taşır.',
+    sigil: '◫',
   },
   {
-    id: 'kings-landing',
-    progress: [0.52, 0.70],
-    title: 'Where Crowns Are Won',
-    subtitle: 'KING\'S LANDING — THE CAPITAL',
-    body: 'The city that swallows kings whole. Gold and treachery perfume the air. Every smile here conceals a blade.',
-    sigil: '👑',
+    id: 'visualize',
+    progress: [0.5678, 0.7839],
+    title: 'Tasarımınızı sunuma hazır görsellere taşıyın',
+    subtitle: 'GÖRSELLEŞTİRME',
+    body: 'Mimariden iç mekana, peyzajdan makineye — projelerinizi müşterinize foto-gerçekçi sunumlarla anlatın.',
+    sigil: '▦',
   },
   {
-    id: 'swords',
-    progress: [0.70, 0.87],
-    title: 'A Thousand Blades',
-    subtitle: 'FORGED IN CONQUEST',
-    body: 'One thousand swords, surrendered by enemies of Aegon the Conqueror. Melted. Reshaped. Made into something terrible and magnificent.',
-    sigil: '⚒',
-  },
-  {
-    id: 'throne',
-    progress: [0.87, 1.0],
-    title: 'The Iron Throne',
-    subtitle: 'WHEN YOU PLAY THE GAME OF THRONES',
-    body: 'You win — or you die.',
-    sigil: '♔',
+    id: 'delivery',
+    progress: [0.7839, 1.0],
+    title: 'Fikirden teslime, tek yazılımla',
+    subtitle: 'AVİCAD TÜRKİYE',
+    body: 'Profesyonel CAD gücünü uygun maliyetle keşfedin. Ücretsiz demo talep edin, projelerinizi AViCAD ile hayata geçirin.',
+    sigil: '◆',
   },
 ]
 
@@ -340,7 +334,7 @@ const Hero = () => {
         <div className="got-loading-logo">AviCAD Türkiye</div>
         <div className={videoError ? 'got-loading-error' : 'got-loading-sub'}>
           {videoError
-            || (videoSlow ? 'Video yükleniyor, bu biraz sürebilir…' : 'The Chronicles of Westeros')}
+            || (videoSlow ? 'Video yükleniyor, bu biraz sürebilir…' : 'DWG Uyumlu CAD Yazılımı')}
         </div>
         {!videoError && (
           <div className="got-loading-bar-wrap">
@@ -391,13 +385,13 @@ const Hero = () => {
           <nav className="got-nav" aria-label="Ana menü">
             <div className="got-nav-logo">AviCAD Türkiye</div>
             <ul className="got-nav-links">
-              {['The World','Characters','Hakkımızda','İletişim'].map(l => (
+              {['Anasayfa','Characters','Hakkımızda','İletişim'].map(l => (
                 <li key={l}>
                   <a
                     href={l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`}
                     onClick={
-                      l === 'The World' ? (e) => {
-                        // "The World" sayfanin en basina (Hero baslangici) kaydirir
+                      l === 'Anasayfa' ? (e) => {
+                        // "Anasayfa" sayfanin en basina (Hero baslangici) kaydirir
                         e.preventDefault()
                         window.scrollTo({
                           top: 0,
