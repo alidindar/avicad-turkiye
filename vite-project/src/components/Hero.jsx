@@ -385,7 +385,7 @@ const Hero = () => {
           <nav className="got-nav" aria-label="Ana menü">
             <div className="got-nav-logo">AviCAD Türkiye</div>
             <ul className="got-nav-links">
-              {['Anasayfa','Characters','Hakkımızda','İletişim'].map(l => (
+              {['Anasayfa','Neden AviCAD?','Hakkımızda','İletişim'].map(l => (
                 <li key={l}>
                   <a
                     href={l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`}
@@ -397,6 +397,14 @@ const Hero = () => {
                           top: 0,
                           behavior: prefersReducedMotion() ? 'auto' : 'smooth',
                         })
+                      } : l === 'Neden AviCAD?' ? (e) => {
+                        // "Neden AviCAD?" ozellikler bolumune (Section1) kaydirir.
+                        e.preventDefault()
+                        const el = document.getElementById('neden-avicad')
+                        if (el) {
+                          const top = el.getBoundingClientRect().top + window.scrollY
+                          window.scrollTo({ top, behavior: 'auto' })
+                        }
                       } : l === 'İletişim' ? (e) => {
                         // "İletişim" alttaki iletisim formuna kaydirir.
                         // NOT: agir video decode ana thread'i bogdugu icin smooth

@@ -5,90 +5,92 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// AviCAD ozellik/avantaj kartlari. `icon` gecici emoji placeholder (ikonlar
+// sonra netlesecek); `sigil` kart altindaki kisa etiket.
 const HOUSES = [
   {
-    id: 'stark',
-    name: 'STARK',
-    seat: 'Winterfell',
-    words: '"Winter Is Coming"',
-    region: 'The North',
-    sigil: 'Grey Direwolf',
-    accent: '#8fafc4',
+    id: 'dwg',
+    name: 'DWG UYUMU',
+    seat: 'Dönüştürmeden aç & kaydet',
+    words: 'Dosyalarınız Olduğu Gibi',
+    region: 'DOSYA UYUMLULUĞU',
+    sigil: 'DWG · DXF',
+    icon: '🗂️',
+    accent: '#5b9bd5',
     description:
-      'Wardens of the North, the Starks trace their blood to the First Men. Honour is their sword and the frozen wind their banner. They endure where others fall — patient as winter itself.',
-    sigil_url: '/images/one.jpg',
-    bg: 'linear-gradient(135deg, #0d1117 0%, #1a2332 60%, #0d1117 100%)',
-    borderColor: '#4a6380',
+      'AviCAD, .dwg ve .dxf dosyalarını dönüştürmeden doğrudan açar ve kaydeder. Mevcut projeleriniz ve iş ortaklarınızla paylaşımınız hiç bozulmadan devam eder.',
+    bg: 'linear-gradient(135deg, #0d1117 0%, #14202e 60%, #0d1117 100%)',
+    borderColor: '#3a5f80',
   },
   {
-    id: 'lannister',
-    name: 'LANNISTER',
-    seat: 'Casterly Rock',
-    words: '"Hear Me Roar"',
-    region: 'The Westerlands',
-    sigil: 'Golden Lion',
+    id: 'arayuz',
+    name: 'TANIDIK ARAYÜZ',
+    seat: 'Sıfır öğrenme eğrisi',
+    words: 'Alıştığınız Komutlar',
+    region: 'KOLAY GEÇİŞ',
+    sigil: 'AutoCAD Uyumlu',
+    icon: '⌨️',
+    accent: '#4fb3a6',
+    description:
+      'Komut satırı, kısayollar ve menüler AutoCAD’e çok benzer. Ekibiniz yeniden eğitime gerek kalmadan ilk günden tam verimle çalışır.',
+    bg: 'linear-gradient(135deg, #0a1413 0%, #10201d 60%, #0a1413 100%)',
+    borderColor: '#2f6f68',
+  },
+  {
+    id: 'tasarim',
+    name: '2B & 3B TASARIM',
+    seat: 'Çizimden modele',
+    words: 'Tek Yazılımda',
+    region: 'TASARIM GÜCÜ',
+    sigil: 'Çizim & Model',
+    icon: '📐',
     accent: '#d4a84b',
     description:
-      'The wealthiest house in Westeros. Their lion does not merely roar — it devours. Power is their birthright, gold their language, and debt a weapon they wield with surgical precision.',
-    sigil_url: '/images/two.jpg',
+      'Teknik çizimden 3B modellemeye kadar mimari, makine ve mühendislik projelerinizi tek bir güçlü ortamda tamamlayın.',
     bg: 'linear-gradient(135deg, #1a1200 0%, #2a1f00 60%, #1a1200 100%)',
     borderColor: '#7a6130',
   },
   {
-    id: 'targaryen',
-    name: 'TARGARYEN',
-    seat: 'Dragonstone',
-    words: '"Fire and Blood"',
-    region: 'The Crownlands',
-    sigil: 'Three-Headed Dragon',
-    accent: '#c0392b',
-    description:
-      'Blood of Old Valyria. They did not conquer Westeros — they burned it into submission. Dragon riders, dynasty builders, and the last of a world consumed by fire.',
-    sigil_url: '/images/three.png',
-    bg: 'linear-gradient(135deg, #1a0000 0%, #2d0a0a 60%, #1a0000 100%)',
-    borderColor: '#7a1a1a',
-  },
-  {
-    id: 'baratheon',
-    name: 'BARATHEON',
-    seat: "Storm's End",
-    words: '"Ours Is The Fury"',
-    region: 'The Stormlands',
-    sigil: 'Crowned Black Stag',
-    accent: '#c9a84c',
-    description:
-      'Born of storms, tempered by battle. The Baratheons seized the Iron Throne not through cunning but through iron will and a war hammer. Fury is not their weakness — it is their crown.',
-    sigil_url: '/images/four.webp',
-    bg: 'linear-gradient(135deg, #0a0a00 0%, #1f1c00 60%, #0a0a00 100%)',
-    borderColor: '#5a5020',
-  },
-  {
-    id: 'greyjoy',
-    name: 'GREYJOY',
-    seat: 'Pyke',
-    words: '"We Do Not Sow"',
-    region: 'The Iron Islands',
-    sigil: 'Golden Kraken',
-    accent: '#b8a040',
-    description:
-      'Reavers of the sea. Iron men who bow to no king but the Drowned God. What they cannot make, they take. What they cannot take, they burn. The sea is their kingdom — all else is plunder.',
-    sigil_url: '/images/five.jpg',
-    bg: 'linear-gradient(135deg, #050810 0%, #0a1020 60%, #050810 100%)',
-    borderColor: '#3a4a5a',
-  },
-  {
-    id: 'tyrell',
-    name: 'TYRELL',
-    seat: 'Highgarden',
-    words: '"Growing Strong"',
-    region: 'The Reach',
-    sigil: 'Golden Rose',
+    id: 'lisans',
+    name: 'UYGUN LİSANS',
+    seat: 'Kalıcı lisans seçeneği',
+    words: 'Bütçenizi Zorlamadan',
+    region: 'MALİYET AVANTAJI',
+    sigil: 'Kalıcı Lisans',
+    icon: '🏷️',
     accent: '#5a9e48',
     description:
-      'The richest lords of the Reach, whose roses feed the realm. Behind beauty and abundance lies a house of ruthless ambition — growing strong in gardens, and stronger still in schemes.',
-    sigil_url: '/images/six.jpg',
-    bg: 'linear-gradient(135deg, #030a00 0%, #0a1800 60%, #030a00 100%)',
-    borderColor: '#2a4a20',
+      'Profesyonel CAD gücünü abonelik baskısı olmadan, uygun maliyetli lisanslama ile edinin. Küçük ofisten büyük ekibe kadar ölçeklenir.',
+    bg: 'linear-gradient(135deg, #030a00 0%, #0c1a06 60%, #030a00 100%)',
+    borderColor: '#2f5a28',
+  },
+  {
+    id: 'destek',
+    name: 'YEREL DESTEK',
+    seat: 'AviCAD Türkiye',
+    words: 'Yanınızda, Türkçe',
+    region: 'TÜRKİYE DESTEĞİ',
+    sigil: 'Türkçe Destek',
+    icon: '🎧',
+    accent: '#d0564a',
+    description:
+      'Kurulumdan eğitime, teknik sorundan lisanslamaya kadar Türkiye distribütörü olarak hızlı ve Türkçe destek sağlıyoruz.',
+    bg: 'linear-gradient(135deg, #170705 0%, #1f0a08 60%, #170705 100%)',
+    borderColor: '#7a2a22',
+  },
+  {
+    id: 'hiz',
+    name: 'HIZLI GEÇİŞ',
+    seat: 'Dakikalar içinde',
+    words: 'Hemen Üretime',
+    region: 'HIZLI BAŞLANGIÇ',
+    sigil: 'Kolay Geçiş',
+    icon: '⚡',
+    accent: '#8a7fe0',
+    description:
+      'Tanıdık arayüz ve DWG uyumu sayesinde AutoCAD’den geçiş sorunsuzdur. Ücretsiz demo ile bugün deneyin, farkı hemen görün.',
+    bg: 'linear-gradient(135deg, #0b0916 0%, #141026 60%, #0b0916 100%)',
+    borderColor: '#4a4290',
   },
 ]
 
@@ -96,7 +98,6 @@ const HouseCard = ({ house, index }) => {
   const cardRef   = useRef(null)
   const sigilRef  = useRef(null)
   const [hovered, setHovered] = useState(false)
-  const [imgError, setImgError] = useState(false)
 
   // Staggered entrance via IntersectionObserver
   useEffect(() => {
@@ -149,18 +150,9 @@ const HouseCard = ({ house, index }) => {
       {/* Glow pulse on hover */}
       <div className="card-glow" />
 
-      {/* Sigil */}
+      {/* Ikon (gecici emoji placeholder) */}
       <div ref={sigilRef} className="house-sigil-wrap">
-        {!imgError ? (
-          <img
-            className="house-sigil-img"
-            src={import.meta.env.BASE_URL + house.sigil_url.replace(/^\//, '')}
-            alt={`House ${house.name} sigil`}
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="house-sigil-fallback">{house.sigil[0]}</div>
-        )}
+        <div className="house-sigil-fallback" aria-hidden="true">{house.icon}</div>
         <div className="sigil-ring" />
       </div>
 
@@ -172,7 +164,7 @@ const HouseCard = ({ house, index }) => {
           <span className="divider-diamond" />
           <span className="divider-line" />
         </div>
-        <h2 className="house-name">HOUSE<br />{house.name}</h2>
+        <h2 className="house-name">{house.name}</h2>
         <p className="house-seat">{house.seat}</p>
         <p className="house-sigil-label">{house.sigil}</p>
       </div>
@@ -185,7 +177,7 @@ const HouseCard = ({ house, index }) => {
           <span className="divider-diamond" />
           <span className="divider-line" />
         </div>
-        <h2 className="hover-name">HOUSE {house.name}</h2>
+        <h2 className="hover-name">{house.name}</h2>
         <p className="hover-desc">{house.description}</p>
       </div>
 
@@ -220,7 +212,7 @@ const Section1 = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} className="section1">
+    <section ref={sectionRef} id="neden-avicad" className="section1">
 
       {/* Ambient background texture */}
       <div className="section1-bg-texture" />
@@ -228,18 +220,18 @@ const Section1 = () => {
 
       {/* Section header */}
       <header className="section1-header">
-        <p ref={subRef} className="section1-eyebrow fade-up">THE GREAT HOUSES OF WESTEROS</p>
+        <p ref={subRef} className="section1-eyebrow fade-up">NEDEN AVİCAD?</p>
         <div className="header-ornament">
           <span className="ornament-line" />
           <span className="ornament-rune">✦</span>
           <span className="ornament-line" />
         </div>
         <h1 ref={headingRef} className="section1-title fade-up">
-          The Noble<br />
-          <em>Houses</em>
+          Öne Çıkan<br />
+          <em>Özellikler</em>
         </h1>
         <p className="section1-subtitle fade-up">
-          Seven kingdoms. Six great houses. One Iron Throne.
+          DWG uyumlu, tanıdık arayüzlü, uygun maliyetli profesyonel CAD çözümü.
         </p>
       </header>
 
@@ -253,7 +245,7 @@ const Section1 = () => {
       {/* Section footer ornament */}
       <div className="section1-footer-ornament">
         <span className="footer-line" />
-        <span className="footer-sigil">⚔</span>
+        <span className="footer-sigil">✦</span>
         <span className="footer-line" />
       </div>
 
