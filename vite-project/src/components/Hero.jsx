@@ -467,7 +467,7 @@ const Hero = () => {
 
           {/* Scroll hint */}
           <div className="got-scroll-hint">
-            <span>Scroll</span>
+            <span>Kaydır</span>
             <div className="arrow" />
           </div>
 
