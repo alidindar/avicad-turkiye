@@ -4,9 +4,9 @@
 //   - TELEFON_HREF ve WHATSAPP_NUMARA yalnizca rakam/+ icermeli (link icin).
 //   - TELEFON_GORUNEN ekranda gosterilen bicim (bosluk/parantez serbest).
 
-export const TELEFON_GORUNEN   = '+90 (212) 000 00 00'
-export const TELEFON_HREF      = 'tel:+902120000000'   // sadece + ve rakam
-export const WHATSAPP_NUMARA   = '905320000000'        // wa.me icin sadece rakam (bassiz 0 yok)
+export const TELEFON_GORUNEN   = '+90 (536) 928 00 59'
+export const TELEFON_HREF      = 'tel:+905369280059'   // sadece + ve rakam
+export const WHATSAPP_NUMARA   = '905369280059'        // wa.me icin sadece rakam (bassiz 0 yok)
 export const WHATSAPP_MESAJ    = 'Merhaba, AviCAD hakkında bilgi almak istiyorum.'
 export const EPOSTA            = 'info@avicadturkiye.com.tr'
 export const ADRES             = 'İstanbul, Türkiye'
