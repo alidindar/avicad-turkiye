@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './Compare.css'
+import Ornament from './Ornament'
 import { PARA_BIRIMI, AVICAD_YILLIK, AUTOCAD_YILLIK } from '../siteConfig'
 
 const fmt = (n) => new Intl.NumberFormat('en-US').format(Math.round(n))
@@ -78,6 +79,7 @@ const Compare = () => (
   <section className="compare" aria-label="AviCAD ve AutoCAD maliyet karşılaştırması">
     <header className="compare-header">
       <p className="compare-eyebrow">KARŞILAŞTIRMA</p>
+      <Ornament />
       <h2 className="compare-title">AviCAD vs AutoCAD</h2>
       <p className="compare-subtitle">
         Aynı temel yetenekler; daha esnek lisans, çok daha uygun maliyet ve yerel Türkçe destek.

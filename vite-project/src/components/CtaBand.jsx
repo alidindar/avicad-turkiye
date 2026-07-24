@@ -1,4 +1,5 @@
 import './CtaBand.css'
+import Ornament from './Ornament'
 
 // Section1 (ozellikler) ile Contact arasinda dönüşüm bandi. Butona basinca
 // Konu'yu "Demo Talebi" yapip Iletisim formuna kaydirir (Hero deseniyle ayni).
@@ -11,6 +12,7 @@ const CtaBand = () => (
   <section className="cta-band">
     <div className="cta-band-inner">
       <p className="cta-band-eyebrow">ÜCRETSİZ 30 GÜN</p>
+      <Ornament />
       <h2 className="cta-band-title">Bugün denemeye başlayın</h2>
       <p className="cta-band-text">
         AviCAD'i kendi projelerinizde ücretsiz deneyin. Kurulumdan lisanslamaya
