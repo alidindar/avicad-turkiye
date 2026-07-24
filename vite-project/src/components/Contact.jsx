@@ -6,6 +6,24 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// Telefon numarasini yazilirken "0 (5XX) XXX XX XX" bicimine maskele.
+const telefonFormatla = (val) => {
+  let d = val.replace(/\D/g, '')
+  if (d.startsWith('90')) d = d.slice(2)   // +90 / 90 onekini at
+  if (d.startsWith('0')) d = d.slice(1)    // bastaki 0'i ayikla (grup basinda tekrar eklenir)
+  d = d.slice(0, 10)
+  let out = '0'
+  if (d.length > 0) out += ' (' + d.slice(0, 3)
+  if (d.length >= 3) out += ')'
+  if (d.length > 3) out += ' ' + d.slice(3, 6)
+  if (d.length > 6) out += ' ' + d.slice(6, 8)
+  if (d.length > 8) out += ' ' + d.slice(8, 10)
+  return out
+}
+
+// Gecerli TR numara: 0 ile baslayan 11 hane (cep + sabit hat).
+const telefonGecerli = (val) => /^0\d{10}$/.test(val.replace(/\D/g, ''))
+
 const Contact = () => {
   const sectionRef = useRef(null)
   const headerRef  = useRef(null)
@@ -17,6 +35,7 @@ const Contact = () => {
   const [telefon, setTelefon] = useState('')
   const [konu, setKonu]       = useState('')
   const [mesaj, setMesaj]     = useState('')
+  const [telefonHata, setTelefonHata] = useState('')
 
   const [gonderiliyor, setGonderiliyor] = useState(false)
   const [durum, setDurum]               = useState(null) // { ok: boolean, text: string }
@@ -51,13 +70,17 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (gonderiliyor) return
+    if (!telefonGecerli(telefon)) {
+      setTelefonHata('Geçerli bir telefon numarası girin (örn. 0 (532) 123 45 67).')
+      return
+    }
     setGonderiliyor(true)
     setDurum(null)
     try {
       // Gonderim: 1) satisa lead, 2) musteriye konuya ozel otomatik yanit.
       await submitContact({ ad, soyad, telefon, email, konu, mesaj })
       setDurum({ ok: true, text: 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.' })
-      setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj('')
+      setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
     } catch (err) {
       setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
     } finally {
@@ -117,10 +140,14 @@ const Contact = () => {
           <div className="contact-field">
             <label className="contact-label" htmlFor="c-telefon">Telefon</label>
             <input
-              id="c-telefon" className="contact-input" type="tel" required
-              value={telefon} onChange={(e) => setTelefon(e.target.value)}
-              autoComplete="tel" placeholder="05__ ___ __ __"
+              id="c-telefon" className={`contact-input ${telefonHata ? 'hata' : ''}`}
+              type="tel" required inputMode="tel" maxLength={19}
+              value={telefon}
+              onChange={(e) => { setTelefon(telefonFormatla(e.target.value)); if (telefonHata) setTelefonHata('') }}
+              onBlur={() => setTelefonHata(telefon && !telefonGecerli(telefon) ? 'Geçerli bir telefon numarası girin (örn. 0 (532) 123 45 67).' : '')}
+              autoComplete="tel" placeholder="0 (5__) ___ __ __"
             />
+            {telefonHata && <span className="contact-field-error">{telefonHata}</span>}
           </div>
         </div>
 

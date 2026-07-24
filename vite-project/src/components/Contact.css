@@ -250,3 +250,13 @@
 }
 .contact-status.ok    { color: #8fc98a; }
 .contact-status.error { color: #d98b7f; }
+
+/* Telefon alani gecersizken: kirmizi kenar + alan-alti uyari */
+.contact-input.hata { border-color: #d98b7f; }
+.contact-field-error {
+  display: block;
+  margin-top: 6px;
+  font-family: 'IM Fell English', serif;
+  font-size: 12px;
+  color: #d98b7f;
+}
