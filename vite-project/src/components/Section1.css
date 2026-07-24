@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=IM+Fell+English:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 /* ─── Section wrapper ────────────────────────────────────────────────────── */
 .section1 {
@@ -38,7 +38,7 @@
 }
 
 .section1-eyebrow {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.5em;
   color: #c9a84c;
@@ -71,7 +71,7 @@
 }
 
 .section1-title {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: clamp(38px, 6vw, 80px);
   font-weight: 700;
   line-height: 1.05;
@@ -84,11 +84,11 @@
 .section1-title em {
   font-style: italic;
   color: #c9a84c;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--font-body);
 }
 
 .section1-subtitle {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--font-body);
   font-size: clamp(14px, 1.6vw, 18px);
   font-style: italic;
   color: #8a8070;
@@ -284,7 +284,7 @@
 }
 
 .house-region {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-mono);
   font-size: 8px;
   letter-spacing: 0.5em;
   color: var(--accent, #c9a84c);
@@ -320,7 +320,7 @@
 }
 
 .house-name {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: clamp(16px, 2vw, 22px);
   font-weight: 700;
   color: #f5e6c8;
@@ -331,7 +331,7 @@
 }
 
 .house-seat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 9px;
   letter-spacing: 0.3em;
   color: #6a6050;
@@ -340,10 +340,10 @@
 }
 
 .house-sigil-label {
-  font-family: 'IM Fell English', serif;
-  font-size: 12px;
-  font-style: italic;
-  color: #5a5040;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #6a6050;
 }
 
 /* ─── Hover content (words + description) ───────────────────────────────── */
@@ -373,7 +373,7 @@
 }
 
 .hover-words {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: clamp(15px, 2vw, 22px);
   font-weight: 700;
   color: var(--accent, #c9a84c);
@@ -393,7 +393,7 @@
 }
 
 .hover-name {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.45em;
@@ -403,7 +403,7 @@
 }
 
 .hover-desc {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--font-body);
   font-size: clamp(12px, 1.2vw, 14px);
   font-style: italic;
   color: #a89880;

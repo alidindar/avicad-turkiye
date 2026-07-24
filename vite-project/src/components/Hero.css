@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=IM+Fell+English:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 *,
 *::before,
@@ -33,6 +33,12 @@
   --ash:        #c8bfb0;
   --ink:        #0a0705;
   --white-mist: rgba(245, 230, 200, 0.88);
+
+  /* Tipografi — IBM Plex (mühendislik/teknik güven). display & body ayni
+     aile; hiyerarsi font-weight ile. mono → teknik büyük-harf etiketler. */
+  --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
 }
 
 html {
@@ -127,7 +133,7 @@ body {
 }
 
 .got-nav-logo {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: 13px;
   letter-spacing: 0.25em;
   color: var(--gold);
@@ -141,7 +147,7 @@ body {
 }
 
 .got-nav-links li a {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 10px;
   letter-spacing: 0.3em;
   color: var(--ash);
@@ -200,7 +206,7 @@ body {
 }
 
 .got-subtitle {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.45em;
   color: var(--gold);
@@ -210,7 +216,7 @@ body {
 }
 
 .got-title {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: clamp(22px, 2.6vw, 34px);
   font-weight: 700;
   line-height: 1.18;
@@ -221,7 +227,7 @@ body {
 }
 
 .got-body {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--font-body);
   font-size: clamp(14px, 1.5vw, 17px);
   line-height: 1.75;
   color: var(--ash);
@@ -239,7 +245,7 @@ body {
 }
 
 .got-cta-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 10px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
@@ -259,7 +265,7 @@ body {
 }
 
 .got-cta-ghost {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 10px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
@@ -291,7 +297,7 @@ body {
 }
 
 .got-chapter-label {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.3em;
   color: var(--gold-dim);
@@ -393,7 +399,7 @@ body {
 }
 
 .got-scroll-hint span {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-mono);
   font-size: 8px;
   letter-spacing: 0.4em;
   color: var(--gold);
@@ -455,7 +461,7 @@ body {
 }
 
 .got-loading-logo {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: var(--font-display);
   font-size: 22px;
   color: var(--gold);
   letter-spacing: 0.2em;
@@ -463,7 +469,7 @@ body {
 }
 
 .got-loading-sub {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 9px;
   letter-spacing: 0.6em;
   color: var(--gold-dim);
@@ -473,7 +479,7 @@ body {
 /* Hata mesaji: got-loading-sub'in genis harf araligi ve 9px'i bilgi metni
    icin uygun ama hata icin okunmuyor. Daha buyuk, dar aralikli, kor rengi. */
 .got-loading-error {
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.7;
   letter-spacing: 0.06em;
