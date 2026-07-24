@@ -12,6 +12,9 @@ export const EPOSTA            = 'info@avicadturkiye.com.tr'
 export const ADRES             = 'İstanbul, Türkiye'
 export const CALISMA_SAATLERI  = 'Hafta içi 09:00 – 18:00'
 
+// Konu "Demo Talebi" secilip form gonderilince baslatilan demo kurulum indirmesi.
+export const DEMO_INDIRME_URL  = 'https://avicad.com/dloads/AviCAD-Download.exe'
+
 // wa.me linki — hazir mesajla birlikte.
 export const whatsappHref = () =>
   `https://wa.me/${WHATSAPP_NUMARA}?text=${encodeURIComponent(WHATSAPP_MESAJ)}`

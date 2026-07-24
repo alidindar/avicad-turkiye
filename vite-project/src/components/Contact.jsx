@@ -3,7 +3,7 @@ import './Contact.css'
 import { submitContact } from '../emailService'
 import {
   TELEFON_GORUNEN, TELEFON_HREF, EPOSTA,
-  ADRES, CALISMA_SAATLERI, whatsappHref,
+  ADRES, CALISMA_SAATLERI, whatsappHref, DEMO_INDIRME_URL,
 } from '../siteConfig'
 
 const prefersReducedMotion = () =>
@@ -27,6 +27,17 @@ const telefonFormatla = (val) => {
 
 // Gecerli TR numara: 0 ile baslayan 11 hane (cep + sabit hat).
 const telefonGecerli = (val) => /^0\d{10}$/.test(val.replace(/\D/g, ''))
+
+// Demo kurulum dosyasini indir. .exe tarayicida acilamadigi icin dogrudan
+// indirilir; gizli <a> tiklamasi sayfadan cikmadan indirmeyi baslatir.
+const tetikleDemoIndir = () => {
+  const a = document.createElement('a')
+  a.href = DEMO_INDIRME_URL
+  a.rel = 'noopener'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+}
 
 const Contact = () => {
   const sectionRef = useRef(null)
@@ -83,18 +94,34 @@ const Contact = () => {
       setTelefonHata('Geçerli bir telefon numarası girin (örn. 0 (532) 123 45 67).')
       return
     }
+    const demoTalebi = konu === 'Demo Talebi'
     setGonderiliyor(true)
     setDurum(null)
+
+    // Lead yakalama (satisa bildirim + musteriye oto-yanit). EmailJS henuz
+    // yapilandirilmadiysa hata verir; demo indirmesi buna bagli DEGIL.
+    let leadOk = true
     try {
-      // Gonderim: 1) satisa lead, 2) musteriye konuya ozel otomatik yanit.
       await submitContact({ ad, soyad, telefon, email, konu, mesaj })
-      setDurum({ ok: true, text: 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.' })
-      setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
     } catch (err) {
-      setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
-    } finally {
-      setGonderiliyor(false)
+      leadOk = false
     }
+
+    // Demo talebinde: zorunlu alanlar dolu + telefon gecerli → demoyu indir.
+    if (demoTalebi) tetikleDemoIndir()
+
+    if (demoTalebi || leadOk) {
+      setDurum({
+        ok: true,
+        text: demoTalebi
+          ? 'Talebiniz alındı. AviCAD demo indirmeniz başlıyor…'
+          : 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.',
+      })
+      setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
+    } else {
+      setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
+    }
+    setGonderiliyor(false)
   }
 
   return (
