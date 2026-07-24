@@ -20,8 +20,19 @@
     0 0 0 4px rgba(37, 211, 102, 0.16),
     0 0 26px rgba(37, 211, 102, 0.45);
 
+  /* Varsayilan gizli — BackToTop ile ayni anda (video/hero bitince) belirir. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(0.9);
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s,
+    box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.wa-fab.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
   animation: wa-fab-pulse 2.6s ease-in-out infinite;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .wa-fab svg { display: block; }
@@ -41,8 +52,8 @@
   }
 }
 
-.wa-fab:hover {
-  transform: scale(1.09);
+.wa-fab.show:hover {
+  transform: translateY(0) scale(1.09);
   background: radial-gradient(circle at 32% 28%, #62f08d, #2ee06f 60%, #25d366);
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.6),
@@ -50,7 +61,7 @@
     0 0 48px rgba(37, 211, 102, 0.75);
 }
 
-.wa-fab:active { transform: scale(1.02); }
+.wa-fab.show:active { transform: translateY(0) scale(1.02); }
 
 .wa-fab:focus-visible {
   outline: 2px solid #eafff1;
@@ -68,6 +79,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wa-fab { animation: none; transition: none; }
-  .wa-fab:hover { transform: none; }
+  .wa-fab {
+    transition: opacity 0.2s ease, visibility 0.2s;
+    transform: none;
+  }
+  .wa-fab.show { transform: none; animation: none; }
+  .wa-fab.show:hover { transform: none; }
 }
