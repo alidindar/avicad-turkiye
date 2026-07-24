@@ -1,0 +1,92 @@
+/* "Yukarı çık" yüzen butonu — renk değişkenleri Hero.css :root'tan gelir. */
+.back-to-top {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 60;
+
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: #0d0d0d;
+
+  background: radial-gradient(circle at 32% 28%, var(--gold-light, #e8c97a), var(--gold, #c9a84c) 62%, var(--gold-dim, #7a6130));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    0 0 0 4px rgba(201, 168, 76, 0.14),
+    0 0 26px color-mix(in srgb, var(--gold, #c9a84c) 45%, transparent);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(0.9);
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s,
+    box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  animation: back-to-top-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes back-to-top-pulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.55),
+      0 0 0 4px rgba(201, 168, 76, 0.14),
+      0 0 22px color-mix(in srgb, var(--gold, #c9a84c) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 8px 26px rgba(0, 0, 0, 0.6),
+      0 0 0 7px rgba(201, 168, 76, 0.20),
+      0 0 40px color-mix(in srgb, var(--gold, #c9a84c) 70%, transparent);
+  }
+}
+
+.back-to-top:hover {
+  transform: translateY(0) scale(1.09);
+  background: radial-gradient(circle at 32% 28%, #f4dd9a, var(--gold-light, #e8c97a) 60%, var(--gold, #c9a84c));
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.65),
+    0 0 0 6px rgba(201, 168, 76, 0.24),
+    0 0 48px color-mix(in srgb, var(--gold-light, #e8c97a) 70%, transparent);
+}
+
+.back-to-top:active {
+  transform: translateY(0) scale(1.02);
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--gold-light, #e8c97a);
+  outline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+  .back-to-top {
+    right: 18px;
+    bottom: 18px;
+    width: 50px;
+    height: 50px;
+    font-size: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: opacity 0.2s ease, visibility 0.2s;
+    transform: none;
+  }
+  .back-to-top.show { transform: none; animation: none; }
+  .back-to-top:hover { transform: none; }
+}
