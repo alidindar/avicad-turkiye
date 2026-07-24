@@ -1,0 +1,78 @@
+/* Orta-sayfa dönüşüm bandi — renk/font degiskenleri Hero.css :root'tan. */
+.cta-band {
+  position: relative;
+  background: linear-gradient(180deg, #050403 0%, #0e0b06 50%, #050403 100%);
+  border-top: 1px solid rgba(201, 168, 76, 0.16);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.16);
+  padding: 76px 24px;
+  text-align: center;
+}
+
+.cta-band-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.cta-band-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold, #c9a84c);
+  margin-bottom: 14px;
+}
+
+.cta-band-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.4vw, 34px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #f5e6c8;
+  margin-bottom: 12px;
+}
+
+.cta-band-text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  color: #b5a992;
+  margin-bottom: 28px;
+}
+
+.cta-band-btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0d0d0d;
+  background: linear-gradient(135deg, var(--gold-light, #e8c97a), var(--gold, #c9a84c));
+  border: none;
+  border-radius: 4px;
+  padding: 15px 34px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.cta-band-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f4dd9a, var(--gold-light, #e8c97a));
+  box-shadow: 0 12px 32px rgba(201, 168, 76, 0.36);
+}
+
+.cta-band-btn:active { transform: translateY(0); }
+
+.cta-band-btn:focus-visible {
+  outline: 2px solid var(--gold-light, #e8c97a);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cta-band { padding: 56px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-band-btn { transition: none; }
+  .cta-band-btn:hover { transform: none; }
+}
