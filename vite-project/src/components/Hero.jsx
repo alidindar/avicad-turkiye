@@ -452,7 +452,7 @@ const Hero = () => {
             <h1 ref={titleRef} className="got-title">{chapter.title}</h1>
             <p ref={bodyRef} className="got-body">{chapter.body}</p>
             <div className="got-cta-row">
-              <button type="button" className="got-cta-btn" onClick={() => scrollToId('iletisim')}>30 Gün Ücretsiz Deneme</button>
+              <button type="button" className="got-cta-btn" onClick={() => { window.dispatchEvent(new CustomEvent('konu-sec', { detail: 'Demo Talebi' })); scrollToId('iletisim') }}>30 Gün Ücretsiz Deneme</button>
               <button type="button" className="got-cta-ghost" onClick={() => scrollToId('neden-avicad')}>Özellikleri Keşfet</button>
             </div>
           </div>

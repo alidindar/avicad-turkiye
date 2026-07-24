@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './Contact.css'
-
-// Formdan gelen mesajlarin gidecegi adres. Degistirmek icin sadece bu satiri
-// duzenleyin (or. 'info@avicad.com.tr').
-const CONTACT_EMAIL = 'tahagulsn@gmail.com'
+import { submitContact } from '../emailService'
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
@@ -14,11 +11,15 @@ const Contact = () => {
   const headerRef  = useRef(null)
   const formRef    = useRef(null)
 
-  const [ad, setAd]         = useState('')
-  const [soyad, setSoyad]   = useState('')
-  const [email, setEmail]   = useState('')
-  const [konu, setKonu]     = useState('')
-  const [mesaj, setMesaj]   = useState('')
+  const [ad, setAd]           = useState('')
+  const [soyad, setSoyad]     = useState('')
+  const [email, setEmail]     = useState('')
+  const [telefon, setTelefon] = useState('')
+  const [konu, setKonu]       = useState('')
+  const [mesaj, setMesaj]     = useState('')
+
+  const [gonderiliyor, setGonderiliyor] = useState(false)
+  const [durum, setDurum]               = useState(null) // { ok: boolean, text: string }
 
   // Fade-up giris — Section1 ile ayni IntersectionObserver deseni
   useEffect(() => {
@@ -40,19 +41,28 @@ const Contact = () => {
     return () => { obs.disconnect(); timers.forEach(clearTimeout) }
   }, [])
 
-  const handleSubmit = (e) => {
+  // Hero "30 Gün Ücretsiz Deneme" butonu bu event'i gonderir → Konu'yu ayarla.
+  useEffect(() => {
+    const onKonuSec = (e) => setKonu(e.detail)
+    window.addEventListener('konu-sec', onKonuSec)
+    return () => window.removeEventListener('konu-sec', onKonuSec)
+  }, [])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Tarayici zaten required + email formatini dogruluyor. Burada mailto kur.
-    const subject = konu || `İletişim — ${ad} ${soyad}`.trim()
-    const body =
-      `Ad Soyad: ${ad} ${soyad}\n` +
-      `E-posta: ${email}\n\n` +
-      `${mesaj}\n`
-    const mailto =
-      `mailto:${CONTACT_EMAIL}` +
-      `?subject=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(body)}`
-    window.location.href = mailto
+    if (gonderiliyor) return
+    setGonderiliyor(true)
+    setDurum(null)
+    try {
+      // Gonderim: 1) satisa lead, 2) musteriye konuya ozel otomatik yanit.
+      await submitContact({ ad, soyad, telefon, email, konu, mesaj })
+      setDurum({ ok: true, text: 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.' })
+      setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj('')
+    } catch (err) {
+      setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
+    } finally {
+      setGonderiliyor(false)
+    }
   }
 
   return (
@@ -71,7 +81,7 @@ const Contact = () => {
           <span className="ornament-line" />
         </div>
         <h2 className="contact-title">İletişim</h2>
-        <p className="contact-subtitle">Bir sorunuz mu var? Bize yazın.</p>
+        <p className="contact-subtitle">Fiyat teklifi, demo ya da destek — size nasıl yardımcı olabiliriz?</p>
       </header>
 
       {/* Form */}
@@ -95,32 +105,56 @@ const Contact = () => {
           </div>
         </div>
 
-        <div className="contact-field">
-          <label className="contact-label" htmlFor="c-email">E-posta</label>
-          <input
-            id="c-email" className="contact-input" type="email" required
-            value={email} onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
+        <div className="contact-row">
+          <div className="contact-field">
+            <label className="contact-label" htmlFor="c-email">E-posta</label>
+            <input
+              id="c-email" className="contact-input" type="email" required
+              value={email} onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+          <div className="contact-field">
+            <label className="contact-label" htmlFor="c-telefon">Telefon</label>
+            <input
+              id="c-telefon" className="contact-input" type="tel" required
+              value={telefon} onChange={(e) => setTelefon(e.target.value)}
+              autoComplete="tel" placeholder="05__ ___ __ __"
+            />
+          </div>
         </div>
 
         <div className="contact-field">
           <label className="contact-label" htmlFor="c-konu">Konu</label>
-          <input
-            id="c-konu" className="contact-input" type="text" required
+          <select
+            id="c-konu" className="contact-input contact-select" required
             value={konu} onChange={(e) => setKonu(e.target.value)}
-          />
+          >
+            <option value="" disabled>Konu seçin</option>
+            <option value="Fiyat Talebi">Fiyat Talebi</option>
+            <option value="Demo Talebi">Demo Talebi</option>
+            <option value="Destek Talebi">Destek Talebi</option>
+          </select>
         </div>
 
         <div className="contact-field">
-          <label className="contact-label" htmlFor="c-mesaj">Mesaj</label>
+          <label className="contact-label" htmlFor="c-mesaj">Mesaj <span className="contact-optional">(isteğe bağlı)</span></label>
           <textarea
-            id="c-mesaj" className="contact-textarea" required rows={5}
+            id="c-mesaj" className="contact-textarea" rows={5}
             value={mesaj} onChange={(e) => setMesaj(e.target.value)}
+            placeholder="Kısa bir açıklama ekleyebilirsiniz."
           />
         </div>
 
-        <button type="submit" className="contact-submit">Gönder</button>
+        <button type="submit" className="contact-submit" disabled={gonderiliyor}>
+          {gonderiliyor ? 'Gönderiliyor…' : 'Gönder'}
+        </button>
+
+        {durum && (
+          <p className={`contact-status ${durum.ok ? 'ok' : 'error'}`} role="status">
+            {durum.text}
+          </p>
+        )}
       </form>
 
       {/* Footer ornament */}

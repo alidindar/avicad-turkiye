@@ -216,3 +216,37 @@
   .contact-row { flex-direction: column; gap: 22px; }
   .contact-submit { align-self: stretch; text-align: center; }
 }
+
+/* ─── Select (Konu) ──────────────────────────────────────────────────────── */
+.contact-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 42px;
+  color-scheme: dark;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath fill='none' stroke='%23c9a84c' stroke-width='2' d='M1 1l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+.contact-select:required:invalid { color: #9c8f77; } /* "Konu seçin" soluk */
+.contact-select option { background: #1a1310; color: #f5e6c8; }
+.contact-select option[value=""][disabled] { display: none; }
+
+/* ─── Opsiyonel etiketi + durum mesaji ───────────────────────────────────── */
+.contact-optional {
+  font-family: 'IM Fell English', serif;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 11px;
+  color: #9c8f77;
+  font-style: italic;
+}
+
+.contact-status {
+  margin-top: 16px;
+  font-family: 'IM Fell English', serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.contact-status.ok    { color: #8fc98a; }
+.contact-status.error { color: #d98b7f; }
