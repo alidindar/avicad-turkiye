@@ -2,6 +2,7 @@ import Hero from './components/Hero'
 import Section1 from './components/Section1'
 import CtaBand from './components/CtaBand'
 import Contact from './components/Contact'
+import Footer from './components/Footer'
 import BackToTop from './components/BackToTop'
 import WhatsAppFab from './components/WhatsAppFab'
 
@@ -13,6 +14,7 @@ function App() {
    <Section1 />
    <CtaBand />
    <Contact />
+   <Footer />
    <BackToTop />
    <WhatsAppFab />
     </>
