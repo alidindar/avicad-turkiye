@@ -233,10 +233,26 @@
 }
 
 .house-sigil-fallback {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 48px;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
   color: var(--accent, #c9a84c);
-  text-shadow: 0 0 30px var(--accent, #c9a84c);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 72%);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: border-color 0.4s ease, background 0.4s ease;
+}
+
+.house-sigil-fallback svg {
+  width: 46px;
+  height: 46px;
+  filter: drop-shadow(0 0 9px color-mix(in srgb, var(--accent) 50%, transparent));
+}
+
+.house-card:hover .house-sigil-fallback {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
 }
 
 .sigil-ring {

@@ -5,8 +5,8 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// AviCAD ozellik/avantaj kartlari. `icon` gecici emoji placeholder (ikonlar
-// sonra netlesecek); `sigil` kart altindaki kisa etiket.
+// AviCAD ozellik/avantaj kartlari. Ikonlar `id` uzerinden FeatureIcon'dan
+// gelir (asagida tanimli); `sigil` kart altindaki kisa etiket.
 const HOUSES = [
   {
     id: 'dwg',
@@ -15,7 +15,6 @@ const HOUSES = [
     words: 'Dosyalarınız Olduğu Gibi',
     region: 'DOSYA UYUMLULUĞU',
     sigil: 'DWG · DXF',
-    icon: '🗂️',
     accent: '#5b9bd5',
     description:
       'AviCAD, .dwg ve .dxf dosyalarını dönüştürmeden doğrudan açar ve kaydeder. Mevcut projeleriniz ve iş ortaklarınızla paylaşımınız hiç bozulmadan devam eder.',
@@ -29,7 +28,6 @@ const HOUSES = [
     words: 'Alıştığınız Komutlar',
     region: 'KOLAY GEÇİŞ',
     sigil: 'AutoCAD Uyumlu',
-    icon: '⌨️',
     accent: '#4fb3a6',
     description:
       'Komut satırı, kısayollar ve menüler AutoCAD’e çok benzer. Ekibiniz yeniden eğitime gerek kalmadan ilk günden tam verimle çalışır.',
@@ -43,7 +41,6 @@ const HOUSES = [
     words: 'Tek Yazılımda',
     region: 'TASARIM GÜCÜ',
     sigil: 'Çizim & Model',
-    icon: '📐',
     accent: '#d4a84b',
     description:
       'Teknik çizimden 3B modellemeye kadar mimari, makine ve mühendislik projelerinizi tek bir güçlü ortamda tamamlayın.',
@@ -57,7 +54,6 @@ const HOUSES = [
     words: 'Bütçenizi Zorlamadan',
     region: 'MALİYET AVANTAJI',
     sigil: 'Kalıcı Lisans',
-    icon: '🏷️',
     accent: '#5a9e48',
     description:
       'Profesyonel CAD gücünü abonelik baskısı olmadan, uygun maliyetli lisanslama ile edinin. Küçük ofisten büyük ekibe kadar ölçeklenir.',
@@ -71,7 +67,6 @@ const HOUSES = [
     words: 'Yanınızda, Türkçe',
     region: 'TÜRKİYE DESTEĞİ',
     sigil: 'Türkçe Destek',
-    icon: '🎧',
     accent: '#d0564a',
     description:
       'Kurulumdan eğitime, teknik sorundan lisanslamaya kadar Türkiye distribütörü olarak hızlı ve Türkçe destek sağlıyoruz.',
@@ -85,7 +80,6 @@ const HOUSES = [
     words: 'Hemen Üretime',
     region: 'HIZLI BAŞLANGIÇ',
     sigil: 'Kolay Geçiş',
-    icon: '⚡',
     accent: '#8a7fe0',
     description:
       'Tanıdık arayüz ve DWG uyumu sayesinde AutoCAD’den geçiş sorunsuzdur. Ücretsiz demo ile bugün deneyin, farkı hemen görün.',
@@ -93,6 +87,58 @@ const HOUSES = [
     borderColor: '#4a4290',
   },
 ]
+
+// Ozelliklere ozel profesyonel cizgi ikonlari. 24x24, stroke=currentColor →
+// her ikon kartin --accent rengini alir. Emoji yerine tutarli vektor set
+// (retina/mobil net, telif-guvenli, dis istek yok).
+const FEATURE_ICONS = {
+  dwg: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5" />
+      <path d="M8.5 13.5h7" />
+      <path d="M8.5 17h7" />
+    </>
+  ),
+  arayuz: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M7 10l2.2 2.2L7 14.4" />
+      <path d="M12 14.4h5" />
+    </>
+  ),
+  tasarim: (
+    <>
+      <path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8z" />
+      <path d="m3.3 7 8.7 5 8.7-5" />
+      <path d="M12 22V12" />
+    </>
+  ),
+  lisans: (
+    <>
+      <path d="M12.6 2.6A2 2 0 0 0 11.2 2H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.2-6.2a2.4 2.4 0 0 0 0-3.4z" />
+      <circle cx="7.8" cy="7.8" r="1.15" />
+    </>
+  ),
+  destek: (
+    <>
+      <path d="M5.5 15v-2.5a6.5 6.5 0 0 1 13 0V15" />
+      <rect x="3.4" y="13.8" width="4" height="6.2" rx="1.6" />
+      <rect x="16.6" y="13.8" width="4" height="6.2" rx="1.6" />
+    </>
+  ),
+  hiz: <path d="M13 3 4 14h6l-1 7 9-11h-6z" />,
+}
+
+const FeatureIcon = ({ id }) => (
+  <svg
+    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true" focusable="false"
+  >
+    {FEATURE_ICONS[id]}
+  </svg>
+)
 
 const HouseCard = ({ house, index }) => {
   const cardRef   = useRef(null)
@@ -150,9 +196,11 @@ const HouseCard = ({ house, index }) => {
       {/* Glow pulse on hover */}
       <div className="card-glow" />
 
-      {/* Ikon (gecici emoji placeholder) */}
+      {/* Ozellik ikonu (profesyonel SVG cizgi-ikon, accent renginde) */}
       <div ref={sigilRef} className="house-sigil-wrap">
-        <div className="house-sigil-fallback" aria-hidden="true">{house.icon}</div>
+        <div className="house-sigil-fallback" aria-hidden="true">
+          <FeatureIcon id={house.id} />
+        </div>
         <div className="sigil-ring" />
       </div>
 
