@@ -126,7 +126,7 @@ const Contact = () => {
       {/* Footer ornament */}
       <div className="contact-footer-ornament" aria-hidden="true">
         <span className="footer-line" />
-        <span className="footer-sigil">⚔</span>
+        <span className="footer-sigil">✦</span>
         <span className="footer-line" />
       </div>
 
