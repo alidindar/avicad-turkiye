@@ -69,6 +69,13 @@ const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// Verilen id'li bolume kaydirir. Agir video decode ana thread'i bogunca smooth
+// scroll ilerlemedigi icin 'auto' (aninda) kullaniliyor — her kosulda calisir.
+const scrollToId = (id) => {
+  const el = document.getElementById(id)
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 const Hero = () => {
   const containerRef  = useRef(null)
@@ -445,8 +452,8 @@ const Hero = () => {
             <h1 ref={titleRef} className="got-title">{chapter.title}</h1>
             <p ref={bodyRef} className="got-body">{chapter.body}</p>
             <div className="got-cta-row">
-              <button type="button" className="got-cta-btn">Begin the Journey</button>
-              <button type="button" className="got-cta-ghost">Explore the Realm</button>
+              <button type="button" className="got-cta-btn" onClick={() => scrollToId('iletisim')}>30 Gün Ücretsiz Deneme</button>
+              <button type="button" className="got-cta-ghost" onClick={() => scrollToId('neden-avicad')}>Özellikleri Keşfet</button>
             </div>
           </div>
 
