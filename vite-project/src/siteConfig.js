@@ -19,6 +19,14 @@ export const DEMO_INDIRME_URL  = 'https://avicad.com/dloads/AviCAD-Download.exe'
 export const YASAL_UNVAN = '[YASAL ÜNVAN]'
 export const VERBIS_NO   = '[VERBİS NO]'
 
+// Karsilastirma fiyatlari — resmi liste fiyatlari (USD), kisi basi / yil.
+// Kaynak: AViCAD $449/yil (avicad.com), AutoCAD ~$1865/yil (Autodesk liste).
+// TODO: Turkiye ₺ satis fiyatiniz farkliysa bu rakamlari + PARA_BIRIMI'ni guncelleyin.
+export const PARA_BIRIMI    = '$'
+export const AVICAD_YILLIK  = 449    // AViCAD yillik abonelik
+export const AUTOCAD_YILLIK = 1865   // AutoCAD yillik abonelik
+export const FIYATLAR_GERCEK = true
+
 // wa.me linki — hazir mesajla birlikte.
 export const whatsappHref = () =>
   `https://wa.me/${WHATSAPP_NUMARA}?text=${encodeURIComponent(WHATSAPP_MESAJ)}`
