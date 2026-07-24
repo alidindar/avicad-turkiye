@@ -116,42 +116,6 @@ const Contact = () => {
         <p className="contact-subtitle">Fiyat teklifi, demo ya da destek — size nasıl yardımcı olabiliriz?</p>
       </header>
 
-      {/* İletişim bilgileri — degerler siteConfig.js'ten gelir */}
-      <div ref={infoRef} className="contact-info fade-up">
-        <a className="contact-info-item" href={TELEFON_HREF}>
-          <span className="contact-info-icon" aria-hidden="true">📞</span>
-          <span className="contact-info-body">
-            <span className="contact-info-label">Telefon</span>
-            <span className="contact-info-value">{TELEFON_GORUNEN}</span>
-          </span>
-        </a>
-
-        <a className="contact-info-item" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
-          <span className="contact-info-icon" aria-hidden="true">💬</span>
-          <span className="contact-info-body">
-            <span className="contact-info-label">WhatsApp</span>
-            <span className="contact-info-value">Mesaj gönderin</span>
-          </span>
-        </a>
-
-        <a className="contact-info-item" href={`mailto:${EPOSTA}`}>
-          <span className="contact-info-icon" aria-hidden="true">✉️</span>
-          <span className="contact-info-body">
-            <span className="contact-info-label">E-posta</span>
-            <span className="contact-info-value">{EPOSTA}</span>
-          </span>
-        </a>
-
-        <div className="contact-info-item contact-info-static">
-          <span className="contact-info-icon" aria-hidden="true">📍</span>
-          <span className="contact-info-body">
-            <span className="contact-info-label">Adres</span>
-            <span className="contact-info-value">{ADRES}</span>
-            <span className="contact-info-sub">{CALISMA_SAATLERI}</span>
-          </span>
-        </div>
-      </div>
-
       {/* Form */}
       <form ref={formRef} className="contact-form fade-up" onSubmit={handleSubmit}>
         <div className="contact-row">
@@ -234,6 +198,42 @@ const Contact = () => {
         <span className="footer-line" />
         <span className="footer-sigil">✦</span>
         <span className="footer-line" />
+      </div>
+
+      {/* İletişim bilgileri — degerler siteConfig.js'ten gelir (✦ süsünden sonra) */}
+      <div ref={infoRef} className="contact-info fade-up">
+        <a className="contact-info-item" href={TELEFON_HREF}>
+          <span className="contact-info-icon" aria-hidden="true">📞</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">Telefon</span>
+            <span className="contact-info-value">{TELEFON_GORUNEN}</span>
+          </span>
+        </a>
+
+        <a className="contact-info-item" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
+          <span className="contact-info-icon" aria-hidden="true">💬</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">WhatsApp</span>
+            <span className="contact-info-value">Mesaj gönderin</span>
+          </span>
+        </a>
+
+        <a className="contact-info-item" href={`mailto:${EPOSTA}`}>
+          <span className="contact-info-icon" aria-hidden="true">✉️</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">E-posta</span>
+            <span className="contact-info-value">{EPOSTA}</span>
+          </span>
+        </a>
+
+        <div className="contact-info-item contact-info-static">
+          <span className="contact-info-icon" aria-hidden="true">📍</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">Adres</span>
+            <span className="contact-info-value">{ADRES}</span>
+            <span className="contact-info-sub">{CALISMA_SAATLERI}</span>
+          </span>
+        </div>
       </div>
 
     </section>
