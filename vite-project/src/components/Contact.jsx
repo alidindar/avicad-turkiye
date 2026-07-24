@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './Contact.css'
 import { submitContact } from '../emailService'
+import {
+  TELEFON_GORUNEN, TELEFON_HREF, EPOSTA,
+  ADRES, CALISMA_SAATLERI, whatsappHref,
+} from '../siteConfig'
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
@@ -27,6 +31,7 @@ const telefonGecerli = (val) => /^0\d{10}$/.test(val.replace(/\D/g, ''))
 const Contact = () => {
   const sectionRef = useRef(null)
   const headerRef  = useRef(null)
+  const infoRef    = useRef(null)
   const formRef    = useRef(null)
 
   const [ad, setAd]           = useState('')
@@ -40,24 +45,28 @@ const Contact = () => {
   const [gonderiliyor, setGonderiliyor] = useState(false)
   const [durum, setDurum]               = useState(null) // { ok: boolean, text: string }
 
-  // Fade-up giris — Section1 ile ayni IntersectionObserver deseni
+  // Fade-up giris — header + bilgi kartlari + form ayni ritimde belirir.
+  // Guvenlik agi: gozlemci herhangi bir sebeple tetiklenmezse form ASLA gizli
+  // kalmasin (form sitenin ana donusum araci).
   useEffect(() => {
-    const els = [headerRef.current, formRef.current].filter(Boolean)
-    const step = prefersReducedMotion() ? 0 : 150
+    const els = [headerRef.current, infoRef.current, formRef.current].filter(Boolean)
+    const step = prefersReducedMotion() ? 0 : 110
     const timers = []
+    const reveal = () =>
+      els.forEach((el, i) => timers.push(setTimeout(() => el.classList.add('visible'), i * step)))
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          els.forEach((el, i) =>
-            timers.push(setTimeout(() => el.classList.add('visible'), i * step))
-          )
-          obs.disconnect()
-        }
+        if (entry.isIntersecting) { reveal(); obs.disconnect() }
       },
-      { threshold: 0.15 }
+      { threshold: 0, rootMargin: '0px 0px -12% 0px' }
     )
     if (sectionRef.current) obs.observe(sectionRef.current)
-    return () => { obs.disconnect(); timers.forEach(clearTimeout) }
+    // Observer aksarsa 1.5s icinde her sey mutlaka gorunur olsun.
+    const safety = setTimeout(() => {
+      obs.disconnect()
+      els.forEach((el) => el.classList.add('visible'))
+    }, 1500)
+    return () => { obs.disconnect(); clearTimeout(safety); timers.forEach(clearTimeout) }
   }, [])
 
   // Hero "30 Gün Ücretsiz Deneme" butonu bu event'i gonderir → Konu'yu ayarla.
@@ -106,6 +115,42 @@ const Contact = () => {
         <h2 className="contact-title">İletişim</h2>
         <p className="contact-subtitle">Fiyat teklifi, demo ya da destek — size nasıl yardımcı olabiliriz?</p>
       </header>
+
+      {/* İletişim bilgileri — degerler siteConfig.js'ten gelir */}
+      <div ref={infoRef} className="contact-info fade-up">
+        <a className="contact-info-item" href={TELEFON_HREF}>
+          <span className="contact-info-icon" aria-hidden="true">📞</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">Telefon</span>
+            <span className="contact-info-value">{TELEFON_GORUNEN}</span>
+          </span>
+        </a>
+
+        <a className="contact-info-item" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
+          <span className="contact-info-icon" aria-hidden="true">💬</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">WhatsApp</span>
+            <span className="contact-info-value">Mesaj gönderin</span>
+          </span>
+        </a>
+
+        <a className="contact-info-item" href={`mailto:${EPOSTA}`}>
+          <span className="contact-info-icon" aria-hidden="true">✉️</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">E-posta</span>
+            <span className="contact-info-value">{EPOSTA}</span>
+          </span>
+        </a>
+
+        <div className="contact-info-item contact-info-static">
+          <span className="contact-info-icon" aria-hidden="true">📍</span>
+          <span className="contact-info-body">
+            <span className="contact-info-label">Adres</span>
+            <span className="contact-info-value">{ADRES}</span>
+            <span className="contact-info-sub">{CALISMA_SAATLERI}</span>
+          </span>
+        </div>
+      </div>
 
       {/* Form */}
       <form ref={formRef} className="contact-form fade-up" onSubmit={handleSubmit}>
