@@ -402,9 +402,9 @@ const Hero = () => {
           {['tl','tr','bl','br'].map(pos => (
             <div key={pos} className={`got-corner got-corner-${pos}`} aria-hidden="true">
               <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 2 L2 20 M2 2 L20 2" stroke="#c9a84c" strokeWidth="1" strokeOpacity="0.5"/>
-                <path d="M2 2 L8 8" stroke="#c9a84c" strokeWidth="0.5" strokeOpacity="0.4"/>
-                <rect x="1" y="1" width="4" height="4" fill="none" stroke="#c9a84c" strokeWidth="0.5" strokeOpacity="0.6"/>
+                <path d="M2 2 L2 20 M2 2 L20 2" stroke="#0693e3" strokeWidth="1" strokeOpacity="0.5"/>
+                <path d="M2 2 L8 8" stroke="#0693e3" strokeWidth="0.5" strokeOpacity="0.4"/>
+                <rect x="1" y="1" width="4" height="4" fill="none" stroke="#0693e3" strokeWidth="0.5" strokeOpacity="0.6"/>
               </svg>
             </div>
           ))}

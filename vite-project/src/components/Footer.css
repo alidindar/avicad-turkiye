@@ -2,7 +2,7 @@
 .site-footer {
   position: relative;
   background: #050403;
-  border-top: 1px solid rgba(201, 168, 76, 0.16);
+  border-top: 1px solid rgba(6, 147, 227, 0.16);
   padding: 56px 40px 28px;
   color: #b5a992;
 }
@@ -37,7 +37,7 @@
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gold, #c9a84c);
+  color: var(--gold, #0693e3);
   margin-bottom: 16px;
 }
 
@@ -67,7 +67,7 @@
 }
 
 .footer-links a:hover,
-.footer-links button:hover { color: var(--gold-light, #e8c97a); }
+.footer-links button:hover { color: var(--gold-light, #4fb0ef); }
 
 .footer-adres { font-family: var(--font-body); font-size: 14px; color: #8a8072; }
 
@@ -76,7 +76,7 @@
   max-width: 1080px;
   margin: 40px auto 0;
   padding-top: 22px;
-  border-top: 1px solid rgba(201, 168, 76, 0.1);
+  border-top: 1px solid rgba(6, 147, 227, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -100,7 +100,7 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
-.footer-legal-links button:hover { color: var(--gold-light, #e8c97a); }
+.footer-legal-links button:hover { color: var(--gold-light, #4fb0ef); }
 .footer-sep { color: #5a5245; }
 
 .footer-copy {
@@ -131,7 +131,7 @@
   max-height: 82vh;
   overflow-y: auto;
   background: #0e0b07;
-  border: 1px solid rgba(201, 168, 76, 0.28);
+  border: 1px solid rgba(6, 147, 227, 0.28);
   border-radius: 10px;
   padding: 32px 32px 28px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
@@ -151,7 +151,7 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
-.footer-modal-close:hover { color: var(--gold-light, #e8c97a); }
+.footer-modal-close:hover { color: var(--gold-light, #4fb0ef); }
 
 .footer-modal-title {
   font-family: var(--font-display);
