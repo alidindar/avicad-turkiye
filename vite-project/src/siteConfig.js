@@ -25,7 +25,6 @@ export const VERBIS_NO   = '[VERBİS NO]'
 export const PARA_BIRIMI    = '$'
 export const AVICAD_YILLIK  = 449    // AViCAD yillik abonelik
 export const AUTOCAD_YILLIK = 1865   // AutoCAD yillik abonelik
-export const FIYATLAR_GERCEK = true
 
 // wa.me linki — hazir mesajla birlikte.
 export const whatsappHref = () =>
