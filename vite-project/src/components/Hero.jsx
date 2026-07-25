@@ -99,8 +99,29 @@ const Hero = () => {
   const [viewportH, setViewportH]         = useState(
     typeof window !== 'undefined' ? window.innerHeight : 800
   )
+  const [menuOpen, setMenuOpen]           = useState(false)  // mobil hamburger menü
 
   const chapter = CHAPTERS[activeChapter]
+
+  // Nav link'leri — masaüstü ve mobil menü aynı mantığı paylaşır.
+  const NAV = ['Anasayfa', 'Neden AviCAD?', 'Hakkımızda', 'İletişim']
+  const navHref = (l) =>
+    l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`
+  const kaydir = (id, top0 = false) => {
+    if (top0) {
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+      return
+    }
+    const el = document.getElementById(id)
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })
+  }
+  const navHandler = (l) => (e) => {
+    // Hakkımızda: hedef bölüm yok → yalnızca menüyü kapat (ölü link, kullanıcı isteği).
+    if (l === 'Anasayfa') { e.preventDefault(); kaydir(null, true) }
+    else if (l === 'Neden AviCAD?') { e.preventDefault(); kaydir('neden-avicad') }
+    else if (l === 'İletişim') { e.preventDefault(); kaydir('iletisim') }
+    setMenuOpen(false)
+  }
 
   // ─── Chapter transition ───────────────────────────────────────────────────
   const prevChapter = useRef(-1)
@@ -391,43 +412,32 @@ const Hero = () => {
           {/* Nav */}
           <nav className="got-nav" aria-label="Ana menü">
             <div className="got-nav-logo">AviCAD Türkiye</div>
+
+            {/* Masaüstü linkleri */}
             <ul className="got-nav-links">
-              {['Anasayfa','Neden AviCAD?','Hakkımızda','İletişim'].map(l => (
+              {NAV.map((l) => (
                 <li key={l}>
-                  <a
-                    href={l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`}
-                    onClick={
-                      l === 'Anasayfa' ? (e) => {
-                        // "Anasayfa" sayfanin en basina (Hero baslangici) kaydirir
-                        e.preventDefault()
-                        window.scrollTo({
-                          top: 0,
-                          behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-                        })
-                      } : l === 'Neden AviCAD?' ? (e) => {
-                        // "Neden AviCAD?" ozellikler bolumune (Section1) kaydirir.
-                        e.preventDefault()
-                        const el = document.getElementById('neden-avicad')
-                        if (el) {
-                          const top = el.getBoundingClientRect().top + window.scrollY
-                          window.scrollTo({ top, behavior: 'auto' })
-                        }
-                      } : l === 'İletişim' ? (e) => {
-                        // "İletişim" alttaki iletisim formuna kaydirir.
-                        // NOT: agir video decode ana thread'i bogdugu icin smooth
-                        // scroll (rAF tabanli) bu sayfada ilerlemiyor; 'auto' (aninda)
-                        // her kosulda guvenilir calisir.
-                        e.preventDefault()
-                        const el = document.getElementById('iletisim')
-                        if (el) {
-                          const top = el.getBoundingClientRect().top + window.scrollY
-                          window.scrollTo({ top, behavior: 'auto' })
-                        }
-                      } : undefined
-                    }
-                  >
-                    {l}
-                  </a>
+                  <a href={navHref(l)} onClick={navHandler(l)}>{l}</a>
+                </li>
+              ))}
+            </ul>
+
+            {/* Mobil hamburger butonu */}
+            <button
+              type="button"
+              className={`got-nav-toggle ${menuOpen ? 'open' : ''}`}
+              aria-label="Menü"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span /><span /><span />
+            </button>
+
+            {/* Mobil menü */}
+            <ul className={`got-nav-mobile ${menuOpen ? 'open' : ''}`}>
+              {NAV.map((l) => (
+                <li key={l}>
+                  <a href={navHref(l)} onClick={navHandler(l)}>{l}</a>
                 </li>
               ))}
             </ul>
