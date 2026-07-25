@@ -214,7 +214,7 @@ const HouseCard = ({ house, index }) => {
           <span className="divider-diamond" />
           <span className="divider-line" />
         </div>
-        <h2 className="house-name">{house.name}</h2>
+        <h3 className="house-name">{house.name}</h3>
         <p className="house-seat">{house.seat}</p>
         <p className="house-sigil-label">{house.sigil}</p>
       </div>
@@ -227,7 +227,7 @@ const HouseCard = ({ house, index }) => {
           <span className="divider-diamond" />
           <span className="divider-line" />
         </div>
-        <h2 className="hover-name">{house.name}</h2>
+        <div className="hover-name">{house.name}</div>
         <p className="hover-desc">{house.description}</p>
       </div>
 
@@ -278,12 +278,12 @@ const Section1 = () => {
           <span className="ornament-rune">✦</span>
           <span className="ornament-line" />
         </div>
-        <h1 ref={headingRef} className="section1-title fade-up">
+        <h2 ref={headingRef} className="section1-title fade-up">
           Öne Çıkan<br />
           <em>Özellikler</em>
-        </h1>
+        </h2>
         <p className="section1-subtitle fade-up">
-          DWG uyumlu, tanıdık arayüzlü, uygun maliyetli profesyonel CAD çözümü.
+          DWG uyumlu, AutoCAD'e alternatif, uygun maliyetli profesyonel 2B/3B CAD çözümü.
         </p>
       </header>
 
