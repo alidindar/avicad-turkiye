@@ -137,6 +137,8 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
+.footer-modal:focus { outline: none; }
+
 .footer-modal-close {
   position: absolute;
   top: 14px;

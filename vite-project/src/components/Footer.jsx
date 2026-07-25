@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './Footer.css'
 import {
   TELEFON_GORUNEN, TELEFON_HREF, EPOSTA, ADRES,
@@ -41,15 +41,37 @@ const legalMetinleri = () => ({
 
 const Footer = () => {
   const [modal, setModal] = useState(null) // 'kvkk' | 'gizlilik' | null
+  const modalRef = useRef(null)
+  const oncekiFocus = useRef(null)
   const yil = new Date().getFullYear()
   const LEGAL = legalMetinleri()
 
-  // Esc ile modal kapat
+  // Modal acikken: arka plan scroll kilidi + focus yonetimi (Esc/Tab trap).
   useEffect(() => {
     if (!modal) return
-    const onKey = (e) => { if (e.key === 'Escape') setModal(null) }
+    oncekiFocus.current = document.activeElement
+    const oncekiOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const panel = modalRef.current
+    panel?.focus()
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') { setModal(null); return }
+      if (e.key === 'Tab' && panel) {
+        const odak = panel.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])')
+        if (odak.length === 0) { e.preventDefault(); return }
+        const ilk = odak[0], son = odak[odak.length - 1]
+        if (e.shiftKey && document.activeElement === ilk) { e.preventDefault(); son.focus() }
+        else if (!e.shiftKey && document.activeElement === son) { e.preventDefault(); ilk.focus() }
+      }
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = oncekiOverflow
+      oncekiFocus.current?.focus?.()
+    }
   }, [modal])
 
   return (
@@ -95,6 +117,8 @@ const Footer = () => {
         <div className="footer-modal-overlay" onClick={() => setModal(null)}>
           <div
             className="footer-modal"
+            ref={modalRef}
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             role="dialog" aria-modal="true" aria-label={LEGAL[modal].baslik}
           >

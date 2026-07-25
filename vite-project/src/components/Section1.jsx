@@ -161,7 +161,9 @@ const HouseCard = ({ house, index }) => {
       { threshold: 0.15 }
     )
     obs.observe(el)
-    return () => { obs.disconnect(); clearTimeout(timer) }
+    // Guvenlik agi: observer aksarsa kart yine de gorunur olsun.
+    const safety = setTimeout(() => { obs.disconnect(); el.classList.add('visible') }, 1500)
+    return () => { obs.disconnect(); clearTimeout(timer); clearTimeout(safety) }
   }, [index])
 
   // Sigil tilt on hover
@@ -256,7 +258,9 @@ const Section1 = () => {
       { threshold: 0.2 }
     )
     if (sectionRef.current) obs.observe(sectionRef.current)
-    return () => { obs.disconnect(); timers.forEach(clearTimeout) }
+    // Guvenlik agi: observer aksarsa baslik/eyebrow yine de gorunur olsun.
+    const safety = setTimeout(() => { obs.disconnect(); els.forEach((el) => el.classList.add('visible')) }, 1500)
+    return () => { obs.disconnect(); clearTimeout(safety); timers.forEach(clearTimeout) }
   }, [])
 
   return (
