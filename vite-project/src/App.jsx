@@ -15,9 +15,9 @@ function App() {
    <Hero />
    <Section1 />
    <Compare />
-   <Faq />
    <CtaBand />
    <Contact />
+   <Faq />
    <Footer />
    <BackToTop />
    <WhatsAppFab />

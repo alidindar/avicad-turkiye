@@ -104,7 +104,7 @@ const Hero = () => {
   const chapter = CHAPTERS[activeChapter]
 
   // Nav link'leri — masaüstü ve mobil menü aynı mantığı paylaşır.
-  const NAV = ['Anasayfa', 'Neden AviCAD?', 'Hakkımızda', 'İletişim']
+  const NAV = ['Anasayfa', 'Neden AviCAD?', 'Hakkımızda', 'İletişim', 'SSS']
   const navHref = (l) =>
     l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`
   const kaydir = (id, top0 = false) => {
@@ -119,6 +119,7 @@ const Hero = () => {
     // Hakkımızda: hedef bölüm yok → yalnızca menüyü kapat (ölü link, kullanıcı isteği).
     if (l === 'Anasayfa') { e.preventDefault(); kaydir(null, true) }
     else if (l === 'Neden AviCAD?') { e.preventDefault(); kaydir('neden-avicad') }
+    else if (l === 'SSS') { e.preventDefault(); kaydir('sss') }
     else if (l === 'İletişim') { e.preventDefault(); kaydir('iletisim') }
     setMenuOpen(false)
   }

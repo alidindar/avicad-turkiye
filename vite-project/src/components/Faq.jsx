@@ -41,7 +41,7 @@ const Faq = () => {
   const toggle = (i) => setAcik((s) => ({ ...s, [i]: !s[i] }))
 
   return (
-    <section className="faq" aria-label="Sıkça sorulan sorular">
+    <section id="sss" className="faq" aria-label="Sıkça sorulan sorular">
       <header className="faq-header">
         <p className="faq-eyebrow">SIK SORULANLAR</p>
         <Ornament />

@@ -29,10 +29,10 @@
   --gold-light: #4fb0ef;
   --gold-dim:   #135a86;
   --blood:      #8b1a1a;
-  --parchment:  #f5e6c8;
-  --ash:        #c8bfb0;
+  --parchment:  #edf1f7;
+  --ash:        #c2c8d1;
   --ink:        #0a0705;
-  --white-mist: rgba(245, 230, 200, 0.88);
+  --white-mist: rgba(237, 241, 247, 0.88);
 
   /* Tipografi — IBM Plex (mühendislik/teknik güven). display & body ayni
      aile; hiyerarsi font-weight ile. mono → teknik büyük-harf etiketler. */
@@ -134,9 +134,9 @@ body {
 
 .got-nav-logo {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.25em;
-  color: var(--gold);
+  color: #edf1f7;
   text-transform: uppercase;
 }
 
@@ -148,7 +148,7 @@ body {
 
 .got-nav-links li a {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.3em;
   color: var(--ash);
   text-decoration: none;
@@ -261,7 +261,7 @@ body {
 
 .got-subtitle {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.45em;
   color: var(--gold);
   text-transform: uppercase;
@@ -271,7 +271,7 @@ body {
 
 .got-title {
   font-family: var(--font-display);
-  font-size: clamp(22px, 2.6vw, 34px);
+  font-size: clamp(26px, 3.6vw, 44px);
   font-weight: 700;
   line-height: 1.18;
   color: var(--parchment);
@@ -282,7 +282,7 @@ body {
 
 .got-body {
   font-family: var(--font-body);
-  font-size: clamp(14px, 1.5vw, 17px);
+  font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.75;
   color: var(--ash);
   max-width: 480px;
@@ -300,7 +300,7 @@ body {
 
 .got-cta-btn {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: #fff;
@@ -320,7 +320,7 @@ body {
 
 .got-cta-ghost {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--gold);
@@ -352,7 +352,7 @@ body {
 
 .got-chapter-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.3em;
   color: var(--gold-dim);
   writing-mode: vertical-rl;
@@ -454,7 +454,7 @@ body {
 
 .got-scroll-hint span {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.4em;
   color: var(--gold);
   text-transform: uppercase;
@@ -524,7 +524,7 @@ body {
 
 .got-loading-sub {
   font-family: var(--font-body);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.6em;
   color: var(--gold-dim);
   text-transform: uppercase;
@@ -574,5 +574,5 @@ body {
   .got-scroll-hint    { display: none; }
   .got-rune-bar       { left: 28px; right: 28px; }
   .got-corner         { display: none; }
-  .got-title          { font-size: 22px; }
+  .got-title          { font-size: 26px; }
 }

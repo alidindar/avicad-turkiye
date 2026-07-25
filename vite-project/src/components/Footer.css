@@ -4,7 +4,7 @@
   background: #050403;
   border-top: 1px solid rgba(6, 147, 227, 0.16);
   padding: 56px 40px 28px;
-  color: #b5a992;
+  color: #adb4bf;
 }
 
 .footer-grid {
@@ -20,15 +20,15 @@
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #f5e6c8;
+  color: #edf1f7;
   margin-bottom: 12px;
 }
 
 .footer-blurb {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.65;
-  color: #8a8072;
+  color: #868d99;
   max-width: 360px;
 }
 
@@ -55,8 +55,8 @@
 .footer-links a,
 .footer-links button {
   font-family: var(--font-body);
-  font-size: 14px;
-  color: #b5a992;
+  font-size: 15px;
+  color: #adb4bf;
   text-decoration: none;
   background: none;
   border: none;
@@ -69,7 +69,7 @@
 .footer-links a:hover,
 .footer-links button:hover { color: var(--gold-light, #4fb0ef); }
 
-.footer-adres { font-family: var(--font-body); font-size: 14px; color: #8a8072; }
+.footer-adres { font-family: var(--font-body); font-size: 15px; color: #868d99; }
 
 /* Alt şerit */
 .footer-bottom {
@@ -93,7 +93,7 @@
 .footer-legal-links button {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #9a8f7d;
+  color: #939aa5;
   background: none;
   border: none;
   padding: 0;
@@ -101,12 +101,12 @@
   transition: color 0.2s ease;
 }
 .footer-legal-links button:hover { color: var(--gold-light, #4fb0ef); }
-.footer-sep { color: #5a5245; }
+.footer-sep { color: #575d66; }
 
 .footer-copy {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #6a6155;
+  color: #697079;
 }
 
 /* ─── Modal ──────────────────────────────────────────────────────────────── */
@@ -145,7 +145,7 @@
   right: 16px;
   font-size: 26px;
   line-height: 1;
-  color: #8a8072;
+  color: #868d99;
   background: none;
   border: none;
   cursor: pointer;
@@ -157,16 +157,16 @@
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
-  color: #f5e6c8;
+  color: #edf1f7;
   margin-bottom: 18px;
   padding-right: 28px;
 }
 
 .footer-modal-body p {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
-  color: #b5a992;
+  color: #adb4bf;
   margin-bottom: 14px;
 }
 
