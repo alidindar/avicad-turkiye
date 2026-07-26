@@ -119,6 +119,7 @@ const Hero = () => {
     // Hakkımızda: hedef bölüm yok → yalnızca menüyü kapat (ölü link, kullanıcı isteği).
     if (l === 'Anasayfa') { e.preventDefault(); kaydir(null, true) }
     else if (l === 'Neden AviCAD?') { e.preventDefault(); kaydir('neden-avicad') }
+    else if (l === 'Hakkımızda') { e.preventDefault(); kaydir('hakkimizda') }
     else if (l === 'SSS') { e.preventDefault(); kaydir('sss') }
     else if (l === 'İletişim') { e.preventDefault(); kaydir('iletisim') }
     setMenuOpen(false)
