@@ -143,6 +143,19 @@ body {
 }
 
 .got-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.got-nav-logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+.got-nav-logo-text {
   font-family: var(--font-display);
   font-size: 15px;
   letter-spacing: 0.25em;

@@ -414,7 +414,10 @@ const Hero = () => {
 
           {/* Nav */}
           <nav className="got-nav" aria-label="Ana menü">
-            <div className="got-nav-logo">AviCAD Türkiye</div>
+            <div className="got-nav-logo">
+              <img className="got-nav-logo-img" src={`${import.meta.env.BASE_URL}logo.png`} alt="AviCAD Türkiye" />
+              <span className="got-nav-logo-text">AviCAD Türkiye</span>
+            </div>
 
             {/* Masaüstü linkleri */}
             <ul className="got-nav-links">
