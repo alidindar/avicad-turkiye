@@ -16,12 +16,25 @@
 }
 
 .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.footer-logo-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.footer-logo-text {
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #edf1f7;
-  margin-bottom: 12px;
 }
 
 .footer-blurb {

@@ -4,7 +4,6 @@ import About from './components/About'
 import Compare from './components/Compare'
 import Testimonials from './components/Testimonials'
 import Faq from './components/Faq'
-import CtaBand from './components/CtaBand'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BackToTop from './components/BackToTop'
@@ -19,7 +18,6 @@ function App() {
    <About />
    <Compare />
    <Testimonials />
-   <CtaBand />
    <Contact />
    <Faq />
    <Footer />

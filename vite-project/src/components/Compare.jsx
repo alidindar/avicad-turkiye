@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './Compare.css'
 import Ornament from './Ornament'
 
-// CtaBand ile ayni desen: Konu'yu "Demo Talebi" yapip Iletisim formuna kaydir.
+// Konu'yu "Demo Talebi" yapip Iletisim formuna kaydir (Hero CTA ile ayni akis).
 const scrollToContact = () => {
   const el = document.getElementById('iletisim')
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })

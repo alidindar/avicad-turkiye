@@ -78,7 +78,10 @@ const Footer = () => {
     <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-col footer-brand">
-          <div className="footer-logo">AviCAD Türkiye</div>
+          <div className="footer-logo">
+            <img className="footer-logo-img" src={`${import.meta.env.BASE_URL}logo.png`} alt="AviCAD Türkiye" />
+            <span className="footer-logo-text">AviCAD Türkiye</span>
+          </div>
           <p className="footer-blurb">
             DWG uyumlu profesyonel 2B/3B CAD çözümü. AviCAD'in resmi Türkiye distribütörü.
           </p>
@@ -89,7 +92,9 @@ const Footer = () => {
           <ul className="footer-links">
             <li><button type="button" onClick={() => scrollToId('top')}>Anasayfa</button></li>
             <li><button type="button" onClick={() => scrollToId('neden-avicad')}>Neden AviCAD?</button></li>
+            <li><button type="button" onClick={() => scrollToId('hakkimizda')}>Hakkımızda</button></li>
             <li><button type="button" onClick={() => scrollToId('iletisim')}>İletişim</button></li>
+            <li><button type="button" onClick={() => scrollToId('sss')}>SSS</button></li>
           </ul>
         </div>
 
