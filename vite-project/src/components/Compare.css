@@ -1,4 +1,4 @@
-/* AviCAD vs AutoCAD — maliyet karşılaştırması (açık tema). Degiskenler Hero.css :root. */
+/* AViCAD vs AutoCAD LT — özellik karşılaştırması + video (açık tema). Degiskenler Hero.css :root. */
 .compare {
   position: relative;
   background: var(--c-surface-2, #f3f6fa);
@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-.compare-header { max-width: 660px; margin: 0 auto 48px; }
+.compare-header { max-width: 720px; margin: 0 auto 44px; }
 
 .compare-eyebrow {
   font-family: var(--font-mono);
@@ -18,7 +18,7 @@
 }
 .compare-title {
   font-family: var(--font-display);
-  font-size: clamp(24px, 3.4vw, 34px);
+  font-size: clamp(26px, 3.4vw, 40px);
   font-weight: 700;
   color: var(--c-text, #0e1621);
   margin-bottom: 12px;
@@ -30,250 +30,90 @@
   color: var(--c-body, #48525f);
 }
 
-/* Ortak kart görünümü (fiyat + özellik) */
-.price-compare,
-.feature-compare {
+/* ─── Yan yana: özellik tablosu | video ──────────────────────────────────── */
+.cmp-split {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  align-items: stretch;
+}
+.cmp-col {
   background: var(--c-card, #ffffff);
   border: 1px solid var(--c-border, #e4e9f0);
   border-radius: 14px;
   box-shadow: 0 12px 34px rgba(14, 22, 33, 0.06);
-}
-
-/* ─── Fiyat karşılaştırması ───────────────────────────────────────────────── */
-.price-compare {
-  max-width: 940px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px 48px;
-  align-items: center;
+  padding: 26px 24px;
   text-align: left;
-  padding: 34px;
 }
-
-.price-title {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 2.4vw, 26px);
-  font-weight: 700;
-  color: var(--c-text, #0e1621);
-  line-height: 1.25;
-  margin-bottom: 12px;
-}
-.price-desc {
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--c-body, #48525f);
-  margin-bottom: 26px;
-}
-
-.price-controls { display: flex; flex-direction: column; gap: 20px; }
-.price-control-label {
-  display: block;
+.cmp-col-label {
   font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--c-mute, #7c8593);
-  margin-bottom: 10px;
-}
-.price-control-label strong { color: var(--gold, #0693e3); }
-
-.stepper { display: inline-flex; align-items: center; gap: 2px; }
-.stepper button {
-  width: 38px; height: 38px;
-  font-size: 20px;
   color: var(--gold, #0693e3);
-  background: rgba(6, 147, 227, 0.08);
-  border: 1px solid rgba(6, 147, 227, 0.28);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.stepper button:first-child { border-radius: 6px 0 0 6px; }
-.stepper button:last-child { border-radius: 0 6px 6px 0; }
-.stepper button:hover { background: rgba(6, 147, 227, 0.16); }
-.stepper-val {
-  min-width: 46px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 16px;
-  color: var(--c-text, #0e1621);
+  margin-bottom: 16px;
 }
 
-.price-control-slider input[type="range"] {
-  width: 100%;
-  accent-color: var(--gold, #0693e3);
-  cursor: pointer;
-}
-
-/* Kümülatif maliyet–yıl çizgi/alan grafiği */
-.price-right { display: flex; flex-direction: column; align-items: center; }
-
-.pc-legend {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-.pc-leg { display: inline-flex; align-items: center; gap: 7px; color: var(--c-body, #48525f); }
-.pc-leg::before {
-  content: '';
-  width: 14px;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
-}
-.pc-leg.avicad { color: var(--gold, #0693e3); }
-.pc-leg.autocad { color: #d94f68; }
-
-.price-line-chart { width: 100%; height: auto; display: block; overflow: visible; }
-.pc-grid { stroke: rgba(14, 22, 33, 0.09); stroke-width: 1; }
-.pc-axis-line { stroke: rgba(14, 22, 33, 0.2); stroke-width: 1; }
-.pc-axis {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  fill: var(--c-mute, #7c8593);
-}
-.pc-axis-title {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  fill: var(--c-mute, #7c8593);
-}
-.pc-area { stroke: none; transition: opacity 0.4s ease; }
-.pc-area.autocad { fill: rgba(217, 79, 104, 0.12); }
-.pc-area.avicad { fill: rgba(6, 147, 227, 0.16); }
-.pc-line {
-  fill: none;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.pc-line.autocad { stroke: #d94f68; }
-.pc-line.avicad { stroke: var(--gold, #0693e3); }
-.pc-dot.autocad { fill: #d94f68; }
-.pc-dot.avicad { fill: var(--gold, #0693e3); }
-.pc-val {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  paint-order: stroke;
-  stroke: #ffffff;
-  stroke-width: 3.5px;
-}
-.pc-val.autocad { fill: #cf3f5a; }
-.pc-val.avicad { fill: #0b7cc0; }
-
-.price-savings {
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: var(--c-body, #48525f);
-  margin-top: 18px;
-  text-align: center;
-}
-.price-savings strong { color: #1f9d55; }
-
-/* Alt not: kalıcı lisans vurgusu + USD liste fiyatı notu */
-.price-footnote {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+/* Video sütunu — video üstte, CTA en altta (kart eşit yüksekliği doldurur). */
+.cmp-col-video { display: flex; flex-direction: column; }
+.cmp-video-cta {
+  margin-top: auto;
   padding-top: 22px;
-  border-top: 1px solid var(--c-border, #e4e9f0);
-}
-.price-perpetual {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  color: var(--c-body, #48525f);
   text-align: center;
 }
-.price-perpetual-badge {
+.cmp-video-line {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--c-body, #48525f);
+  margin-bottom: 16px;
+}
+.cmp-cta-btn {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold, #0693e3);
-  padding: 4px 11px;
-  border: 1px solid rgba(6, 147, 227, 0.4);
-  border-radius: 999px;
-  white-space: nowrap;
+  color: #fff;
+  background: var(--gold, #0693e3);
+  border: none;
+  border-radius: 8px;
+  padding: 14px 30px;
+  cursor: pointer;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
-.price-note {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--c-mute, #7c8593);
-  text-align: center;
+.cmp-cta-btn:hover {
+  background: #0b7cc0;
+  box-shadow: 0 10px 24px rgba(6, 147, 227, 0.28);
+  transform: translateY(-2px);
 }
+.cmp-cta-btn:active { transform: translateY(0); }
 
-/* ─── Özellik karşılaştırması: AViCAD vs AutoCAD LT ───────────────────────── */
-.feature-compare {
-  max-width: 940px;
-  margin: 28px auto 0;
-  padding: 34px;
-  text-align: center;
-}
-.fc-title {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 2.4vw, 26px);
-  font-weight: 700;
-  color: var(--c-text, #0e1621);
-  line-height: 1.25;
-  margin-bottom: 10px;
-}
-.fc-subtitle {
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--c-body, #48525f);
-  max-width: 600px;
-  margin: 0 auto 26px;
-}
-
-.fc-table {
-  max-width: 680px;
-  margin: 0 auto;
-  text-align: left;
-}
+/* ─── Özellik tablosu ────────────────────────────────────────────────────── */
+.fc-table { width: 100%; }
 .fc-row {
   display: grid;
-  grid-template-columns: 1fr 92px 92px;
+  grid-template-columns: 1fr 76px 76px;
   align-items: center;
-  gap: 8px;
-  padding: 12px 6px;
+  gap: 6px;
+  padding: 11px 4px;
   border-bottom: 1px solid var(--c-border, #e4e9f0);
 }
 .fc-row:last-child { border-bottom: none; }
 .fc-feat {
   font-family: var(--font-body);
-  font-size: 14.5px;
+  font-size: 14px;
   color: #2b3542;
 }
-.fc-cell {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+.fc-cell { display: inline-flex; align-items: center; justify-content: center; }
 .fc-cell.fc-feat { justify-content: flex-start; }
 
-/* AViCAD sütunu vurgulu */
-.fc-avicad {
-  border-radius: 8px;
-  background: rgba(6, 147, 227, 0.08);
-}
+.fc-avicad { border-radius: 8px; background: rgba(6, 147, 227, 0.08); }
 .fc-head .fc-cell {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--c-mute, #7c8593);
   padding: 6px 0;
@@ -289,8 +129,51 @@
   font-size: 11px;
   line-height: 1.5;
   color: var(--c-mute, #7c8593);
-  max-width: 560px;
-  margin: 24px auto 0;
+  margin-top: 18px;
+}
+
+/* ─── Video facade ───────────────────────────────────────────────────────── */
+.video-facade {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 1px solid var(--c-border, #e4e9f0);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #05070a;
+  cursor: pointer;
+}
+.video-facade img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease, opacity 0.25s ease;
+}
+.video-facade:hover img { transform: scale(1.04); opacity: 0.92; }
+.video-facade iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  padding-left: 3px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(6, 147, 227, 0.94);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 0 8px rgba(6, 147, 227, 0.16);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.video-facade:hover .video-play {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: var(--gold, #0693e3);
 }
 
 .compare-note {
@@ -299,22 +182,21 @@
   line-height: 1.5;
   color: var(--c-mute, #7c8593);
   max-width: 560px;
-  margin: 34px auto 0;
+  margin: 30px auto 0;
   text-align: center;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 760px) {
   .compare { padding: 60px 16px; }
-  .price-compare { grid-template-columns: 1fr; gap: 32px; padding: 24px; }
-  .feature-compare { padding: 26px 18px; }
-}
-
-@media (max-width: 600px) {
-  .fc-row { grid-template-columns: 1fr 60px 60px; gap: 6px; }
-  .fc-feat { font-size: 13.5px; }
+  .cmp-split { grid-template-columns: 1fr; gap: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pc-area { transition: none; }
+  .video-facade img,
+  .video-facade:hover img,
+  .video-play,
+  .video-facade:hover .video-play { transition: none; transform: none; }
+  .video-play,
+  .video-facade:hover .video-play { transform: translate(-50%, -50%); }
 }

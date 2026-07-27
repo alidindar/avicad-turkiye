@@ -1,6 +1,5 @@
 import Hero from './components/Hero'
 import Section1 from './components/Section1'
-import VideoShowcase from './components/VideoShowcase'
 import About from './components/About'
 import Compare from './components/Compare'
 import Testimonials from './components/Testimonials'
@@ -17,7 +16,6 @@ function App() {
     <>
    <Hero />
    <Section1 />
-   <VideoShowcase />
    <About />
    <Compare />
    <Testimonials />
