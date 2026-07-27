@@ -110,10 +110,13 @@ a.contact-info-item:hover {
 }
 
 .contact-info-icon {
-  font-size: 22px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  color: var(--gold, #0693e3);
 }
+.contact-info-icon svg { width: 22px; height: 22px; }
 .contact-info-body {
   display: flex;
   flex-direction: column;
