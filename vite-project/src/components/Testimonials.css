@@ -1,7 +1,7 @@
 /* Kullanıcı Yorumları (Referanslar) — renk/font degiskenleri Hero.css :root'tan. */
 .testimonials {
   position: relative;
-  background: #08080a;
+  background: var(--c-bg, #ffffff);
   padding: 88px 24px;
   text-align: center;
 }
@@ -19,14 +19,14 @@
   font-family: var(--font-display);
   font-size: clamp(26px, 3.6vw, 40px);
   font-weight: 700;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
   margin-bottom: 16px;
 }
 .tm-intro {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.7;
-  color: #adb4bf;
+  color: var(--c-body, #48525f);
 }
 
 .tm-grid {
@@ -49,14 +49,15 @@
   width: 100%;
   padding: 28px 26px 26px;
   text-align: left;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--c-card, #ffffff);
+  border: 1px solid var(--c-border, #e4e9f0);
   border-radius: 14px;
-  transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+  box-shadow: 0 8px 24px rgba(14, 22, 33, 0.05);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 .tm-card:hover .tm-fig {
   border-color: rgba(6, 147, 227, 0.4);
-  background: rgba(6, 147, 227, 0.05);
+  box-shadow: 0 14px 32px rgba(6, 147, 227, 0.12);
   transform: translateY(-3px);
 }
 
@@ -72,14 +73,14 @@
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
   margin-bottom: 8px;
 }
 .tm-text {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.65;
-  color: #b7bdc7;
+  color: var(--c-body, #48525f);
 }
 
 .tm-author {
@@ -93,13 +94,13 @@
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: var(--gold-light, #4fb0ef);
+  color: var(--gold, #0693e3);
 }
 .tm-loc {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: #7f8792;
+  color: var(--c-mute, #7c8593);
 }
 
 .tm-note {
@@ -107,7 +108,7 @@
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: #6f7681;
+  color: var(--c-mute, #7c8593);
 }
 
 @media (max-width: 900px) {

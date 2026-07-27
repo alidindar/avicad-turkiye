@@ -1,9 +1,7 @@
-/* Orta-sayfa dönüşüm bandi — renk/font degiskenleri Hero.css :root'tan. */
+/* Orta-sayfa dönüşüm bandı — mavi accent band (açık sayfada çıpa/dikkat). */
 .cta-band {
   position: relative;
-  background: linear-gradient(180deg, #050403 0%, #0e0b06 50%, #050403 100%);
-  border-top: 1px solid rgba(6, 147, 227, 0.16);
-  border-bottom: 1px solid rgba(6, 147, 227, 0.16);
+  background: linear-gradient(135deg, #0693e3 0%, #0a6aa6 100%);
   padding: 76px 24px;
   text-align: center;
 }
@@ -18,16 +16,25 @@
   font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--gold, #0693e3);
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 14px;
 }
+
+/* Bandaki ✦ süsü beyaza çekilir */
+.cta-band .ornament-line {
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6));
+}
+.cta-band .ornament-line:last-child {
+  background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.6));
+}
+.cta-band .ornament-rune { color: #ffffff; filter: none; }
 
 .cta-band-title {
   font-family: var(--font-display);
   font-size: clamp(24px, 3.4vw, 34px);
   font-weight: 700;
   line-height: 1.2;
-  color: #edf1f7;
+  color: #ffffff;
   margin-bottom: 12px;
 }
 
@@ -35,7 +42,7 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.65;
-  color: #adb4bf;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 28px;
 }
 
@@ -45,26 +52,23 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #fff;
-  background: var(--gold);
+  color: #0670b0;
+  background: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 15px 34px;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(6, 147, 227, 0.2);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
-
 .cta-band-btn:hover {
   transform: translateY(-2px);
-  background: var(--gold-dim);
-  box-shadow: 0 12px 32px rgba(6, 147, 227, 0.36);
+  background: #eaf4fd;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
 }
-
 .cta-band-btn:active { transform: translateY(0); }
-
 .cta-band-btn:focus-visible {
-  outline: 2px solid var(--gold-light, #4fb0ef);
+  outline: 2px solid #ffffff;
   outline-offset: 3px;
 }
 

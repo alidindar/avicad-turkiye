@@ -1,7 +1,7 @@
-/* Hakkımızda — renk/font degiskenleri Hero.css :root'tan. */
+/* Hakkımızda — açık tema. Renk/font degiskenleri Hero.css :root'tan. */
 .about {
   position: relative;
-  background: #060504;
+  background: var(--c-bg, #ffffff);
   padding: 88px 24px;
   text-align: center;
 }
@@ -21,20 +21,20 @@
   font-family: var(--font-display);
   font-size: clamp(26px, 3.6vw, 40px);
   font-weight: 700;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
 }
 
 .about-body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.75;
-  color: #adb4bf;
+  color: var(--c-body, #48525f);
 }
 .about-body p { margin-bottom: 18px; }
 .about-body p:last-child { margin-bottom: 0; }
 .about-lead {
   font-size: 18px;
-  color: #d2d8e0;
+  color: #2b3542;
 }
 
 .about-stats {
@@ -64,7 +64,7 @@
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #9aa2ad;
+  color: var(--c-mute, #7c8593);
 }
 
 .about-highlights {
@@ -82,7 +82,7 @@
   gap: 9px;
   font-family: var(--font-body);
   font-size: 14px;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
 }
 .about-hl-mark {
   display: inline-flex;

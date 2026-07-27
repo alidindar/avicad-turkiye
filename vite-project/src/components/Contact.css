@@ -1,30 +1,24 @@
-/* İletişim bölümü — Section1 ile ayni tasarim dili (font, renk, süsleme).
-   Renk değişkenleri Hero.css :root'tan gelir; fontlar global yüklü. */
+/* İletişim bölümü — açık tema. Renk değişkenleri Hero.css :root'tan. */
 
 .contact {
   position: relative;
   width: 100%;
-  background: #050403;
-  padding: 40px 60px 120px;
+  background: var(--c-surface-2, #f3f6fa);
+  padding: 84px 60px 110px;
   overflow: hidden;
 }
 
-/* ─── Background (Section1 ile ayni) ─────────────────────────────────────── */
-.contact-bg-texture {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 220px;
-  pointer-events: none;
-}
+/* Dark ambient (texture + vignette) açık temada kapatıldı. */
+.contact-bg-texture,
+.contact-bg-vignette { display: none; }
 
-.contact-bg-vignette {
+/* Honeypot — gizli; yalnizca botlar doldurur */
+.contact-hp {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%);
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -33,14 +27,14 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
 }
 
 .contact-eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.5em;
-  color: #0693e3;
+  color: var(--gold, #0693e3);
   text-transform: uppercase;
   margin-bottom: 18px;
 }
@@ -52,40 +46,34 @@
   gap: 16px;
   margin-bottom: 24px;
 }
-
 .contact-ornament .ornament-line {
   display: block;
   width: 80px;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(6, 147, 227,0.5));
+  background: linear-gradient(to right, transparent, rgba(6, 147, 227, 0.5));
 }
 .contact-ornament .ornament-line:last-child {
-  background: linear-gradient(to left, transparent, rgba(6, 147, 227,0.5));
+  background: linear-gradient(to left, transparent, rgba(6, 147, 227, 0.5));
 }
-
 .contact-ornament .ornament-rune {
   font-size: 15px;
-  color: #0693e3;
-  filter: drop-shadow(0 0 8px rgba(6, 147, 227,0.7));
+  color: var(--gold, #0693e3);
 }
 
 .contact-title {
   font-family: var(--font-display);
-  font-size: clamp(38px, 6vw, 80px);
+  font-size: clamp(30px, 4.4vw, 52px);
   font-weight: 700;
-  line-height: 1.05;
-  color: #edf1f7;
-  text-shadow: 0 0 60px rgba(6, 147, 227,0.12), 0 4px 30px rgba(0,0,0,0.9);
-  margin-bottom: 16px;
-  letter-spacing: 0.02em;
+  line-height: 1.08;
+  color: var(--c-text, #0e1621);
+  margin-bottom: 14px;
+  letter-spacing: 0.01em;
 }
 
 .contact-subtitle {
   font-family: var(--font-body);
   font-size: clamp(15px, 1.6vw, 18px);
-  font-style: italic;
-  color: #868d99;
-  letter-spacing: 0.06em;
+  color: var(--c-body, #48525f);
   margin-top: 4px;
 }
 
@@ -108,18 +96,16 @@
   text-decoration: none;
   border: 1px solid rgba(6, 147, 227, 0.22);
   border-radius: 10px;
-  background: rgba(6, 147, 227, 0.04);
+  background: rgba(6, 147, 227, 0.05);
   transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
 }
-
 a.contact-info-item:hover {
   border-color: rgba(6, 147, 227, 0.55);
-  background: rgba(6, 147, 227, 0.09);
+  background: rgba(6, 147, 227, 0.1);
   transform: translateY(-2px);
 }
-
 .contact-info-item:focus-visible {
-  outline: 2px solid var(--gold-light, #4fb0ef);
+  outline: 2px solid var(--gold, #0693e3);
   outline-offset: 3px;
 }
 
@@ -128,14 +114,12 @@ a.contact-info-item:hover {
   line-height: 1;
   flex-shrink: 0;
 }
-
 .contact-info-body {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
-
 .contact-info-label {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -143,20 +127,17 @@ a.contact-info-item:hover {
   text-transform: uppercase;
   color: var(--gold, #0693e3);
 }
-
 .contact-info-value {
   font-family: var(--font-body);
   font-size: 15px;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
   word-break: break-word;
 }
-
 .contact-info-sub {
   font-family: var(--font-body);
   font-size: 12.5px;
-  color: #868d99;
+  color: var(--c-mute, #7c8593);
 }
-
 .contact-info-static { cursor: default; }
 
 /* ─── Form ───────────────────────────────────────────────────────────────── */
@@ -170,57 +151,42 @@ a.contact-info-item:hover {
   gap: 22px;
 }
 
-.contact-row {
-  display: flex;
-  gap: 20px;
-}
-
-.contact-field {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+.contact-row { display: flex; gap: 20px; }
+.contact-field { display: flex; flex-direction: column; flex: 1; }
 
 .contact-label {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: #0693e3;
+  color: var(--gold, #0693e3);
   margin-bottom: 10px;
 }
 
 .contact-input,
 .contact-textarea {
   width: 100%;
-  background: rgba(10, 7, 5, 0.6);
-  border: 1px solid #135a86;
-  color: #edf1f7;
+  background: #ffffff;
+  border: 1px solid var(--c-border, #e4e9f0);
+  color: var(--c-text, #0e1621);
   font-family: var(--font-body);
   font-size: 16px;
   padding: 13px 16px;
+  border-radius: 8px;
   outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-
-.contact-textarea {
-  resize: vertical;
-  min-height: 120px;
-  line-height: 1.6;
-}
+.contact-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
 
 .contact-input:focus,
 .contact-textarea:focus {
-  border-color: #0693e3;
-  box-shadow: 0 0 12px rgba(6, 147, 227, 0.25);
+  border-color: var(--gold, #0693e3);
+  box-shadow: 0 0 0 3px rgba(6, 147, 227, 0.15);
 }
-
 .contact-input::placeholder,
-.contact-textarea::placeholder {
-  color: rgba(194, 200, 209, 0.4);
-}
+.contact-textarea::placeholder { color: #a9b1bc; }
 
-/* ─── Submit (Hero got-cta-btn görünümü) ─────────────────────────────────── */
+/* ─── Submit ─────────────────────────────────────────────────────────────── */
 .contact-submit {
   align-self: flex-start;
   margin-top: 6px;
@@ -229,30 +195,28 @@ a.contact-info-item:hover {
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: #fff;
-  background: #0693e3;
+  background: var(--gold, #0693e3);
   border: none;
-  padding: 14px 40px;
+  border-radius: 8px;
+  padding: 15px 40px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.25s ease;
+  transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
-
 .contact-submit:hover {
-  background: #135a86;
+  background: #0b7cc0;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(6, 147, 227, 0.25);
 }
+.contact-submit:disabled { opacity: 0.6; cursor: default; transform: none; box-shadow: none; }
 
-/* ─── Fade-up (Section1 ile ayni) ────────────────────────────────────────── */
+/* ─── Fade-up ────────────────────────────────────────────────────────────── */
 .contact .fade-up {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1),
-              transform 0.9s cubic-bezier(0.22,1,0.36,1);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-.contact .fade-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.contact .fade-up.visible { opacity: 1; transform: translateY(0); }
 
 /* ─── Footer ornament ────────────────────────────────────────────────────── */
 .contact-footer-ornament {
@@ -262,27 +226,25 @@ a.contact-info-item:hover {
   align-items: center;
   justify-content: center;
   gap: 24px;
-  margin-top: 72px;
+  margin-top: 68px;
 }
-
 .contact-footer-ornament .footer-line {
   display: block;
   width: 120px;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(6, 147, 227,0.3));
+  background: linear-gradient(to right, transparent, rgba(6, 147, 227, 0.3));
 }
 .contact-footer-ornament .footer-line:last-child {
-  background: linear-gradient(to left, transparent, rgba(6, 147, 227,0.3));
+  background: linear-gradient(to left, transparent, rgba(6, 147, 227, 0.3));
 }
-
 .contact-footer-ornament .footer-sigil {
   font-size: 20px;
-  color: rgba(6, 147, 227,0.4);
+  color: rgba(6, 147, 227, 0.5);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .contact { padding: 28px 24px 90px; }
+  .contact { padding: 56px 24px 84px; }
   .contact-row { flex-direction: column; gap: 22px; }
   .contact-submit { align-self: stretch; text-align: center; }
 }
@@ -293,13 +255,13 @@ a.contact-info-item:hover {
   -webkit-appearance: none;
   cursor: pointer;
   padding-right: 42px;
-  color-scheme: dark;
+  color-scheme: light;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath fill='none' stroke='%230693e3' stroke-width='2' d='M1 1l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
 }
-.contact-select:required:invalid { color: #959ca7; } /* "Konu seçin" soluk */
-.contact-select option { background: #1a1310; color: #edf1f7; }
+.contact-select:required:invalid { color: #9aa2ad; }
+.contact-select option { background: #ffffff; color: var(--c-text, #0e1621); }
 .contact-select option[value=""][disabled] { display: none; }
 
 /* ─── Opsiyonel etiketi + durum mesaji ───────────────────────────────────── */
@@ -308,7 +270,7 @@ a.contact-info-item:hover {
   text-transform: none;
   letter-spacing: normal;
   font-size: 11px;
-  color: #959ca7;
+  color: var(--c-mute, #7c8593);
   font-style: italic;
 }
 
@@ -318,15 +280,15 @@ a.contact-info-item:hover {
   font-size: 15px;
   line-height: 1.5;
 }
-.contact-status.ok    { color: #8fc98a; }
-.contact-status.error { color: #d98b7f; }
+.contact-status.ok    { color: #1f9d55; }
+.contact-status.error { color: #cf3f5a; }
 
 /* Telefon alani gecersizken: kirmizi kenar + alan-alti uyari */
-.contact-input.hata { border-color: #d98b7f; }
+.contact-input.hata { border-color: #cf3f5a; }
 .contact-field-error {
   display: block;
   margin-top: 6px;
   font-family: var(--font-body);
   font-size: 12px;
-  color: #d98b7f;
+  color: #cf3f5a;
 }

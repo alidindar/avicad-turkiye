@@ -51,6 +51,7 @@ const Contact = () => {
   const [telefon, setTelefon] = useState('')
   const [konu, setKonu]       = useState('')
   const [mesaj, setMesaj]     = useState('')
+  const [hp, setHp]           = useState('') // honeypot — botlar doldurur, insanlar gormez
   const [telefonHata, setTelefonHata] = useState('')
 
   const [gonderiliyor, setGonderiliyor] = useState(false)
@@ -90,6 +91,11 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (gonderiliyor) return
+    // Honeypot dolu → bot. Sessizce basari gibi davran, hicbir sey gonderme.
+    if (hp) {
+      setDurum({ ok: true, text: 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.' })
+      return
+    }
     if (!telefonGecerli(telefon)) {
       setTelefonHata('Geçerli bir telefon numarası girin (örn. 0 (532) 123 45 67).')
       return
@@ -145,6 +151,12 @@ const Contact = () => {
 
       {/* Form */}
       <form ref={formRef} className="contact-form fade-up" onSubmit={handleSubmit}>
+        {/* Honeypot — gizli; yalnizca botlar doldurur */}
+        <input
+          type="text" name="website" className="contact-hp" tabIndex={-1}
+          autoComplete="off" aria-hidden="true"
+          value={hp} onChange={(e) => setHp(e.target.value)}
+        />
         <div className="contact-row">
           <div className="contact-field">
             <label className="contact-label" htmlFor="c-ad">Ad</label>

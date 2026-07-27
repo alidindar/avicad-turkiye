@@ -1,7 +1,7 @@
 /* SSS (accordion) — renk/font degiskenleri Hero.css :root'tan. */
 .faq {
   position: relative;
-  background: #050403;
+  background: var(--c-bg, #ffffff);
   padding: 84px 24px;
   text-align: center;
 }
@@ -19,7 +19,7 @@
   font-family: var(--font-display);
   font-size: clamp(24px, 3.4vw, 34px);
   font-weight: 700;
-  color: #edf1f7;
+  color: var(--c-text, #0e1621);
 }
 
 .faq-list {
@@ -43,7 +43,7 @@
   font-family: var(--font-body);
   font-size: clamp(15px, 1.8vw, 17px);
   font-weight: 500;
-  color: #e3e7ee;
+  color: var(--c-text, #0e1621);
   background: none;
   border: none;
   cursor: pointer;
@@ -78,7 +78,7 @@
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.7;
-  color: #adb4bf;
+  color: var(--c-body, #48525f);
   max-width: 640px;
 }
 

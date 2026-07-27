@@ -34,6 +34,16 @@
   --ink:        #0a0705;
   --white-mist: rgba(237, 241, 247, 0.88);
 
+  /* Hibrit tema — ACIK icerik bolumleri (koyu hero'nun altinda). Mavi accent
+     (--gold*) her iki temada da kullanilir. */
+  --c-bg:       #ffffff;   /* ana icerik zemini */
+  --c-surface-2:#f3f6fa;   /* alternatif/ikincil bolum zemini */
+  --c-card:     #ffffff;   /* kart zemini */
+  --c-border:   #e4e9f0;   /* ince ayrac/kenar */
+  --c-text:     #0e1621;   /* baslik */
+  --c-body:     #48525f;   /* govde metni */
+  --c-mute:     #7c8593;   /* soluk/etiket metni */
+
   /* Tipografi — IBM Plex (mühendislik/teknik güven). display & body ayni
      aile; hiyerarsi font-weight ile. mono → teknik büyük-harf etiketler. */
   --font-display: 'IBM Plex Sans', system-ui, sans-serif;
