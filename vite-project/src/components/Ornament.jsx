@@ -1,5 +1,6 @@
-// Bölüm başlığı ✦ süsü (iki altın çizgi + ✦). Section1/Contact ile birebir aynı;
-// global .header-ornament/.ornament-line/.ornament-rune stillerini kullanır.
+import './Ornament.css'
+
+// Bölüm başlığı ✦ süsü (iki mavi çizgi + ✦). Stilleri kendi CSS'inden gelir.
 const Ornament = () => (
   <div className="header-ornament" aria-hidden="true">
     <span className="ornament-line" />

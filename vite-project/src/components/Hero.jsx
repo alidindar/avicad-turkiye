@@ -116,7 +116,7 @@ const Hero = () => {
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })
   }
   const navHandler = (l) => (e) => {
-    // Hakkımızda: hedef bölüm yok → yalnızca menüyü kapat (ölü link, kullanıcı isteği).
+    // Her link ilgili bölüme kaydırır; sonda mobil menüyü kapatır.
     if (l === 'Anasayfa') { e.preventDefault(); kaydir(null, true) }
     else if (l === 'Neden AviCAD?') { e.preventDefault(); kaydir('neden-avicad') }
     else if (l === 'Hakkımızda') { e.preventDefault(); kaydir('hakkimizda') }
@@ -204,7 +204,7 @@ const Hero = () => {
     const failTerminal = () => {
       if (settled) return
       settled = true
-      setVideoError('Video yüklenemedi. public/video/one.mp4 dosyasını kontrol edin.')
+      setVideoError('Görsel deneyim yüklenemedi. Lütfen sayfayı yenilemeyi deneyin.')
     }
 
     // Zaman asimi TERMINAL DEGIL. Sure dolunca ger cek durumu olc: yalnizca video
@@ -456,8 +456,9 @@ const Hero = () => {
             ))}
           </div>
 
-          {/* Bolum metni. Icerik state'ten geliyor; aria-live degisimi bildiriyor. */}
-          <div className="got-content" aria-live="polite">
+          {/* Bolum metni scroll-scrub ile degisir. aria-live YOK: her scroll'da
+              metni tekrar okuyup ekran okuyucuyu bogmasin (ilk H1 normal okunur). */}
+          <div className="got-content">
             <span ref={sigilRef} className="got-sigil" aria-hidden="true">{chapter.sigil}</span>
             <div className="got-divider" aria-hidden="true">
               <div className="got-divider-line" />

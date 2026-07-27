@@ -1,0 +1,22 @@
+/* Bölüm başlığı ✦ süsü — self-contained (Section1.css'e bağımlı değil). */
+.header-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.ornament-line {
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(6, 147, 227, 0.5));
+}
+.ornament-line:last-child {
+  background: linear-gradient(to left, transparent, rgba(6, 147, 227, 0.5));
+}
+.ornament-rune {
+  font-size: 15px;
+  color: #0693e3;
+  filter: drop-shadow(0 0 8px rgba(6, 147, 227, 0.7));
+}

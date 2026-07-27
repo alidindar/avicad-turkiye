@@ -1,0 +1,68 @@
+/* ErrorBoundary fallback — koyu, sade, marka uyumlu. */
+.eb-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #0a0f18;
+  font-family: var(--font-body, 'IBM Plex Sans', system-ui, sans-serif);
+}
+.eb-card {
+  max-width: 520px;
+  text-align: center;
+  padding: 40px 32px;
+  border: 1px solid rgba(6, 147, 227, 0.2);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+}
+.eb-brand {
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #4fb0ef;
+  margin-bottom: 18px;
+}
+.eb-title {
+  font-family: var(--font-display, 'IBM Plex Sans', system-ui, sans-serif);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  color: #edf1f7;
+  margin-bottom: 14px;
+}
+.eb-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #aab4c0;
+  margin-bottom: 28px;
+}
+.eb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+}
+.eb-btn {
+  font-family: var(--font-body, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #0693e3;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 26px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+.eb-btn:hover { background: #0b7cc0; }
+.eb-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4fb0ef;
+  text-decoration: none;
+}
+.eb-link:hover { text-decoration: underline; }

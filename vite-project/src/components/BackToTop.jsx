@@ -10,11 +10,19 @@ const BackToTop = () => {
   useEffect(() => {
     // Video/hero'yu kaplamamasi icin: buton yalnizca Section1 (Neden AviCAD)
     // tepesi viewport ustunu gecince belirir → o an hero tamamen scroll edilmis olur.
-    const onScroll = () => {
+    // getBoundingClientRect scroll'da reflow tetikler → rAF ile frame basina 1 kez.
+    let ticking = false
+    const compute = () => {
+      ticking = false
       const s1 = document.getElementById('neden-avicad')
       setVisible(s1 ? s1.getBoundingClientRect().top <= 0 : window.scrollY > window.innerHeight * 6)
     }
-    onScroll()
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(compute)
+    }
+    compute()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {

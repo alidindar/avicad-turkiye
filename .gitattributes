@@ -1,2 +1,10 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Satır sonlarını normalize et (repo + working dir LF). Windows'ta "LF -> CRLF" uyarısını keser.
+* text=auto eol=lf
+
+# Binary varlıklar — dönüştürme yok
+*.png  -text
+*.jpg  -text
+*.jpeg -text
+*.webp -text
+*.ico  -text
+*.mp4  -text
