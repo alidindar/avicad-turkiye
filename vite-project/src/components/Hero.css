@@ -273,6 +273,48 @@ body {
   max-width: 720px;
 }
 
+/* Metin bloğunun arkasındaki karartma perdesi.
+   Neden gerekli: arka plan hareketli bir video — kimi karede çok koyu, kimi
+   karede parlak. Sabit bir metin rengi bu iki ucun ikisinde birden geçemez
+   (ölçüm: alt başlık 5 bölümde 1.09–2.60 kontrast, WCAG AA eşiği 4.5). Perde
+   metnin altındaki zemini videodan bağımsız hale getirir, böylece kontrast
+   scroll boyunca sabit kalır.
+   Dikey fade yalnızca üst kenarda: geçiş bölgesi metnin ÜSTÜNDE bitsin diye
+   üstten taşırılıyor (top -90px) — yoksa alt başlık fade'in içine düşerdi.
+
+   Yatayda perde kapsayıcıya BAGLANMAZ. .got-content masaüstünde
+   `max-width: 720px` + `left: 0` ile sola yaslı; perde o kutuyu takip edince
+   748px'te aniden bitip ekranın ortasında tam boy sert bir dikey kenar
+   birakiyordu (1440px'te dikis siddeti 2.02–3.30; mobilde ekran perdeden dar
+   oldugu icin gorunmuyordu). Bu yuzden sabit genislik + saga dogru sonen maske:
+   opak −28→702, yumusak gecis 702→1152. Masaustu metin sutunu 648'de, mobil
+   ekran 394'te biter — ikisi de opak bolgenin icinde, yani mobil davranis
+   degismez.
+
+   100vw KULLANILMIYOR: kaydirma cubugu genisligini de sayip yatay tasma
+   yaratabilir. Maske 1180px'te sifirlandigi icin 1200px zaten yetiyor.
+   Tasma riski ayrica yok — .got-sticky `overflow: hidden` (yukarida). */
+.got-content::before {
+  content: '';
+  position: absolute;
+  top: -90px;
+  bottom: -8px;
+  left: -28px;
+  right: auto;
+  width: 1200px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(4, 10, 18, 0.9) 0%,
+    rgba(4, 10, 18, 0.9) 62%,
+    rgba(4, 10, 18, 0.72) 82%,
+    rgba(4, 10, 18, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(to right, #000 0 730px, transparent 1180px);
+  mask-image:         linear-gradient(to right, #000 0 730px, transparent 1180px);
+}
+
 .got-sigil {
   font-size: 28px;
   margin-bottom: 16px;
@@ -285,7 +327,10 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.45em;
-  color: var(--gold);
+  /* --gold (#0693e3) 11px + 0.45em harf araligiyla video uzerinde okunmuyordu.
+     Ayni markanin acik tonu (--gold-light, sitenin baska yerlerinde de
+     kullaniliyor) perdeyle birlikte rahat gecer. */
+  color: var(--gold-light);
   text-transform: uppercase;
   margin-bottom: 16px;
   display: block;

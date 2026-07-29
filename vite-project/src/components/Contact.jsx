@@ -125,19 +125,38 @@ const Contact = () => {
       await submitContact({ ad, soyad, telefon, email, konu, mesaj })
     } catch (err) {
       leadOk = false
+      // Sessizce yutma: tek teshis izi bu. Ziyaretci konsolu gormez ama
+      // saha hatasi bildirildiginde sebebi buradan okunur.
+      console.error('[iletisim] Lead gönderilemedi:', err)
     }
 
     // Demo talebinde: zorunlu alanlar dolu + telefon gecerli → demoyu indir.
+    // Indirme bilerek leadOk'a bagli DEGIL: e-posta gitmese de ziyaretci
+    // istedigi dosyayi almali.
     if (demoTalebi) tetikleDemoIndir()
 
-    if (demoTalebi || leadOk) {
+    // ONEMLI: basari mesaji YALNIZCA lead gercekten gittiyse gosterilir.
+    // Eskiden kosul `demoTalebi || leadOk` idi; demo talebinde e-posta
+    // basarisiz olsa bile "Talebiniz alindi" yazip formu temizliyordu ->
+    // ziyaretci kaydoldugunu saniyor, satisa hicbir sey ulasmiyordu
+    // (sitenin en degerli donusumunde sessiz lead kaybi).
+    if (leadOk) {
       setDurum({
         ok: true,
         text: demoTalebi
           ? 'Talebiniz alındı. AviCAD demo indirmeniz başlıyor…'
           : 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.',
       })
+      // Form yalnizca basarida temizlenir; hatada girilen veri korunur ki
+      // ziyaretci bastan yazmak zorunda kalmadan tekrar deneyebilsin.
       setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
+    } else if (demoTalebi) {
+      // Indirme basladi ama talep kaydedilemedi — bunu saklamak yerine
+      // ziyaretciye alternatif kanal veriyoruz.
+      setDurum({
+        ok: false,
+        text: `Demo indirmeniz başlıyor. Ancak talebinizi kaydedemedik — size dönebilmemiz için lütfen bizi arayın: ${TELEFON_GORUNEN}`,
+      })
     } else {
       setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
     }

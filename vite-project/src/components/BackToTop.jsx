@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './BackToTop.css'
+import { fabSeridiniKapatiyor } from './fabAlan'
 
 // Sayfa sonundayken (Iletisim) nav yukarida pinli hero'da kaldigi icin erisilemez.
 // Bu yuzen buton her yerden en uste donmeyi saglar. Agir video decode smooth
@@ -12,9 +13,14 @@ const BackToTop = () => {
     // tepesi viewport ustunu gecince belirir → o an hero tamamen scroll edilmis olur.
     // Not: rAF throttle KULLANILMIYOR — agir video ana thread'i doyurup rAF'i
     // starve edince FAB takili kaliyordu (QA). 2 eleman icin dogrudan hesap ucuz.
+    // Iletisim formu alt seride girdiginde FAB input'larin sag kenarindan
+    // dokunma caliyor (bkz. fabAlan.js) — o aralikta gizlenir.
     const onScroll = () => {
       const s1 = document.getElementById('neden-avicad')
-      setVisible(s1 ? s1.getBoundingClientRect().top <= 0 : window.scrollY > window.innerHeight * 6)
+      const gorunur = s1
+        ? s1.getBoundingClientRect().top <= 0
+        : window.scrollY > window.innerHeight * 6
+      setVisible(gorunur && !fabSeridiniKapatiyor('iletisim'))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })

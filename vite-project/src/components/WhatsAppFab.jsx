@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './WhatsAppFab.css'
 import { whatsappHref } from '../siteConfig'
+import { fabSeridiniKapatiyor } from './fabAlan'
 
 // Sol alttaki yuzen WhatsApp CTA'si. BackToTop (sag alt) ile AYNI anda —
 // video/hero bitince — belirir ki videonun uzerini kaplamasin. Gorunurluk:
@@ -12,7 +13,10 @@ const WhatsAppFab = () => {
     // rAF throttle KULLANILMIYOR — agir video rAF'i starve edince FAB takiliyordu (QA).
     const onScroll = () => {
       const s1 = document.getElementById('neden-avicad')
-      setVisible(s1 ? s1.getBoundingClientRect().top <= 0 : window.scrollY > window.innerHeight * 6)
+      const gorunur = s1
+        ? s1.getBoundingClientRect().top <= 0
+        : window.scrollY > window.innerHeight * 6
+      setVisible(gorunur && !fabSeridiniKapatiyor('iletisim'))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
