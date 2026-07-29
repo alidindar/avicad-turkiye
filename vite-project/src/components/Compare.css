@@ -109,7 +109,7 @@
 .fc-cell { display: inline-flex; align-items: center; justify-content: center; }
 .fc-cell.fc-feat { justify-content: flex-start; }
 
-.fc-avicad { border-radius: 8px; background: rgba(6, 147, 227, 0.08); }
+.fc-avicad { border-radius: 8px; background: rgba(6, 147, 227, 0.12); }
 .fc-head .fc-cell {
   font-family: var(--font-mono);
   font-size: 10.5px;
@@ -120,8 +120,13 @@
 }
 .fc-head .fc-avicad { color: var(--gold, #0693e3); font-weight: 600; }
 
-.fc-yes { color: #1f9d55; }
+/* Vurgu bizim sutunumuzda olmali. Onceki hal terstiydi: AutoCAD LT'nin tikleri
+   parlak yesil (#1f9d55 — evrensel "olumlu" sinyali), AViCAD'inkiler soluk mavi
+   kaliyordu; goz rakibin sutununa gidiyordu. Simdi LT'nin tikleri notr gri,
+   AViCAD'inkiler marka mavisi + daha kalin ve buyuk. */
+.fc-yes { color: var(--c-mute, #7c8593); }
 .fc-avicad.fc-yes { color: var(--gold, #0693e3); }
+.fc-avicad.fc-yes svg { width: 20px; height: 20px; stroke-width: 2.9; }
 .fc-no { color: #b7bec8; }
 
 .fc-note {
