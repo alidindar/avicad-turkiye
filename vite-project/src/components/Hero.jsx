@@ -13,10 +13,11 @@ const SCROLL_VIEWPORTS = 6
 const SEEK_THRESHOLD   = 0.04   // s — bundan kucuk fark icin video'yu seek etme
 const SCRUB_SMOOTH     = 1.2    // video/metin scrub yumusatmasi
 const OVERLAY_SCRUB    = 2      // overlay crossfade yumusatmasi
-// Yavas ilk-kare cozumunu (agir/-g 1 dev videosu) yanlislikla stall saymamak
-// icin genis tutuldu. Asil guvence: stall TERMINAL degil — video gec de olsa
-// hazir olunca onReady toparlar (asagidaki setup effect).
-const STALL_TIMEOUT_MS = 30000
+// Bu sure dolunca video hazir olmasa da site ACILIR (hero poster'la kalir).
+// 30sn idi: ziyaretciyi terk suresinin cok otesinde bos ekranda tutuyordu.
+// Asil guvence: stall TERMINAL degil — video gec de olsa hazir olunca onReady
+// toparlar ve scrub devreye girer (asagidaki setup effect).
+const STALL_TIMEOUT_MS = 8000
 const RUNE_TICKS       = 80
 
 // ─── Chapter data ────────────────────────────────────────────────────────────
@@ -100,6 +101,16 @@ const Hero = () => {
     typeof window !== 'undefined' ? window.innerHeight : 800
   )
   const [menuOpen, setMenuOpen]           = useState(false)  // mobil hamburger menü
+
+  // Mobilde 25MB'lik masaustu videosu ilk kareyi cozemeden dakikalarca bekletiyor
+  // (gercek cihaz testinde 30sn'de bile acilmadi). Mobile ozel 480p/15fps ~5MB
+  // surum ayni keyframe yapisina sahip -> scrub birebir calisir, indirme 5 kat az.
+  // Karar MOUNT'ta donuyor: resize'da yeniden hesaplansa video ortada yeniden
+  // yuklenir ve scrub sifirlanirdi.
+  const [isMobil] = useState(
+    () => typeof window !== 'undefined'
+      && window.matchMedia('(max-width: 768px)').matches
+  )
 
   const chapter = CHAPTERS[activeChapter]
 
@@ -200,25 +211,36 @@ const Hero = () => {
       setVideoError(null)
       setVideoReady(true)
     }
-    // Gercek yukleme hatasi (dosya yok/bozuk): terminal.
+    // Gercek yukleme hatasi (dosya yok/bozuk). ESKIDEN: yalnizca hata metni
+    // yazilirdi, videoReady false kalirdi -> overlay hic kalkmaz, SITE TAMAMEN
+    // ERISILEMEZ olurdu. Bu ciddi bir deploy riski: video dosyalari .gitignore'da,
+    // sunucuya elle yukleniyor; biri unutulursa (ya da yol yanlissa) tum site
+    // olu ekrana donerdi. Artik hatada da siteyi ACIYORUZ — hero poster'la kalir,
+    // icerik/CTA/telefon erisilebilir olur. Dekoratif bir arka planin kaybi,
+    // sayfanin tamamini feda etmeye degmez.
     const failTerminal = () => {
       if (settled) return
       settled = true
       setVideoError('Görsel deneyim yüklenemedi. Lütfen sayfayı yenilemeyi deneyin.')
+      setVideoReady(true)
     }
 
-    // Zaman asimi TERMINAL DEGIL. Sure dolunca ger cek durumu olc: yalnizca video
-    // gercekten basarisizsa (MediaError ya da NETWORK_NO_SOURCE=3) terminal hataya
-    // gec. Aksi halde video hala yukleniyordur ( agir/-g 1 encode ilk kareyi gec
-    // cozer) — sadece yumusak bir "yukleniyor" notu goster, settled'a DOKUNMA ki
-    // loadeddata gelince onReady toparlayabilsin. Onceki hal burada onError'i
-    // kalici yapip onReady'yi sonsuza dek blokluyor, tum siteyi kilitliyordu.
+    // Zaman asimi TERMINAL DEGIL — ama artik BEKLETMEZ de. Onceki hal yalnizca
+    // "yavas yukleniyor" notunu gosterip overlay'i acik birakiyordu; video hic
+    // gelmezse site SONSUZA DEK loading ekraninda kilitli kaliyordu (icerik, CTA,
+    // telefon, WhatsApp — hicbiri gorunmuyordu). Gercek cihaz testinde ziyaretci
+    // tam olarak bu ekranda kaldi. Artik sure dolunca SITEYI ACIYORUZ: hero
+    // poster.jpg uzerinde durur, tum bolumler ve CTA erisilebilir olur. Video
+    // sonradan gelirse asagidaki loadeddata/canplay dinleyicileri scrub'i normal
+    // sekilde devreye alir (onReady idempotent degil ama settled zaten true
+    // oldugundan zararsiz; scrub effect'i videoReady'ye bagli calisir).
     const stallTimer = setTimeout(() => {
       if (settled) return
       if (video.error || video.networkState === 3 /* NETWORK_NO_SOURCE */) {
         failTerminal()
       } else if (video.readyState < 2) {
         setVideoSlow(true)
+        setVideoReady(true)   // <- overlay kalkar, site kullanilabilir olur
       }
     }, STALL_TIMEOUT_MS)
 
@@ -240,9 +262,8 @@ const Hero = () => {
   useEffect(() => {
     if (!videoReady) return
 
-    const video    = videoRef.current
-    const duration = video.duration || 1
-    const reduced  = prefersReducedMotion()
+    const video   = videoRef.current
+    const reduced = prefersReducedMotion()
 
     // Pin bitisi fonksiyon olarak veriliyor: ScrollTrigger.refresh() bunu yeniden
     // hesaplar, boylece resize'da pin mesafesi guncel innerHeight'e uyar.
@@ -270,8 +291,13 @@ const Hero = () => {
           end:     endFn,
           scrub:   SCRUB_SMOOTH,
           onUpdate: (self) => {
-            // video scrub
-            const t = self.progress * duration
+            // video scrub — duration HER KAREDE okunur, bir kez yakalanmaz.
+            // Stall zaman asimi siteyi videosuz acabildigi icin bu effect
+            // duration daha NaN'ken kurulabiliyor; video sonradan gelince
+            // videoReady zaten true oldugundan effect YENIDEN CALISMAZ. Sabit
+            // yakalansaydi duration 1sn'de kalir, tum scroll videonun ilk
+            // saniyesine sikisirdi. Canli okuma video gelir gelmez duzeltir.
+            const t = self.progress * (video.duration || 1)
             if (!video.seeking && Math.abs(video.currentTime - t) > SEEK_THRESHOLD) {
               if (video.fastSeek) video.fastSeek(t)
               else video.currentTime = t
@@ -386,7 +412,7 @@ const Hero = () => {
           <video
             ref={videoRef}
             className="got-video"
-            src={`${import.meta.env.BASE_URL}video/one.mp4`}
+            src={`${import.meta.env.BASE_URL}video/${isMobil ? 'one-mobile.mp4' : 'one.mp4'}`}
             poster={`${import.meta.env.BASE_URL}video/poster.jpg`}
             playsInline
             muted

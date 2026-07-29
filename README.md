@@ -27,12 +27,24 @@ Tümü tek yerde — `vite-project/src/`:
 `currentTime` ile gezinirken tarayıcı en yakın keyframe'den başlayıp kareleri çözer; seyrek keyframe'de scroll kasar. Sık keyframe ile yeniden encode şart:
 
 ```bash
-# Web icin, 2 karede bir keyframe (akici + makul boyut)
-ffmpeg -i kaynak.mp4 -c:v libx264 -g 2 -crf 22 -preset medium \
-  -pix_fmt yuv420p -an -movflags +faststart public/video/one.mp4
+# Masaustu: 720p, 2 karede bir keyframe (akici + makul boyut) — ~25MB
+ffmpeg -i kaynak.mp4 -vf scale=1280:720 -c:v libx264 -g 2 -keyint_min 2 \
+  -sc_threshold 0 -crf 22 -preset medium -pix_fmt yuv420p -an \
+  -movflags +faststart public/video/one.mp4
 ```
 
-Video dosyaları büyük olduğundan repoda tutulmaz; encode edip `vite-project/public/video/one.mp4` olarak koyun.
+**Mobil sürüm zorunlu.** Hero, `max-width: 768px` altında `one-mobile.mp4` yükler; dosya yoksa mobilde hero videosuz kalır. 25MB'lık masaüstü sürümü telefonda ilk kareyi 30 sn'de bile çözemiyordu — 480p/15fps sürüm ~5MB'a iniyor, keyframe yapısı aynı kaldığı için **scrub birebir çalışır**:
+
+```bash
+# Mobil: 480p / 15fps, keyframe yine 2 karede — ~5MB
+ffmpeg -i public/video/one.mp4 -vf scale=854:480 -r 15 -c:v libx264 -g 2 \
+  -keyint_min 2 -sc_threshold 0 -crf 29 -preset medium -pix_fmt yuv420p -an \
+  -movflags +faststart public/video/one-mobile.mp4
+```
+
+`-g 2 -keyint_min 2 -sc_threshold 0` üçlüsü scrub'ın çalışma şartıdır; keyframe'i seyrekleştirmeyin.
+
+Video dosyaları büyük olduğundan repoda tutulmaz (`.gitignore`). **Her iki dosyayı da** encode edip `vite-project/public/video/` altına koyun — yayına çıkarken sunucuya elle yüklenmeleri gerekir.
 
 ## Kurulum
 
