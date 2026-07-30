@@ -90,7 +90,11 @@
      -> sutun basina ~257px, 4 sutun icin >1070px kap gerekirdi; forma gore cok genis).
      Bu yuzden 2x2: 760px kapta 2 sutun (~373px) — hem metinler tek satirda, hem
      dizilim simetrik (3+1 birakildiginda adres karti altta tek basina kaliyordu). */
-  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  /* min(330px, 100%) — cıplak minmax(330px,…) dar ekranda TASIYOR: auto-fit
+     330px'lik minimumun altina inemez, 343px viewport'ta (kap 295px) kart
+     24+330=354px'te bitip ekrandan cikiyordu. min(…,100%) izi kaba sigdirir;
+     genis ekranda davranis aynen korunur (760px kapta yine 2 sutun). */
+  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
   gap: 14px;
 }
 

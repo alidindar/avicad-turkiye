@@ -1,4 +1,7 @@
 // ─── AviCAD Türkiye — iletişim bilgileri (tek kaynak) ────────────────────────
+// TEK ISTISNA: index.html'deki <noscript> blogu bu degerleri TEKRARLIYOR —
+// orasi React disinda kaldigi icin buradan okuyamiyor. Telefon/e-posta/adres
+// degistirirken index.html'i de guncelleyin.
 // TODO: Placeholder degerleri gercekleriyle degistirin. Hem yuzen WhatsApp
 //   butonu (WhatsAppFab) hem Contact bilgi blogu buradan okur.
 //   - TELEFON_HREF ve WHATSAPP_NUMARA yalnizca rakam/+ icermeli (link icin).

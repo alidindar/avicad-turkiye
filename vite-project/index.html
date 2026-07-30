@@ -111,6 +111,29 @@
     </script>
   </head>
   <body>
+    <!-- JS calismazsa sayfa TAMAMEN bostu (body yalnizca bos #root'tan
+         ibaretti) — ziyaretci telefon numarasini bile goremiyordu. Bu blok
+         en azindan kim oldugumuzu ve nasil ulasilacagini gosterir.
+         DIKKAT: buradaki iletisim bilgileri src/siteConfig.js'i tekrarliyor
+         (index.html React disinda kaldigi icin oradan okunamiyor).
+         Birini degistirirken digerini de guncelleyin. Stiller satir ici:
+         React'e bagli sinif adlari burada ise yaramaz. -->
+    <noscript>
+      <div style="max-width:640px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#0e1621">
+        <h1 style="font-size:24px;margin:0 0 8px">AviCAD Türkiye</h1>
+        <p style="margin:0 0 24px;color:#5c6675">
+          DWG uyumlu profesyonel 2B/3B CAD çözümü — AViCAD'in resmi Türkiye distribütörü.
+        </p>
+        <p style="margin:0 0 24px;padding:12px 16px;background:#fff4d6;border-radius:8px">
+          Bu sitenin tamamını görüntülemek için JavaScript gerekiyor.
+          Tarayıcınızda JavaScript kapalı görünüyor — aşağıdaki kanallardan bize doğrudan ulaşabilirsiniz.
+        </p>
+        <p style="margin:0 0 6px"><strong>Telefon:</strong> <a href="tel:+905369280059">+90 (536) 928 00 59</a></p>
+        <p style="margin:0 0 6px"><strong>WhatsApp:</strong> <a href="https://wa.me/905369280059">+90 (536) 928 00 59</a></p>
+        <p style="margin:0 0 6px"><strong>E-posta:</strong> <a href="mailto:info@avicadturkiye.com.tr">info@avicadturkiye.com.tr</a></p>
+        <p style="margin:0;color:#5c6675">İstanbul, Türkiye · Hafta içi 09:00 – 18:00</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
