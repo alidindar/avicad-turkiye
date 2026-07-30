@@ -37,12 +37,17 @@ export const YASAL_UNVAN = '[YASAL ÜNVAN]'
 // Kriterler kumulatif: calisan sayisi 50'ye ULASIRSA ya da bilanco 100M TL'yi
 // GECERSE yukumluluk dogar; o zaman burasi yeniden eklenmeli.
 
-// Karsilastirma fiyatlari — resmi liste fiyatlari (USD), kisi basi / yil.
-// Kaynak: AViCAD $449/yil (avicad.com), AutoCAD ~$1865/yil (Autodesk liste).
-// TODO: Turkiye ₺ satis fiyatiniz farkliysa bu rakamlari + PARA_BIRIMI'ni guncelleyin.
-export const PARA_BIRIMI    = '$'
-export const AVICAD_YILLIK  = 449    // AViCAD yillik abonelik
-export const AUTOCAD_YILLIK = 1865   // AutoCAD yillik abonelik
+// FIYAT SABITI YOK — BILEREK.
+// Sitede fiyat yayinlanmiyor; musteriye telefonda veriliyor (karar 4661da5'te
+// alindi, maliyet grafigi bolumu o commit'te komple kaldirildi). Burada eskiden
+// PARA_BIRIMI / AVICAD_YILLIK / AUTOCAD_YILLIK sabitleri duruyordu; grafik
+// gidince hicbir yerden import edilmez oldular ama dosyada kaldilar ve
+// "sayfada fiyat var" yanilgisina yol actilar. Kaldirildilar.
+//
+// Fiyat gostermeye karar verilirse: once gorunur icerige eklenmeli, SONRA
+// index.html'deki SoftwareApplication semasina offers dusunulmeli. Google
+// yapilandirilmis verinin gorunur icerigi temsil etmesini istiyor; sayfada
+// olmayan bir fiyati semaya koymak kural ihlali olur.
 
 // wa.me linki — hazir mesajla birlikte.
 export const whatsappHref = () =>

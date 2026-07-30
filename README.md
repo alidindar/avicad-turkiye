@@ -6,13 +6,17 @@ Teknik altyapı, orijinal scroll-scrub şablonu [divyashrma18/GOT](https://githu
 
 ## Bölümler (akış)
 
-Hero (scroll-scrub video) → **Neden AviCAD?** (6 özellik kartı) → **AviCAD vs AutoCAD** (interaktif fiyat grafiği) → **SSS** → CTA bandı → **İletişim** (form + demo indirme) → Footer (KVKK / Gizlilik).
+Hero (scroll-scrub video) → **Neden AviCAD?** (6 özellik kartı) → **Hakkımızda** → **AViCAD vs AutoCAD LT** (özellik karşılaştırma tablosu + tanıtım videosu) → **Kullanıcılar Ne Diyor?** (referanslar) → **İletişim** (form + demo indirme) → **SSS** → Footer (KVKK / Gizlilik).
+
+> Fiyat sitede **yayınlanmıyor** — müşteriye telefonda veriliyor. Karşılaştırma bölümü eskiden interaktif bir maliyet grafiği içeriyordu, `4661da5`'te kaldırıldı.
 
 ## Yayına çıkmadan doldurulacaklar
 
 Tümü tek yerde — `vite-project/src/`:
 
-- **`siteConfig.js`** — telefon/WhatsApp/e-posta/adres, demo indirme URL'si, karşılaştırma fiyatları (`AVICAD_YILLIK`/`AUTOCAD_YILLIK`/`PARA_BIRIMI`), KVKK için `[YASAL ÜNVAN]`/`[VERBİS NO]`.
+- **`siteConfig.js`** — `[YASAL ÜNVAN]` (ticaret sicilinde kayıtlı tam ünvan; marka adı değil). Telefon/WhatsApp/e-posta/adres ve demo indirme URL'si doludur, gerekirse güncellenir.
+  - **VERBİS numarası aranmıyor** — şirket kayıt yükümlülüğünden istisna, gerekçe `siteConfig.js` içinde yazılı (`681a64d`).
+  - **Fiyat sabiti aranmıyor** — fiyat sitede yayınlanmıyor (`4661da5`).
 - **`emailService.js`** — EmailJS `PUBLIC_KEY` / `SERVICE_ID` / `TEMPLATE_LEAD` / `TEMPLATE_REPLY` (form gönderimi + otomatik yanıt için).
 - **KVKK/Gizlilik metinleri** taslaktır (`Footer.jsx`); yasal onay önerilir.
 
