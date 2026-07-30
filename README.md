@@ -59,6 +59,53 @@ npm install
 npm run dev   # http://localhost:5173/got/
 ```
 
+## Güvenlik — deploy'da yapılacaklar
+
+`index.html`'de bir **CSP meta etiketi** var; `script-src`/`connect-src`/`frame-src` gibi kaynak direktiflerini host'tan bağımsız uyguluyor ve test edildi (`api.emailjs.com` geçiyor, başka her yer engelleniyor).
+
+Ama bazı başlıklar **meta ile çalışmaz, sunucudan verilmek zorunda.** Bunlar verilmezse site clickjacking'e ve HTTP'ye düşürmeye açık kalır. Hosting seçilince aşağıdaki bloklardan uygunu kopyalanacak:
+
+**Netlify / Cloudflare Pages** — `vite-project/public/_headers`:
+```
+/*
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**cPanel / Apache** — `.htaccess`:
+```apache
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "DENY"
+  Header always set Content-Security-Policy "frame-ancestors 'none'"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+```
+
+**Nginx** — `server { … }` içine:
+```nginx
+add_header X-Frame-Options "DENY" always;
+add_header Content-Security-Policy "frame-ancestors 'none'" always;
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+```
+
+> Sunucudan verilen CSP, meta'dakini **ezmez** — ikisi birlikte uygulanır ve en kısıtlayıcısı kazanır. Bu yüzden yukarıdaki bloklarda yalnızca `frame-ancestors` var; kaynak direktifleri meta'da kalıyor.
+
+Ayrıca:
+- **HTTPS zorunlu**, HTTP → HTTPS yönlendirmesi açık olmalı (HSTS ancak öyle anlamlı).
+- Deploy edilen dizinde `.git/`, `node_modules/`, `src/` **bulunmamalı** — yalnızca `dist/` içeriği yüklenir.
+- **`npm audit`** deploy öncesi çalıştırılmalı (bağımlılık açığı taraması).
+- **EmailJS anahtarları girilirken** `emailService.js`'in başındaki güvenlik maddeleri uygulanmalı: alan adı kısıtı, CAPTCHA, hız sınırı, kota uyarısı. Anahtarlar bundle'da açık yayınlandığı için bu ayarlar suistimalin tek engeli.
+
 ## Notlar
 
 - `vite.config.js` → `base: '/got/'` (alt dizinde yayın için). Kök domainde yayınlanacaksa `'/'` yapın.

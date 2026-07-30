@@ -2,6 +2,36 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- İçerik Güvenliği Politikası. Meta ile verilebilenler burada; sunucu
+         tarafi olmasi ZORUNLU olanlar (frame-ancestors, HSTS, X-Frame-Options,
+         X-Content-Type-Options, Referrer-Policy, Permissions-Policy) meta ile
+         calismaz — README'deki deploy bolumunde hazir bloklar var, hosting
+         secilince oradan kopyalanacak.
+
+         Direktif gerekceleri:
+           style-src 'unsafe-inline' — <noscript> blogu satir ici style
+             kullaniyor (React sinif adlari orada ise yaramaz). GSAP'in CSSOM
+             uzerinden yazdigi stiller CSP kapsaminda DEGIL, onun icin degil.
+           img-src data: — Hero'daki film grain dokusu data: URI'li SVG.
+           connect-src api.emailjs.com — form gonderimi buraya gidiyor;
+             cikarilirsa form sessizce kirilir.
+           frame-src youtube-nocookie — tikla-oynat video facade'i.
+           media-src 'self' — hero scroll-scrub videolari. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data:;
+      font-src 'self';
+      media-src 'self';
+      connect-src 'self' https://api.emailjs.com;
+      frame-src https://www.youtube-nocookie.com;
+      form-action 'self';
+      base-uri 'self';
+      object-src 'none'
+    " />
+
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

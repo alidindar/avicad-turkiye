@@ -8,6 +8,30 @@ import emailjs from '@emailjs/browser'
 //   4) Email Templates -> yeni sablon "Yanit" (To: {{email}})            -> TEMPLATE_REPLY
 // Sablon degiskenleri: {{ad}} {{soyad}} {{ad_soyad}} {{telefon}} {{email}}
 //   {{konu}} {{mesaj}}  ve yanit sablonunda ayrica {{oto_yanit}}
+//
+// ─── GUVENLIK: anahtarlari girerken BUNLARI DA YAP ───────────────────────────
+// EmailJS tarayicidan calisir, yani asagidaki uc deger ZORUNLU OLARAK istemci
+// bundle'inda yayinlanir. Bunlar sir degil (tasarim geregi acik) — ama "Yanit"
+// sablonunun To alani {{email}}, yani ISTEK ATANIN belirledigi adres. Sunucu
+// tarafi dogrulama ve hiz sinirlama da yok; honeypot yalnizca istemcide.
+// Sonuc: bundle'dan degerleri okuyan biri API'yi dogrudan cagirip ISTEDIGI
+// adrese, {{ad}}/{{soyad}}/{{mesaj}} alanlarini kendi metniyle doldurup
+// e-posta gonderebilir. Iki somut zarar: (1) aylik kota tukenir ve gercek
+// lead'ler SESSIZCE ulasmaz, (2) sirket adina ucuncu kisilere e-posta gider.
+//
+//   a) Account -> Security -> Allowed Origins: yalnizca avicadturkiye.com.tr
+//      NOT: EmailJS bunu Origin basligindan dogruluyor; tarayici disi bir
+//      istemci basligi taklit edebilir. Duvar degil, hiz kesici.
+//   b) Sablonda EmailJS'in yerlesik CAPTCHA'sini AC — otomatik suistimale
+//      karsi en etkili tekil onlem.
+//   c) Panelden hiz siniri (rate limit) tanimla.
+//   d) Kota uyarisi kur — kota dolarsa haberin olsun, yoksa lead kaybi
+//      sessiz olur (bkz. 835122c'de duzeltilen ayni sinif hata).
+//
+// KALICI COZUM: Turkiye'de barinan kendi endpoint'in. Kimlik bilgisi sunucuda
+// gizli kalir, dogrulama + hiz sinirlama sunucuda yapilir, {{email}}'e serbest
+// gonderim ortadan kalkar. submitContact() imzasi ayni kaldigi surece
+// Contact.jsx hic degismez.
 export const EMAILJS_PUBLIC_KEY     = 'YOUR_PUBLIC_KEY'
 export const EMAILJS_SERVICE_ID     = 'YOUR_SERVICE_ID'
 export const EMAILJS_TEMPLATE_LEAD  = 'YOUR_TEMPLATE_LEAD'   // -> satisa bildirim
@@ -53,7 +77,9 @@ export async function submitContact({ ad, soyad, telefon, email, konu, mesaj }) 
   await emailjs.send(
     EMAILJS_SERVICE_ID,
     EMAILJS_TEMPLATE_REPLY,
-    { ...p, oto_yanit: OTO_YANIT[konu] || '' },
+    // Object.hasOwn: duz indeksleme prototip zinciri anahtarlarinda
+    // (constructor, toString...) beklenmedik deger dondururdu.
+    { ...p, oto_yanit: Object.hasOwn(OTO_YANIT, konu) ? OTO_YANIT[konu] : '' },
     { publicKey: EMAILJS_PUBLIC_KEY },
   )
 }
