@@ -122,7 +122,9 @@ const Footer = () => {
         </div>
 
         <div className="footer-col">
-          <h4 className="footer-head">Menü</h4>
+          {/* h4 -> h3: sayfadaki son baslik h2 idi, h4'e atlamak hiyerarsiyi
+              kiriyordu (2 -> 4). Stil sinif tabanli, etiket degisimi guvenli. */}
+          <h3 className="footer-head">Menü</h3>
           <ul className="footer-links">
             <li><button type="button" onClick={() => scrollToId('top')}>Anasayfa</button></li>
             <li><button type="button" onClick={() => scrollToId('neden-avicad')}>Neden AviCAD?</button></li>
@@ -133,7 +135,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-col">
-          <h4 className="footer-head">İletişim</h4>
+          <h3 className="footer-head">İletişim</h3>
           <ul className="footer-links">
             <li><a href={TELEFON_HREF}>{TELEFON_GORUNEN}</a></li>
             <li><a href={whatsappHref()} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>

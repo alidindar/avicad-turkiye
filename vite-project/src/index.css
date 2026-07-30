@@ -26,6 +26,57 @@
    Yeni bir ağırlık gerekirse: Google Fonts CSS'inden ilgili woff2 URL'sini
    src/assets/fonts/ altına indir, aşağıdakiyle aynı biçimde @font-face ekle. */
 
+/* ─── Odak göstergesi (global) ────────────────────────────────────────────────
+   Denetimde yalnizca 3 ogede :focus-visible kurali vardi (.contact-info-item,
+   .back-to-top, .wa-fab); kalan ~9 kontrol tarayici varsayilanina birakilmisti.
+   Hata degil ama koyu hero ile acik bolumler arasinda tutarsizdi. Tek kural
+   hepsini esitliyor.
+
+   Marka mavisi her iki zeminde de esigi geciyor: koyu hero uzerinde ~6:1,
+   beyaz bolumlerde ~3.9:1 (UI bileseni siniri icin esik 3.0).
+
+   Form alanlari BILEREK disarida: .contact-input/.contact-textarea kendi
+   `outline: none` + border/glow tedavisini uyguluyor ve o kural bu dosyadan
+   SONRA yuklendigi icin (main.jsx once index.css'i import eder) esit
+   ozgullukte kaynak sirasiyla kazaniyor. Yani mevcut tasarim korunuyor. */
+:focus-visible {
+  outline: 2px solid var(--gold, #0693e3);
+  outline-offset: 3px;
+}
+
+/* Skip link hedefi olan <main tabindex="-1">, odaklandiginda binlerce piksel
+   yuksekligindeki kutusunun etrafina halka cizdiriyor. Kenarlari cogu scroll
+   konumunda ekran disinda kaliyor, yani halka bilgi tasimadigi gibi bazen
+   basibos kenar cizgisi olarak beliriyor. Geri bildirim zaten sayfanin hedefe
+   atlamasi. Kural YALNIZCA tabindex="-1" kapsayicilar icin — klavye sirasindaki
+   gercek kontroller yukaridaki halkayi almaya devam eder. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* ─── Skip link ───────────────────────────────────────────────────────────────
+   Nav'i ve 6 ekran boyu suren pinli hero'yu atlar. Gorunmez ama
+   ODAKLANABILIR: display:none / visibility:hidden kullanilmiyor, cunku
+   ikisi de ogeyi klavye sirasindan cikarir. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  transform: translateY(-120%);
+  padding: 12px 20px;
+  background: #0e1621;
+  color: #edf1f7;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  transition: transform 0.18s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 /* ── latin altkümesi ── */
 @font-face {
   font-family: 'IBM Plex Mono';

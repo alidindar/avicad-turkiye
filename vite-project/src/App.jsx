@@ -13,16 +13,34 @@ function App() {
 
   return (
     <>
-   <Hero />
-   <Section1 />
-   <About />
-   <Compare />
-   <Testimonials />
-   <Contact />
-   <Faq />
-   <Footer />
-   <BackToTop />
-   <WhatsAppFab />
+      {/* Klavye/ekran okuyucu kullanicisinin nav'i VE 6 ekran boyu suren
+          pinli hero'yu atlayabilmesi icin ilk odaklanabilir oge. Normalde
+          gorunmez, odaklaninca belirir (stil: index.css). */}
+      <a className="skip-link" href="#ana-icerik">İçeriğe geç</a>
+
+      <Hero />
+
+      {/* <main> landmark'i yoktu; ekran okuyucu kullanicisi icerige
+          atlayamiyordu. Hero disarida biraktildi: site nav'ini iceriyor ve
+          nav'in main icinde olmasi landmark semantigini bulandirir. Bunun
+          bedeli h1'in main disinda kalmasi — hero/banner alaninda h1 bulunan
+          yaygin bir desen, gecerli. */}
+      {/* tabIndex={-1} SART: onsuz skip link'e basildiginda sayfa main'e
+          kayiyor ama ODAK <body>'ye dusuyordu — sonraki Tab basa donuyor ve
+          link islevsel olarak ise yaramiyordu (olculdu). -1, main'i klavye
+          sirasina SOKMADAN programatik odaga acar. */}
+      <main id="ana-icerik" tabIndex={-1}>
+        <Section1 />
+        <About />
+        <Compare />
+        <Testimonials />
+        <Contact />
+        <Faq />
+      </main>
+
+      <Footer />
+      <BackToTop />
+      <WhatsAppFab />
     </>
   )
 }
