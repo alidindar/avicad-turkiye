@@ -112,6 +112,16 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (gonderiliyor) return
+    // Onceki gonderimin sonuc mesajini HEMEN temizle — guard'lardan ONCE.
+    // Eskiden setDurum(null) guard'larin ALTINDAYDI; guard'a takilan gonderim
+    // eski mesaji ekranda birakiyordu. Onceki mesaj bir BASARI mesajiysa ekran,
+    // hicbir sey gonderilmemisken "Talebiniz alindi" diyordu (yesil basari +
+    // kirmizi riza hatasi ayni anda gorunuyordu). Basarili gonderimden sonra
+    // rizayi sifirladigimiz icin bu akis nadir bir kenar durum degil: ikinci
+    // talebi gonderen kullanici dogrudan buraya dusuyor.
+    // gonderiliyor kontrolunden SONRA: ucusta bir gonderim varken mesaji
+    // silmek yanlis olurdu.
+    setDurum(null)
     // Honeypot dolu → bot. Sessizce basari gibi davran, hicbir sey gonderme.
     if (hp) {
       setDurum({ ok: true, text: 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.' })
@@ -131,7 +141,6 @@ const Contact = () => {
     }
     const demoTalebi = konu === 'Demo Talebi'
     setGonderiliyor(true)
-    setDurum(null)
 
     // Lead yakalama (satisa bildirim + musteriye oto-yanit). EmailJS henuz
     // yapilandirilmadiysa hata verir; demo indirmesi buna bagli DEGIL.
