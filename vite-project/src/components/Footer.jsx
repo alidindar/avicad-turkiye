@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './Footer.css'
 import {
   TELEFON_GORUNEN, TELEFON_HREF, EPOSTA, ADRES,
-  whatsappHref, YASAL_UNVAN, VERBIS_NO,
+  whatsappHref, YASAL_UNVAN,
 } from '../siteConfig'
 
 const scrollToId = (id) => {
@@ -17,13 +17,32 @@ const legalMetinleri = () => ({
   kvkk: {
     baslik: 'KVKK Aydınlatma Metni',
     govde: [
-      `Veri Sorumlusu: ${YASAL_UNVAN} ("AviCAD Türkiye"). Adres: ${ADRES}. VERBİS: ${VERBIS_NO}.`,
+      // Madde sirasi "Aydinlatma Yukumlulugunun Yerine Getirilmesinde Uyulacak
+      // Usul ve Esaslar Hakkinda Teblig" (RG 10.03.2018/30356) m.4'un asgari
+      // unsurlarina gore kuruldu: (a) veri sorumlusunun kimligi, (b) isleme
+      // amaci, (c) kimlere/hangi amacla aktarilabilecegi, (c-cedil) toplama
+      // YONTEMI ve hukuki sebebi, (d) m.11 haklari.
+      //
+      // VERBIS satiri bilerek yok — sirket kayit yukumlulugunden istisna
+      // (gerekce: siteConfig.js). Eksik saniip geri eklemeyin.
+      `Veri Sorumlusu: ${YASAL_UNVAN} ("AviCAD Türkiye"). Adres: ${ADRES}. E-posta: ${EPOSTA}. Telefon: ${TELEFON_GORUNEN}.`,
       'İşlenen Kişisel Veriler: İletişim/demo formu aracılığıyla ilettiğiniz ad-soyad, telefon numarası, e-posta adresi ve mesaj içeriği.',
       'İşleme Amaçları: Fiyat teklifi, demo ve destek taleplerinizin karşılanması; satış, kurulum ve müşteri ilişkileri süreçlerinin yürütülmesi; sizinle iletişime geçilmesi.',
-      'Hukuki Sebep: 6698 sayılı KVKK m.5 uyarınca, talebinizi iletmek için formu doldurmanızla verdiğiniz açık rıza ve ilgili meşru menfaat.',
-      'Aktarım: Verileriniz, form gönderimlerini iletmek için kullanılan e-posta altyapısı hizmet sağlayıcısı (EmailJS) aracılığıyla işlenir; yasal yükümlülükler dışında üçüncü kişilerle paylaşılmaz.',
-      `Haklarınız (KVKK m.11): Kişisel verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini veya silinmesini isteme, işlemeye itiraz etme ve diğer haklarınız için ${EPOSTA} adresine başvurabilirsiniz.`,
-      'Saklama Süresi: Verileriniz, işleme amacının gerektirdiği süre ve ilgili mevzuatta öngörülen süreler boyunca saklanır.',
+      // Teblig m.4/(c-cedil): TOPLAMA YONTEMI onceki metinde hic yoktu.
+      // Hukuki sebep de duzeltildi: eskiden "formu doldurmanizla verdiginiz
+      // acik riza VE ilgili mesru menfaat" deniyordu — hem ayni isleme icin iki
+      // sebep birden gosteriyordu, hem de acik rizayi aydinlatma metninin
+      // ICINE gomuyordu. Teblig m.5 ve Kurul 2018/90 karari ikisinin AYRI AYRI
+      // yerine getirilmesini zorunlu kiliyor. Yurt ici isleme artik rizaya
+      // DEGIL, m.5/2-(c) ve m.5/2-(f)'ye dayaniyor; boylece hizmet acik riza
+      // sartina baglanmis olmuyor (bkz. Kurul 2023/1041).
+      'Toplama Yöntemi ve Hukuki Sebep: Kişisel verileriniz, internet sitemizdeki iletişim/demo formunu doldurmanız yoluyla, tamamen otomatik olmayan yollarla ve elektronik ortamda toplanır. Hukuki sebep, 6698 sayılı KVKK m.5/2-(c) uyarınca talebinizle kurulacak sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması ile m.5/2-(f) uyarınca meşru menfaatimizdir; bu işleme açık rızanıza dayanmaz.',
+      // Teblig m.4/(c): "kimlere VE hangi amacla" ayrik yaziliyor. Yurt disina
+      // aktarim icin dayanak formda AYRICA alinan acik riza — bu metin rizayi
+      // TESKIL ETMEZ, yalnizca bilgilendirir (Teblig m.5 ayrim kurali).
+      'Aktarım: Form gönderiminizin satış ekibimize ulaştırılması amacıyla, e-posta iletim altyapısı hizmet sağlayıcımız EmailJS (ABD) ile paylaşılır. EmailJS yurt dışında bulunduğundan bu paylaşım yurt dışına aktarım niteliğindedir ve KVKK m.9 uyarınca, formda bu amaçla ayrıca verdiğiniz açık rızaya dayanır. Bunun dışında verileriniz, yasal yükümlülükler saklı kalmak üzere üçüncü kişilerle paylaşılmaz.',
+      `Haklarınız (KVKK m.11): Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işleme amacını öğrenme, yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmişse düzeltilmesini, şartları oluştuğunda silinmesini veya yok edilmesini isteme, işleme faaliyetine itiraz etme ve zarara uğramanız hâlinde zararın giderilmesini talep etme haklarına sahipsiniz. Başvurularınızı ${EPOSTA} adresine iletebilirsiniz.`,
+      'Saklama Süresi: Verileriniz, işleme amacının gerektirdiği süre ve ilgili mevzuatta öngörülen süreler boyunca saklanır; bu sürelerin sonunda silinir, yok edilir veya anonim hâle getirilir.',
     ],
   },
   gizlilik: {
@@ -32,7 +51,9 @@ const legalMetinleri = () => ({
       'AviCAD Türkiye olarak gizliliğinize önem veriyoruz. Bu politika, web sitemiz üzerinden hangi verileri topladığımızı ve nasıl kullandığımızı açıklar.',
       'Topladığımız Veriler: Yalnızca iletişim/demo formunu doldurduğunuzda ilettiğiniz ad-soyad, telefon, e-posta ve mesaj bilgileri.',
       'Kullanım: Bu bilgiler yalnızca talebinizi karşılamak, size demo/fiyat/destek konusunda dönüş yapmak ve sizinle iletişim kurmak için kullanılır; pazarlama amacıyla üçüncü kişilere satılmaz.',
-      'Üçüncü Taraf Hizmetler: Form gönderimleri, e-posta iletimi için EmailJS hizmeti üzerinden iletilir.',
+      // KVKK metnindeki "Aktarim" maddesiyle AYNI bilgiyi vermeli; iki metin
+      // celismesin (rizanin formda ayrica alindigi dahil).
+      'Üçüncü Taraf Hizmetler: Form gönderimleri, e-posta iletimi için ABD merkezli EmailJS hizmeti üzerinden iletilir; bu nedenle verileriniz yurt dışına aktarılmaktadır. Aktarım, formu gönderirken bu amaçla ayrıca verdiğiniz açık rızaya dayanır.',
       'Çerezler: Sitemiz yalnızca çalışması için gerekli minimum tarayıcı depolamasını kullanır; üçüncü taraf reklam/takip çerezi kullanılmaz.',
       `İletişim: Verilerinizle ilgili talepleriniz için ${EPOSTA} adresinden bize ulaşabilirsiniz.`,
     ],
@@ -45,6 +66,15 @@ const Footer = () => {
   const oncekiFocus = useRef(null)
   const yil = new Date().getFullYear()
   const LEGAL = legalMetinleri()
+
+  // Iletisim formundaki acik riza onay kutusunun etiketi buradan KVKK metnini
+  // acar. Bilesenler arasi dogrudan bag kurmamak icin Hero -> Contact'ta
+  // kullanilan ayni CustomEvent deseni ('konu-sec') izleniyor.
+  useEffect(() => {
+    const ac = () => setModal('kvkk')
+    window.addEventListener('kvkk-ac', ac)
+    return () => window.removeEventListener('kvkk-ac', ac)
+  }, [])
 
   // Modal acikken: arka plan scroll kilidi + focus yonetimi (Esc/Tab trap).
   useEffect(() => {
@@ -125,12 +155,18 @@ const Footer = () => {
             ref={modalRef}
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
-            role="dialog" aria-modal="true" aria-label={LEGAL[modal].baslik}
+            role="dialog" aria-modal="true" aria-labelledby="footer-modal-baslik"
           >
-            <button className="footer-modal-close" type="button" onClick={() => setModal(null)} aria-label="Kapat">×</button>
-            <h3 className="footer-modal-title">{LEGAL[modal].baslik}</h3>
-            <div className="footer-modal-body">
-              {LEGAL[modal].govde.map((p, i) => <p key={i}>{p}</p>)}
+            {/* Baslik + kapatma KAYDIRMAYAN satirda: × her kaydirma
+                konumunda erisilebilir kalir (bkz. Footer.css). */}
+            <div className="footer-modal-head">
+              <h3 className="footer-modal-title" id="footer-modal-baslik">{LEGAL[modal].baslik}</h3>
+              <button className="footer-modal-close" type="button" onClick={() => setModal(null)} aria-label="Kapat">×</button>
+            </div>
+            <div className="footer-modal-scroll">
+              <div className="footer-modal-body">
+                {LEGAL[modal].govde.map((p, i) => <p key={i}>{p}</p>)}
+              </div>
             </div>
           </div>
         </div>

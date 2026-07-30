@@ -304,3 +304,44 @@ a.contact-info-item:hover {
   font-size: 12px;
   color: #cf3f5a;
 }
+
+/* ─── Yurt disina aktarim acik riza onay kutusu ───────────────────────────── */
+.contact-consent { margin-top: 4px; }
+
+/* Etiketin tamami tiklanabilir: kutu 20px ama dokunma alani satirin tamami. */
+.contact-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  color: #5c6675;
+}
+
+.contact-consent-box {
+  flex: 0 0 auto;
+  /* 20px gorsel kutu; ust bosluk metnin ilk satiriyla hizalar. Dokunma alani
+     etiketin tamami oldugu icin 44px esigi kutu boyutuyla sinirli degil. */
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--gold, #0693e3);
+  cursor: pointer;
+}
+
+.contact-consent-label strong { color: #3d4654; font-weight: 600; }
+
+/* KVKK metnini acan buton — metin icinde bag gibi gorunur. */
+.contact-consent-link {
+  font: inherit;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--gold, #0693e3);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.contact-consent-link:hover { color: var(--gold-light, #4fb0ef); }

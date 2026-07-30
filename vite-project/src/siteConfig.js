@@ -15,9 +15,24 @@ export const CALISMA_SAATLERI  = 'Hafta içi 09:00 – 18:00'
 // Konu "Demo Talebi" secilip form gonderilince baslatilan demo kurulum indirmesi.
 export const DEMO_INDIRME_URL  = 'https://avicad.com/dloads/AviCAD-Download.exe'
 
-// KVKK / yasal (footer + aydinlatma metni). TODO: kullanici dolduracak.
+// KVKK / yasal (footer + aydinlatma metni).
+// TODO: Ticaret sicilinde KAYITLI TAM UNVANI yazin — marka adi ("AviCAD
+//   Turkiye") degil, tescilli unvan (or. "... Sanayi ve Ticaret Limited
+//   Sirketi"). Kaynak: vergi levhasi / MERSIS (mersis.ticaret.gov.tr) /
+//   Ticaret Sicili Gazetesi kurulus ilani; en hizlisi mali musavire sormak.
+//   Aydinlatma metni bunu `${YASAL_UNVAN} ("AviCAD Turkiye")` diye kuruyor.
 export const YASAL_UNVAN = '[YASAL ÜNVAN]'
-export const VERBIS_NO   = '[VERBİS NO]'
+
+// VERBIS NUMARASI BILEREK YOK — eksik degil.
+// Kayit yukumlulugunden istisna kriterleri (2026, ucu birlikte saglanmali):
+// yillik calisan < 50, yillik mali bilanco < 100 milyon TL, ana faaliyet
+// konusu ozel nitelikli veri islemek degil. Bu sirket ucunu de karsiliyor
+// (10 kisilik ekip; form yalnizca ad-soyad/telefon/e-posta/mesaj topluyor,
+// ozel nitelikli veri yok), dolayisiyla VERBIS kaydi gerekmiyor ve aydinlatma
+// metninde VERBIS satiri hic gecmiyor. Olmayan bir numara icin placeholder
+// birakmak oldugundan kotu gorunur.
+// Kriterler kumulatif: calisan sayisi 50'ye ULASIRSA ya da bilanco 100M TL'yi
+// GECERSE yukumluluk dogar; o zaman burasi yeniden eklenmeli.
 
 // Karsilastirma fiyatlari — resmi liste fiyatlari (USD), kisi basi / yil.
 // Kaynak: AViCAD $449/yil (avicad.com), AutoCAD ~$1865/yil (Autodesk liste).

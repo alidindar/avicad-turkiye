@@ -68,6 +68,13 @@ const Contact = () => {
   const [hp, setHp]           = useState('') // honeypot — botlar doldurur, insanlar gormez
   const [telefonHata, setTelefonHata] = useState('')
 
+  // Yurt disina aktarim acik rizasi. VARSAYILAN FALSE olmali — riza olumlu bir
+  // eylemle verilir, on isaretli kutu riza sayilmaz. Aydinlatma metninden AYRI
+  // tutuluyor: Teblig m.5 ve Kurul 2018/90 karari aydinlatma ile rizanin ayri
+  // ayri yerine getirilmesini zorunlu kiliyor.
+  const [rizaVar, setRizaVar]   = useState(false)
+  const [rizaHata, setRizaHata] = useState('')
+
   const [gonderiliyor, setGonderiliyor] = useState(false)
   const [durum, setDurum]               = useState(null) // { ok: boolean, text: string }
 
@@ -114,6 +121,14 @@ const Contact = () => {
       setTelefonHata('Geçerli bir telefon numarası girin (örn. 0 (532) 123 45 67).')
       return
     }
+    // Riza yoksa EmailJS'e HIC istek atilmaz — aktarimin dayanagi bu riza.
+    // Hata mesaji alternatif kanallari gosteriyor: sirkete ulasmak rizaya bagli
+    // degil, yalnizca form kanali bagli (bkz. Kurul 2023/1041 — hizmeti acik
+    // riza sartina baglama elestirisi).
+    if (!rizaVar) {
+      setRizaHata(`Formu gönderebilmek için yurt dışına aktarım onayı gerekiyor. Onay vermek istemezseniz bize ${TELEFON_GORUNEN} numarasından veya ${EPOSTA} adresinden ulaşabilirsiniz.`)
+      return
+    }
     const demoTalebi = konu === 'Demo Talebi'
     setGonderiliyor(true)
     setDurum(null)
@@ -150,6 +165,8 @@ const Contact = () => {
       // Form yalnizca basarida temizlenir; hatada girilen veri korunur ki
       // ziyaretci bastan yazmak zorunda kalmadan tekrar deneyebilsin.
       setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
+      // Riza da sifirlanir: sonraki gonderim icin yeniden olumlu eylem gerekir.
+      setRizaVar(false); setRizaHata('')
     } else if (demoTalebi) {
       // Indirme basladi ama talep kaydedilemedi — bunu saklamak yerine
       // ziyaretciye alternatif kanal veriyoruz.
@@ -252,6 +269,35 @@ const Contact = () => {
             value={mesaj} onChange={(e) => setMesaj(e.target.value)}
             placeholder="Kısa bir açıklama ekleyebilirsiniz."
           />
+        </div>
+
+        {/* Yurt disina aktarim acik rizasi — aydinlatma metninden AYRI, genel
+            bir "sartlari kabul ediyorum" DEGIL: Teblig rizanin spesifik olmasini
+            istiyor, o yuzden etiket aktarimin ne oldugunu tek tek soyluyor.
+            required KULLANILMIYOR: tarayicinin kendi baloncugu yerine kendi
+            hata mesajimizi gosteriyoruz (alternatif kanallari da iceriyor). */}
+        <div className="contact-field contact-consent">
+          <label className="contact-consent-label" htmlFor="c-riza">
+            <input
+              id="c-riza" className="contact-consent-box" type="checkbox"
+              checked={rizaVar}
+              onChange={(e) => { setRizaVar(e.target.checked); if (rizaHata) setRizaHata('') }}
+              aria-describedby={rizaHata ? 'c-riza-hata' : undefined}
+            />
+            <span>
+              Form gönderimimin satış ekibine ulaştırılması amacıyla, e-posta iletim
+              altyapısı sağlayıcısı <strong>EmailJS (ABD)</strong> ile paylaşılmasına —
+              yani verilerimin <strong>yurt dışına aktarılmasına</strong> — açık rıza
+              veriyorum.{' '}
+              <button
+                type="button" className="contact-consent-link"
+                onClick={() => window.dispatchEvent(new CustomEvent('kvkk-ac'))}
+              >
+                KVKK Aydınlatma Metni
+              </button>
+            </span>
+          </label>
+          {rizaHata && <span className="contact-field-error" id="c-riza-hata">{rizaHata}</span>}
         </div>
 
         <button type="submit" className="contact-submit" disabled={gonderiliyor}>

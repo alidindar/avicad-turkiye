@@ -137,25 +137,48 @@
 
 @keyframes footer-modal-fade { from { opacity: 0; } to { opacity: 1; } }
 
+/* Panel KAYDIRILMAZ — kaydirma icteki .footer-modal-scroll'da.
+   Eskiden kaydirma bu elemandaydi ve kapatma butonu `position: absolute` ile
+   buna bagliydi; asagi kaydirinca × icerikle birlikte yukari cikip ekrandan
+   tamamen kayboluyordu (en altta top=-454px olculdu). Mobilde Esc de olmadigi
+   icin tek cikis overlay'e basmakti. Artik baslik + × sabit satirda duruyor.
+   max-height: 82vh -> 100%: siniri overlay'in 24px padding'i belirliyor,
+   mobilde bosa harcanan ~%18 geri kazaniliyor (543px -> ~614px). */
 .footer-modal {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 620px;
-  max-height: 82vh;
-  overflow-y: auto;
+  max-height: 100%;
+  overflow: hidden;              /* kose yuvarlakligi icerigi kirpsin */
   background: #0e0b07;
   border: 1px solid rgba(6, 147, 227, 0.28);
   border-radius: 10px;
-  padding: 32px 32px 28px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
 .footer-modal:focus { outline: none; }
 
+/* Kaydirmayan ust satir: baslik + kapatma */
+.footer-modal-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 26px 20px 14px 32px;
+}
+
 .footer-modal-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
+  flex: 0 0 auto;
+  /* 15x26px idi — 44px dokunma esiginin altindaydi. Negatif margin gorsel
+     hizayi korur, dokunma alani 44x44 kalir. */
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  margin: -12px -10px 0 0;
   font-size: 26px;
   line-height: 1;
   color: #868d99;
@@ -171,8 +194,29 @@
   font-size: 20px;
   font-weight: 700;
   color: #edf1f7;
-  margin-bottom: 18px;
-  padding-right: 28px;
+  margin: 0;
+}
+
+/* Kaydirilan alan */
+.footer-modal-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 32px 28px;
+  overscroll-behavior: contain;  /* modal sonunda sayfa kaydirmaya sicramasin */
+}
+
+/* Devami oldugunu gosteren alt solma. pointer-events yok; icerik sigdiginda
+   yalnizca alt padding'in uzerine duser, metni etkilemez. */
+.footer-modal::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  height: 36px;
+  pointer-events: none;
+  border-radius: 0 0 9px 9px;
+  background: linear-gradient(to top, #0e0b07 20%, rgba(14, 11, 7, 0));
 }
 
 .footer-modal-body p {
