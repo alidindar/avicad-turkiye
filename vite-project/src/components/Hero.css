@@ -392,7 +392,12 @@ body {
   text-transform: uppercase;
   color: var(--gold);
   background: transparent;
-  border: 1px solid var(--gold-dim);
+  /* --gold-dim (#135a86) perde uzerinde 2.76–2.82 kontrast veriyordu; UI
+     bileseni siniri icin esik 3.0. --gold-dim GLOBAL olarak degistirilmiyor —
+     scrollbar thumb, divider gradyanlari ve BackToTop da onu kullaniyor —
+     bu yuzden yalnizca bu butona bir tik acik ton veriliyor. Metin zaten
+     6.12–6.27 ile rahat geciyor (perde sayesinde), sorun sadece kenarliktaydi. */
+  border: 1px solid #1e6f9f;
   padding: 13px 28px;
   cursor: pointer;
   transition: border-color 0.3s, color 0.3s;

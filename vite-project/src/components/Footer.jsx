@@ -55,6 +55,10 @@ const legalMetinleri = () => ({
       // celismesin (rizanin formda ayrica alindigi dahil).
       'Üçüncü Taraf Hizmetler: Form gönderimleri, e-posta iletimi için ABD merkezli EmailJS hizmeti üzerinden iletilir; bu nedenle verileriniz yurt dışına aktarılmaktadır. Aktarım, formu gönderirken bu amaçla ayrıca verdiğiniz açık rızaya dayanır.',
       'Çerezler: Sitemiz yalnızca çalışması için gerekli minimum tarayıcı depolamasını kullanır; üçüncü taraf reklam/takip çerezi kullanılmaz.',
+      // Onizleme gorseli artik kendi sunucumuzda, dolayisiyla sayfa acilisinda
+      // ucuncu taraf istegi yok. Ancak oynat'a basilinca YouTube devreye
+      // giriyor; metinde hic gecmiyordu, eklendi.
+      'Video İçeriği: Tanıtım videosunun önizleme görseli kendi sunucumuzdan yüklenir; sayfayı açtığınızda YouTube ile herhangi bir bağlantı kurulmaz. Videoyu oynatmak için tıkladığınızda, gelişmiş gizlilik modundaki YouTube oynatıcısı (youtube-nocookie.com) yüklenir ve bu noktadan sonra YouTube kendi koşullarını uygular.',
       `İletişim: Verilerinizle ilgili talepleriniz için ${EPOSTA} adresinden bize ulaşabilirsiniz.`,
     ],
   },

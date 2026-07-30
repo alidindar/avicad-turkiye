@@ -114,10 +114,26 @@ const Hero = () => {
 
   const chapter = CHAPTERS[activeChapter]
 
-  // Nav link'leri — masaüstü ve mobil menü aynı mantığı paylaşır.
-  const NAV = ['Anasayfa', 'Neden AviCAD?', 'Hakkımızda', 'İletişim', 'SSS']
-  const navHref = (l) =>
-    l === 'İletişim' ? '#iletisim' : `#${l.toLowerCase().replace(/\s+/g, '-')}`
+  // Nav link'leri — masaüstü ve mobil menü aynı diziyi paylaşır.
+  //
+  // Etiket ve hedef id TEK YERDE tutuluyor. Eskiden href etiketten string
+  // islemeyle uretiliyordu (`l.toLowerCase().replace(/\s+/g,'-')`), dogru
+  // id'ler ise navHandler'da elle yaziliydi — yani esleme iki yerdeydi ve
+  // tutarsizdi: "Neden AviCAD?" -> `#neden-avicad?` (soru isareti kaliyordu),
+  // "Hakkımızda" -> `#hakkımızda` (Turkce ı, gercek id `hakkimizda`).
+  // preventDefault sayesinde tiklama calisiyordu, ama href'ler oluydu:
+  // JS calismazsa, link kopyalanip paylasilirsa ya da bir crawler anchor'i
+  // takip ederse hicbir yere gitmiyordu. Artik tek kaynak var.
+  //
+  // id: null -> sayfa basi ("Anasayfa"). href olarak `#` kullaniliyor; JS
+  // devre disi olsa bile tarayici bunu sayfa basina goturur.
+  const NAV = [
+    { etiket: 'Anasayfa',      id: null },
+    { etiket: 'Neden AviCAD?', id: 'neden-avicad' },
+    { etiket: 'Hakkımızda',    id: 'hakkimizda' },
+    { etiket: 'İletişim',      id: 'iletisim' },
+    { etiket: 'SSS',           id: 'sss' },
+  ]
   const kaydir = (id, top0 = false) => {
     if (top0) {
       window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
@@ -126,13 +142,11 @@ const Hero = () => {
     const el = document.getElementById(id)
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'auto' })
   }
-  const navHandler = (l) => (e) => {
-    // Her link ilgili bölüme kaydırır; sonda mobil menüyü kapatır.
-    if (l === 'Anasayfa') { e.preventDefault(); kaydir(null, true) }
-    else if (l === 'Neden AviCAD?') { e.preventDefault(); kaydir('neden-avicad') }
-    else if (l === 'Hakkımızda') { e.preventDefault(); kaydir('hakkimizda') }
-    else if (l === 'SSS') { e.preventDefault(); kaydir('sss') }
-    else if (l === 'İletişim') { e.preventDefault(); kaydir('iletisim') }
+  // Her link ilgili bölüme kaydırır; sonda mobil menüyü kapatır. Eslemeyi
+  // NAV'dan aldigi icin if/else zinciri gerekmiyor.
+  const navHandler = (id) => (e) => {
+    e.preventDefault()
+    kaydir(id, id === null)
     setMenuOpen(false)
   }
 
@@ -447,9 +461,9 @@ const Hero = () => {
 
             {/* Masaüstü linkleri */}
             <ul className="got-nav-links">
-              {NAV.map((l) => (
-                <li key={l}>
-                  <a href={navHref(l)} onClick={navHandler(l)}>{l}</a>
+              {NAV.map(({ etiket, id }) => (
+                <li key={etiket}>
+                  <a href={id ? `#${id}` : '#'} onClick={navHandler(id)}>{etiket}</a>
                 </li>
               ))}
             </ul>
@@ -467,9 +481,9 @@ const Hero = () => {
 
             {/* Mobil menü */}
             <ul className={`got-nav-mobile ${menuOpen ? 'open' : ''}`}>
-              {NAV.map((l) => (
-                <li key={l}>
-                  <a href={navHref(l)} onClick={navHandler(l)}>{l}</a>
+              {NAV.map(({ etiket, id }) => (
+                <li key={etiket}>
+                  <a href={id ? `#${id}` : '#'} onClick={navHandler(id)}>{etiket}</a>
                 </li>
               ))}
             </ul>

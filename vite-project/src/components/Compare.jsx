@@ -60,9 +60,16 @@ const FeatureTable = () => (
 const VIDEO_ID = 'NG6p5puX9kY'
 
 // Tikla-oynat facade: player yalniz tiklayinca yuklenir (agir sayfaya on yuk yok).
+//
+// Onizleme gorseli KENDI SUNUCUMUZDA. Eskiden img.youtube.com'dan cekiliyordu;
+// facade'in kendisi dogru kurulmus olsa da (iframe youtube-nocookie ve yalnizca
+// tiklamada yukleniyor) bu tek gorsel sayfa acilisinda ziyaretcinin IP'sini
+// onay olmadan Google'a gonderiyordu. Yerel kopyayla acilista ucuncu taraf
+// istegi SIFIR; YouTube'a baglanti ancak kullanici bilerek oynat'a bastiginda
+// kuruluyor. Gorsel AViCAD'in kendi tanitim videosundan (1280x720, 16/9 —
+// facade'in aspect-ratio'suyla ayni).
 const DesignVideo = () => {
   const [playing, setPlaying] = useState(false)
-  const [thumb, setThumb] = useState(`https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`)
 
   if (playing) {
     return (
@@ -79,10 +86,9 @@ const DesignVideo = () => {
   return (
     <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label="Videoyu oynat">
       <img
-        src={thumb}
+        src={`${import.meta.env.BASE_URL}video-onizleme.jpg`}
         alt="AViCAD tanıtım videosu önizlemesi"
         loading="lazy"
-        onError={() => setThumb(`https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg`)}
       />
       <span className="video-play" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
