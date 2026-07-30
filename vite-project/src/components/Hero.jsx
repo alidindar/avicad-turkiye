@@ -107,9 +107,17 @@ const Hero = () => {
   // surum ayni keyframe yapisina sahip -> scrub birebir calisir, indirme 5 kat az.
   // Karar MOUNT'ta donuyor: resize'da yeniden hesaplansa video ortada yeniden
   // yuklenir ve scrub sifirlanirdi.
+  // YALNIZCA GENISLIGE BAKMAK YETMIYOR: yatay tutulan telefon 844px genis
+  // oldugu icin masaustu yoluna dusuyor ve 25MB'lik one.mp4'u indiriyordu —
+  // yani bu dosyanin varlik sebebi olan hataya geri donuyordu (844x390'da
+  // currentSrc = one.mp4 olarak olculdu). Yukseklik kosulu eklendi; `pointer:
+  // coarse` ile birlikte, boylece kisa masaustu PENCERELERI (dokunmatik
+  // olmayan) etkilenmiyor, yatay telefon/kucuk tablet yakalaniyor.
   const [isMobil] = useState(
     () => typeof window !== 'undefined'
-      && window.matchMedia('(max-width: 768px)').matches
+      && window.matchMedia(
+        '(max-width: 768px), (max-height: 600px) and (pointer: coarse)'
+      ).matches
   )
 
   const chapter = CHAPTERS[activeChapter]

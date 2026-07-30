@@ -58,4 +58,8 @@ npm run dev   # http://localhost:5173/got/
 ## Notlar
 
 - `vite.config.js` → `base: '/got/'` (alt dizinde yayın için). Kök domainde yayınlanacaksa `'/'` yapın.
-- Fontlar: IBM Plex Sans + IBM Plex Mono (Google Fonts, CSS `@import`).
+- **Fontlar kendi sunucumuzda barındırılıyor** — Google Fonts'a hiçbir istek atılmıyor. Sebep KVKK: `<link>` ile yüklendiğinde her sayfa açılışında Google'a 7 istek gidiyor ve ziyaretçinin IP'si onay olmadan oraya ulaşıyordu. Yerelde ayrıca daha hızlı (çapraz-origin CSS → woff2 zinciri kalkıyor).
+  - `@font-face` tanımları `vite-project/src/index.css`, woff2 dosyaları `vite-project/src/assets/fonts/` (10 dosya, ~264 KB). `public/` değil `src/assets/` çünkü Vite oradaki `url()`'leri hash'leyip `base` değişse bile doğru yolu üretir.
+  - Alınan yüzler: **IBM Plex Sans** değişken (tek dosya 400–700), normal + *italic*; **IBM Plex Mono** statik 400/600/700 (bu ailenin değişken sürümü yok). Altkümeler yalnızca `latin` + `latin-ext` — Türkçe karakterler latin-ext'te.
+  - `unicode-range` değerleri Google Fonts CSS'inden birebir alınmıştır; **silmeyin**, yoksa tarayıcı tüm altkümeleri indirir.
+  - Yeni ağırlık gerekirse: Google Fonts CSS'inden woff2 URL'sini `src/assets/fonts/` altına indirip `index.css`'e aynı biçimde `@font-face` ekleyin.

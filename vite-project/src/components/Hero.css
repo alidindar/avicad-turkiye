@@ -1,4 +1,5 @@
-/* Fontlar index.html'de preconnect + <link> ile yuklenir (render-blocking @import degil). */
+/* Fontlar kendi sunucumuzda: @font-face tanimlari src/index.css'te, woff2
+   dosyalari src/assets/fonts/ altinda. Google Fonts'a hic istek atilmiyor. */
 *,
 *::before,
 *::after {
@@ -358,11 +359,21 @@ body {
 }
 
 /* ── CTA buttons ── */
+/* flex-wrap + flex-shrink:0 : 375px'te iki buton satira sigmadigi icin
+   .got-cta-btn kuculuyor, overflow:hidden de metni kirpiyordu
+   ("30 GÜN ÜCRE… DENİ"; scrollWidth 146 > clientWidth 130). Artik kuculmek
+   yerine alt alta geciyorlar. */
 .got-cta-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 24px;
   margin-top: 36px;
+}
+
+.got-cta-btn,
+.got-cta-ghost {
+  flex: 0 0 auto;
 }
 
 .got-cta-btn {
@@ -647,4 +658,38 @@ body {
   .got-rune-bar       { left: 28px; right: 28px; }
   .got-corner         { display: none; }
   .got-title          { font-size: 26px; }
+}
+
+/* ── Kisa ekran: yatay telefon + kucuk pencere ──
+   .got-content, sabit yukseklikli (100vh) sticky alana `absolute; bottom: 0`
+   ile oturuyor ama icerigi akiskan. Alan kisaldiginda icerik yukari dogru
+   buyuyup NAV'IN ICINE tasiyor: 844x390'da 62px, 343x608'de 71px tasma
+   olculdu — baslik ve alt baslik logoyu ve tum menu linklerini eziyordu.
+   Cozum dikey butceyi kismak: dekoratif ogeler (sigil, rune bar) gizlenir,
+   bosluklar sikistirilir; METIN ve CTA korunur.
+
+   ESIK NEDEN 640px: sikistirilmamis icerik ~553px + nav 82px = ~635px yer
+   istiyor. Ilk denemede 700px yazilmisti ve 394x662 gibi TAMAMEN SAGLIKLI
+   dikey telefonlarda da tetikleniyordu — sigil/rune bar gizlenip baslik
+   26px'ten 20px'e dusuyordu, yani sorunu olmayan cihazda gereksiz kayip.
+   640px, gercekten carpismanin basladigi yer: 662px etkilenmez, kisa dikey
+   telefonlar (or. iPhone SE Safari ~553px) ve yatay telefonlar yakalanir. */
+@media (max-height: 640px) {
+  .got-content   { padding-bottom: 28px; }
+  .got-sigil     { display: none; }
+  .got-rune-bar  { display: none; }
+  .got-divider   { margin-bottom: 8px; }
+  .got-subtitle  { margin-bottom: 10px; }
+  .got-title     { margin-bottom: 12px; font-size: clamp(20px, 3vw, 30px); }
+  .got-body      { line-height: 1.6; }
+  .got-cta-row   { margin-top: 16px; gap: 14px; }
+}
+
+/* ── Cok dar ekran (≤360px) ──
+   26px baslik burada 5 satira cikip dikey butceyi patlatiyordu. */
+@media (max-width: 360px) {
+  .got-content   { padding-left: 20px; padding-right: 20px; padding-bottom: 40px; }
+  .got-title     { font-size: 22px; }
+  .got-subtitle  { letter-spacing: 0.3em; }
+  .got-rune-bar  { left: 20px; right: 20px; }
 }
