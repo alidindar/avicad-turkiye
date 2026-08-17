@@ -26,6 +26,23 @@ const ARALIK_SN      = 30;    // aynı IP'den iki gönderim arasında en az
 const SAATLIK_SINIR  = 5;     // aynı IP'den saatte en fazla
 const MAKS_UZUNLUK   = 2000;  // tek alan için üst sınır
 
+// ─── SMTP ───────────────────────────────────────────────────────────────────
+// PHP'nin mail() fonksiyonu BU SUNUCUDA KAPALI: sendmail_path = /dev/null,
+// yani çağrı sessizce hiçbir yere gitmiyor (2026-08-17'de ölçüldü — üç ayrı
+// mail() denemesi de false döndü). Paylaşımlı hostinglerde spam önlemek için
+// yaygın bir ayar. Sunucunun kendi Postfix'i localhost:25 ve :587 üzerinde
+// dinlediği için doğrudan SMTP konuşuyoruz; dış kütüphane gerekmiyor.
+const SMTP_SUNUCU    = 'localhost';
+const SMTP_KAPI      = 25;
+const SMTP_KULLANICI = 'info@avicad.com.tr';
+
+// SMTP_SIFRE BOŞ bırakılırsa kimlik doğrulaması denenmez. Yerel Postfix
+// genelde kendi sunucusundan gelen bağlantıya izin verir; önce bu denenmeli.
+// Sunucu "relay access denied" derse buraya info@avicad.com.tr'nin şifresini
+// yazın. Dosya web kökünde olsa da PHP olarak çalıştığı için içeriği dışarıdan
+// okunamaz; yine de şifreyi kimseyle paylaşmayın.
+const SMTP_SIFRE     = '';
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
@@ -140,6 +157,108 @@ $ortakBaslik = [
     'From: ' . $baslik(SITE_ADI) . ' <' . GONDEREN . '>',
 ];
 
+/**
+ * Tek bir e-postayı doğrudan SMTP ile yollar.
+ *
+ * Dönüş: [başarılı, tanılama]. Tanılama YALNIZCA sunucu günlüğüne yazılır,
+ * istemciye asla dönmez — ham SMTP yanıtları altyapı hakkında bilgi sızdırır.
+ */
+function smtpYolla(string $alici, string $konu, string $govde, array $baslikSatirlari): array
+{
+    $soket = @fsockopen(SMTP_SUNUCU, SMTP_KAPI, $eno, $estr, 10);
+    if (!$soket) {
+        return [false, "baglanti kurulamadi: $estr ($eno)"];
+    }
+    stream_set_timeout($soket, 15);
+
+    $oku = static function () use ($soket): string {
+        $yanit = '';
+        while (($satir = fgets($soket, 515)) !== false) {
+            $yanit .= $satir;
+            // Çok satırlı yanıtta ara satırlar "250-", son satır "250 " olur.
+            if (strlen($satir) >= 4 && $satir[3] === ' ') {
+                break;
+            }
+        }
+        return $yanit;
+    };
+    $kod = static fn(string $yanit): int => (int) substr(ltrim($yanit), 0, 3);
+    $komut = static function (string $satir) use ($soket, $oku): string {
+        fwrite($soket, $satir . "\r\n");
+        return $oku();
+    };
+    $kapat = static function () use ($soket): void {
+        @fwrite($soket, "QUIT\r\n");
+        @fclose($soket);
+    };
+
+    if ($kod($oku()) !== 220) {
+        $kapat();
+        return [false, 'karsilama alinamadi'];
+    }
+
+    $alan = $_SERVER['HTTP_HOST'] ?? 'avicad.com.tr';
+    $y = $komut('EHLO ' . $alan);
+    if ($kod($y) !== 250) {
+        $kapat();
+        return [false, 'EHLO reddedildi: ' . trim($y)];
+    }
+
+    // Şifre boşsa auth atlanır — yerel Postfix kendi sunucusundan gelen
+    // bağlantıya genelde izin verir.
+    if (SMTP_SIFRE !== '') {
+        if ($kod($komut('AUTH LOGIN')) !== 334) {
+            $kapat();
+            return [false, 'AUTH LOGIN desteklenmiyor'];
+        }
+        if ($kod($komut(base64_encode(SMTP_KULLANICI))) !== 334) {
+            $kapat();
+            return [false, 'kullanici adi reddedildi'];
+        }
+        $y = $komut(base64_encode(SMTP_SIFRE));
+        if ($kod($y) !== 235) {
+            $kapat();
+            return [false, 'kimlik dogrulama basarisiz: ' . trim($y)];
+        }
+    }
+
+    $y = $komut('MAIL FROM:<' . GONDEREN . '>');
+    if ($kod($y) !== 250) {
+        $kapat();
+        return [false, 'MAIL FROM reddedildi: ' . trim($y)];
+    }
+
+    $y = $komut('RCPT TO:<' . $alici . '>');
+    if (!in_array($kod($y), [250, 251], true)) {
+        $kapat();
+        return [false, 'RCPT TO reddedildi: ' . trim($y)];
+    }
+
+    $y = $komut('DATA');
+    if ($kod($y) !== 354) {
+        $kapat();
+        return [false, 'DATA reddedildi: ' . trim($y)];
+    }
+
+    // RFC 5321 nokta kaçışı: gövdede satır başındaki tek nokta veri sonu
+    // işareti sanılır ve mail yarıda kesilirdi.
+    $guvenliGovde = (string) preg_replace('/^\./m', '..', $govde);
+
+    $mesaj = implode("\r\n", array_merge($baslikSatirlari, [
+        'To: ' . $alici,
+        'Subject: ' . $konu,
+        'Date: ' . date('r'),
+        'Message-ID: <' . bin2hex(random_bytes(8)) . '@' . $alan . '>',
+    ])) . "\r\n\r\n" . str_replace("\n", "\r\n", $guvenliGovde);
+
+    fwrite($soket, $mesaj . "\r\n.\r\n");
+    $y = $oku();
+    $basarili = $kod($y) === 250;
+    $kapat();
+
+    return [$basarili, $basarili ? 'ok' : 'teslim reddedildi: ' . trim($y)];
+}
+
 // 1) Satışa lead bildirimi. Reply-To müşteriye ayarlı ki kutudan doğrudan
 //    "yanıtla" denebilsin.
 $leadGovde = <<<METIN
@@ -159,12 +278,17 @@ METIN;
 $leadGovde .= date('d.m.Y H:i');
 
 $leadBaslik = array_merge($ortakBaslik, ['Reply-To: ' . $baslik($adSoyad) . ' <' . $emailTemiz . '>']);
-$leadGonderildi = @mail(
+[$leadGonderildi, $leadTani] = smtpYolla(
     SATIS_EPOSTA,
     $baslik("[Web] {$konuTemiz} — {$adSoyad}"),
     $leadGovde,
-    implode("\r\n", $leadBaslik)
+    $leadBaslik
 );
+if (!$leadGonderildi) {
+    // Tek teşhis izi bu. İstemciye ham SMTP yanıtı DÖNMÜYOR; sunucu günlüğüne
+    // yazılıyor ki saha hatası bildirildiğinde sebebi okunabilsin.
+    error_log('[iletisim.php] lead gonderilemedi -> ' . $leadTani);
+}
 
 // 2) Müşteriye otomatik yanıt. Bu BAŞARISIZ olsa bile lead gittiyse istek
 //    başarılıdır — ziyaretçinin talebi kaydedilmiştir, asıl mesele odur.
@@ -182,12 +306,15 @@ E-posta : info@avicad.com.tr
 AviCAD Türkiye
 METIN;
 
-@mail(
+[$yanitGonderildi, $yanitTani] = smtpYolla(
     $emailTemiz,
     $baslik('Talebiniz alındı — AviCAD Türkiye'),
     $yanitGovde,
-    implode("\r\n", $ortakBaslik)
+    $ortakBaslik
 );
+if (!$yanitGonderildi) {
+    error_log('[iletisim.php] oto-yanit gonderilemedi -> ' . $yanitTani);
+}
 
 if (!$leadGonderildi) {
     // Sessiz lead kaybı bu projede daha önce yaşandı (835122c). İstemci bu
