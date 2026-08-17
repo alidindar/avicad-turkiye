@@ -143,7 +143,12 @@ const FeatureIcon = ({ id }) => (
 const HouseCard = ({ house, index }) => {
   const cardRef   = useRef(null)
   const sigilRef  = useRef(null)
-  const [hovered, setHovered] = useState(false)
+  // Panelin gorunurlugu. Eskiden yalnizca fareye bagliydi (`hovered`) —
+  // olculdu: klavye kullanicisi bu bolumde HIC odak duragi bulamiyordu, yani
+  // aciklama metinlerine ulasmanin yolu yoktu. Artik uc kaynaktan besleniyor:
+  // fare (hover), tetik butonunun tiklamasi (dokunmatik) ve odagi (klavye).
+  const [acik, setAcik] = useState(false)
+  const panelId = `house-panel-${house.id}`
 
   // Staggered entrance via IntersectionObserver
   useEffect(() => {
@@ -175,9 +180,17 @@ const HouseCard = ({ house, index }) => {
       sigilRef.current.style.transform = `rotateY(${x}deg) rotateX(${-y}deg) scale(1.06)`
     }
   }
-  const handleMouseLeave = () => {
+  // pointerType kontrolu SART: dokunmatik tarayicilar dokununca once
+  // mouseenter/pointerenter taklidi yapiyor. Bu olay paneli acinca hemen
+  // ardindan gelen tiklama onu KAPATIYORDU (olculdu: aria-expanded false'ta
+  // kaliyordu). Hover yolu artik yalnizca gercek fareye ait; dokunma ve
+  // klavye kendi yollarindan gidiyor.
+  const handlePointerEnter = (e) => {
+    if (e.pointerType === 'mouse') setAcik(true)
+  }
+  const handlePointerLeave = (e) => {
     if (sigilRef.current) sigilRef.current.style.transform = ''
-    setHovered(false)
+    if (e.pointerType === 'mouse') setAcik(false)
   }
 
   return (
@@ -185,8 +198,8 @@ const HouseCard = ({ house, index }) => {
       ref={cardRef}
       className={`house-card house-card--${house.id}`}
       style={{ '--accent': house.accent, '--border': house.borderColor, background: house.bg }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={handleMouseLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onMouseMove={handleMouseMove}
     >
       {/* Corner ornaments */}
@@ -207,7 +220,7 @@ const HouseCard = ({ house, index }) => {
       </div>
 
       {/* Static content */}
-      <div className={`house-content ${hovered ? 'content-hidden' : ''}`}>
+      <div className={`house-content ${acik ? 'content-hidden' : ''}`}>
         <p className="house-region">{house.region}</p>
         <div className="house-divider">
           <span className="divider-line" />
@@ -219,8 +232,8 @@ const HouseCard = ({ house, index }) => {
         <p className="house-sigil-label">{house.sigil}</p>
       </div>
 
-      {/* Hover reveal: words + description */}
-      <div className={`house-hover-content ${hovered ? 'hover-visible' : ''}`}>
+      {/* Acilan panel: words + description */}
+      <div id={panelId} className={`house-hover-content ${acik ? 'hover-visible' : ''}`}>
         <p className="hover-words">{house.words}</p>
         <div className="house-divider hover-divider">
           <span className="divider-line" />
@@ -230,6 +243,37 @@ const HouseCard = ({ house, index }) => {
         <div className="hover-name">{house.name}</div>
         <p className="hover-desc">{house.description}</p>
       </div>
+
+      {/* Panelin acilabildigini gosteren tek isaret. Onceden hicbir ipucu
+          yoktu: dokunmatikte metin aslinda aciliyordu ama ziyaretci ancak
+          tesadufen kesfediyordu. */}
+      <span className={`house-ipucu ${acik ? 'acik' : ''}`} aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </span>
+
+      {/* Erisim tetigi — karti tam kaplayan seffaf buton. Kartin KENDISI
+          <button> yapilamaz: icinde <h3>/<p> var, <button> yalnizca phrasing
+          content alir ve gecersiz HTML uretirdi. Ayri tetik hem klavyeye Tab
+          duragi + Enter/Space verir hem dokunmatikte acik bir hedef sunar;
+          farenin hover yolu hic degismez. */}
+      <button
+        type="button"
+        className="house-tetik"
+        aria-expanded={acik}
+        aria-controls={panelId}
+        aria-label={`${house.name} — detaylar`}
+        onClick={() => setAcik((a) => !a)}
+        /* :focus-visible kontrolu SART. Cıplak onFocus, FARE tiklamasinda da
+           calisiyor: odak paneli aciyor, hemen ardindan gelen onClick toggle
+           edip kapatiyordu (olculdu — aria-expanded false'ta kaliyordu).
+           :focus-visible yalnizca klavye odaginda eslesir, boylece tiklama
+           yolu ile klavye yolu birbirini iptal etmez. */
+        onFocus={(e) => { if (e.target.matches(':focus-visible')) setAcik(true) }}
+        onBlur={() => setAcik(false)}
+      />
 
       {/* Bottom accent bar */}
       <div className="card-accent-bar" />

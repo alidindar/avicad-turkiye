@@ -387,6 +387,61 @@
 }
 .house-card:hover .card-accent-bar { transform: scaleX(1); }
 
+/* ─── Erisim tetigi + acilma ipucu ───────────────────────────────────────────
+   Panel eskiden YALNIZCA :hover ile aciliyordu. Olculdu (CDP, 2026-08-17):
+   bu bolumde klavye icin sifir odak duragi vardi, yani aciklama metinlerine
+   Tab ile ulasmanin yolu yoktu; dokunmatikte aciliyordu ama hicbir ipucu
+   olmadigi icin ziyaretci ancak tesadufen kesfediyordu.
+
+   Tetik seffaf ve karti tam kaplar — gorunum hic degismez, kart Tab ile
+   bulunur ve Enter/Space ile acilir. Odak halkasi ayrica tanimlanmadi:
+   index.css'teki global :focus-visible kurali zaten yakaliyor. */
+.house-tetik {
+  position: absolute;
+  inset: 0;
+  z-index: 6;              /* .house-hover-content z-index:5 — tetik onun ustunde */
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Chevron: kose suslerinin arasinda, ortada; accent bar'in uzerinde durur.
+   pointer-events yok — tiklama daima alttaki tetige gitmeli. */
+.house-ipucu {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  display: flex;
+  pointer-events: none;
+  color: var(--accent, #0693e3);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+.house-card:hover .house-ipucu,
+.house-ipucu.acik { opacity: 0.95; }
+
+.house-ipucu svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.house-ipucu.acik svg { transform: rotate(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .house-ipucu svg,
+  .house-ipucu { transition: none; }
+}
+
 /* ─── Section footer ornament ────────────────────────────────────────────── */
 .section1-footer-ornament {
   position: relative;
