@@ -19,7 +19,7 @@ import emailjs from '@emailjs/browser'
 // e-posta gonderebilir. Iki somut zarar: (1) aylik kota tukenir ve gercek
 // lead'ler SESSIZCE ulasmaz, (2) sirket adina ucuncu kisilere e-posta gider.
 //
-//   a) Account -> Security -> Allowed Origins: yalnizca avicadturkiye.com.tr
+//   a) Account -> Security -> Allowed Origins: yalnizca avicad.com.tr
 //      NOT: EmailJS bunu Origin basligindan dogruluyor; tarayici disi bir
 //      istemci basligi taklit edebilir. Duvar degil, hiz kesici.
 //   b) Sablonda EmailJS'in yerlesik CAPTCHA'sini AC — otomatik suistimale

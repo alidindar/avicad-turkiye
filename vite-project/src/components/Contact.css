@@ -85,7 +85,7 @@
   margin: 44px auto 0;
   display: grid;
   /* Onceki hal 860px kapta minmax(200px) ile 4 sutun uretiyordu; icerik sigmayip
-     telefon "…928 00 / 59", e-posta "info@avicadturkiye. / com.tr" diye kiriliyordu.
+     telefon "…928 00 / 59", e-posta "info@avicad. / com.tr" diye kiriliyordu.
      4 sutun bu metinleri asla sigdiramaz (en uzun deger ~187px + ikon/padding ~70px
      -> sutun basina ~257px, 4 sutun icin >1070px kap gerekirdi; forma gore cok genis).
      Bu yuzden 2x2: 760px kapta 2 sutun (~373px) — hem metinler tek satirda, hem
@@ -144,7 +144,7 @@ a.contact-info-item:hover {
   font-family: var(--font-body);
   font-size: 15px;
   color: var(--c-text, #0e1621);
-  /* break-word e-postayi "avicadturkiye." / "com.tr" diye ortadan boluyordu.
+  /* break-word e-postayi "avicad." / "com.tr" diye ortadan boluyordu.
      Telefon ve e-posta tek satirda kalmali; tek sutuna dusen dar mobilde bile
      (320px'te ~210px kullanilabilir alan) en uzun deger siger. */
   white-space: nowrap;

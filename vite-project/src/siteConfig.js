@@ -11,7 +11,7 @@ export const TELEFON_GORUNEN   = '+90 (536) 928 00 59'
 export const TELEFON_HREF      = 'tel:+905369280059'   // sadece + ve rakam
 export const WHATSAPP_NUMARA   = '905369280059'        // wa.me icin sadece rakam (bassiz 0 yok)
 export const WHATSAPP_MESAJ    = 'Merhaba, AviCAD hakkında bilgi almak istiyorum.'
-export const EPOSTA            = 'info@avicadturkiye.com.tr'
+export const EPOSTA            = 'info@avicad.com.tr'
 export const ADRES             = 'İstanbul, Türkiye'
 export const CALISMA_SAATLERI  = 'Hafta içi 09:00 – 18:00'
 
