@@ -103,6 +103,48 @@
   color: var(--c-mute, #7c8593);
 }
 
+/* ─── Yerel guven sinyalleri ─────────────────────────────────────────────────
+   Yorum kartlarindan ince bir cizgiyle ayrilir: bunlar musteri sozu DEGIL,
+   dogrulanabilir kurumsal bilgi — ayni gorunumu paylasmalari yaniltici olurdu. */
+.tm-guven {
+  list-style: none;
+  max-width: 1100px;
+  margin: 44px auto 0;
+  padding: 34px 0 0;
+  border-top: 1px solid var(--c-border, #e4e9f0);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.tm-guven-oge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+}
+
+.tm-guven-ikon {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--gold, #0693e3);
+}
+.tm-guven-ikon svg { width: 22px; height: 22px; }
+
+.tm-guven-baslik {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text, #0e1621);
+  margin-bottom: 3px;
+}
+.tm-guven-alt {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--c-body, #48525f);
+}
+
 .tm-note {
   margin: 40px auto 0;
   font-family: var(--font-mono);
@@ -113,6 +155,16 @@
 
 @media (max-width: 900px) {
   .tm-grid { grid-template-columns: repeat(2, 1fr); }
+}
+/* 780px altinda 3 sutun ~240px'e dusuyor ve "Resmi Türkiye distribütörü"
+   basligi iki satira kiriliyor — tek sutun daha okunakli. */
+@media (max-width: 780px) {
+  .tm-guven {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 34px;
+    padding-top: 26px;
+  }
 }
 @media (max-width: 600px) {
   .testimonials { padding: 60px 18px; }
