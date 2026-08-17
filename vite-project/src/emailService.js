@@ -1,85 +1,52 @@
-import emailjs from '@emailjs/browser'
-
-// ─── EmailJS ayarlari ─────────────────────────────────────────────────────────
-// TODO: Bu 4 degeri EmailJS panelinden alip yapistirin (https://www.emailjs.com).
-//   1) Hesap ac -> Email Services'e bir servis ekle (Gmail/SMTP)         -> SERVICE_ID
-//   2) Account -> General -> Public Key                                  -> PUBLIC_KEY
-//   3) Email Templates -> yeni sablon "Lead" (To: SATIS e-postaniz)      -> TEMPLATE_LEAD
-//   4) Email Templates -> yeni sablon "Yanit" (To: {{email}})            -> TEMPLATE_REPLY
-// Sablon degiskenleri: {{ad}} {{soyad}} {{ad_soyad}} {{telefon}} {{email}}
-//   {{konu}} {{mesaj}}  ve yanit sablonunda ayrica {{oto_yanit}}
+// ─── İletişim formu gönderimi ────────────────────────────────────────────────
+// Gönderim artık kendi sunucumuzdaki `public/iletisim.php` üzerinden yapılıyor.
 //
-// ─── GUVENLIK: anahtarlari girerken BUNLARI DA YAP ───────────────────────────
-// EmailJS tarayicidan calisir, yani asagidaki uc deger ZORUNLU OLARAK istemci
-// bundle'inda yayinlanir. Bunlar sir degil (tasarim geregi acik) — ama "Yanit"
-// sablonunun To alani {{email}}, yani ISTEK ATANIN belirledigi adres. Sunucu
-// tarafi dogrulama ve hiz sinirlama da yok; honeypot yalnizca istemcide.
-// Sonuc: bundle'dan degerleri okuyan biri API'yi dogrudan cagirip ISTEDIGI
-// adrese, {{ad}}/{{soyad}}/{{mesaj}} alanlarini kendi metniyle doldurup
-// e-posta gonderebilir. Iki somut zarar: (1) aylik kota tukenir ve gercek
-// lead'ler SESSIZCE ulasmaz, (2) sirket adina ucuncu kisilere e-posta gider.
+// Önceki kurulum EmailJS'ti ve üç değeri (public key, service id, template id)
+// ZORUNLU olarak istemci bundle'ında yayınlıyordu. Bunlar tasarım gereği açık
+// olsa da "Yanıt" şablonunun To alanı {{email}} — yani isteği atanın belirlediği
+// adres — olduğu için bundle'ı okuyan biri şirket adına istediği kişiye e-posta
+// gönderebiliyordu; üstelik sunucu tarafı doğrulama ve hız sınırı da yoktu.
 //
-//   a) Account -> Security -> Allowed Origins: yalnizca avicad.com.tr
-//      NOT: EmailJS bunu Origin basligindan dogruluyor; tarayici disi bir
-//      istemci basligi taklit edebilir. Duvar degil, hiz kesici.
-//   b) Sablonda EmailJS'in yerlesik CAPTCHA'sini AC — otomatik suistimale
-//      karsi en etkili tekil onlem.
-//   c) Panelden hiz siniri (rate limit) tanimla.
-//   d) Kota uyarisi kur — kota dolarsa haberin olsun, yoksa lead kaybi
-//      sessiz olur (bkz. 835122c'de duzeltilen ayni sinif hata).
+// Kendi endpoint'imizde: kimlik bilgisi istemciye hiç inmiyor, doğrulama ve
+// hız sınırı sunucuda, gönderim domainin kendi MTA'sı üzerinden (SPF uyumlu),
+// veri Türkiye'de kalıyor. CSP'den de api.emailjs.com çıkarıldı.
 //
-// KALICI COZUM: Turkiye'de barinan kendi endpoint'in. Kimlik bilgisi sunucuda
-// gizli kalir, dogrulama + hiz sinirlama sunucuda yapilir, {{email}}'e serbest
-// gonderim ortadan kalkar. submitContact() imzasi ayni kaldigi surece
-// Contact.jsx hic degismez.
-export const EMAILJS_PUBLIC_KEY     = 'YOUR_PUBLIC_KEY'
-export const EMAILJS_SERVICE_ID     = 'YOUR_SERVICE_ID'
-export const EMAILJS_TEMPLATE_LEAD  = 'YOUR_TEMPLATE_LEAD'   // -> satisa bildirim
-export const EMAILJS_TEMPLATE_REPLY = 'YOUR_TEMPLATE_REPLY'  // -> musteriye oto-yanit
+// `submitContact` imzası BİLEREK korundu — Contact.jsx yalnızca bu fonksiyonu
+// tanıyor, form/doğrulama/KVKK akışının hiçbiri değişmedi.
 
-// Konuya ozel otomatik yanit metinleri (musteriye gider).
-const OTO_YANIT = {
-  'Fiyat Talebi':
-    'Fiyat teklifi talebiniz bize ulaştı. Satış ekibimiz, ihtiyaçlarınıza uygun paket ve fiyat bilgisiyle en kısa sürede sizi arayacak.',
-  'Demo Talebi':
-    '30 günlük ücretsiz demo talebiniz alındı. Kurulum ve deneme süreci için ekibimiz kısa süre içinde sizinle iletişime geçecek.',
-  'Destek Talebi':
-    'Destek talebiniz bize ulaştı. Konuyla ilgili ekibimiz en kısa sürede size dönüş yapacak.',
-}
+// BASE_URL ile kuruluyor: vite.config.js `base` değeri değişirse (alt dizinde
+// yayın) yol kendiliğinden doğru kalır.
+const ENDPOINT = `${import.meta.env.BASE_URL}iletisim.php`
 
-// Konfigure edilmemisse (placeholder degerler) gercek istek atmadan hata don.
-const yapilandirildi = () =>
-  EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY' &&
-  EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID' &&
-  EMAILJS_TEMPLATE_LEAD !== 'YOUR_TEMPLATE_LEAD' &&
-  EMAILJS_TEMPLATE_REPLY !== 'YOUR_TEMPLATE_REPLY'
-
-// İletisim formu gonderimi:
-//   1) satisa lead bildirimi, 2) musteriye konuya ozel otomatik yanit.
+/**
+ * İletişim formunu gönderir: satışa lead bildirimi + müşteriye konuya özel
+ * otomatik yanıt (ikisini de sunucu yollar).
+ * Başarısızlıkta Error fırlatır — Contact.jsx bunu yakalayıp ziyaretçiye
+ * alternatif iletişim kanallarını gösteriyor.
+ */
 export async function submitContact({ ad, soyad, telefon, email, konu, mesaj }) {
-  if (!yapilandirildi()) {
-    throw new Error('EmailJS henüz yapılandırılmadı (emailService.js içindeki 4 değeri girin).')
+  let yanit
+  try {
+    yanit = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ad, soyad, telefon, email, konu, mesaj: mesaj || '—' }),
+    })
+  } catch (err) {
+    // Ağ katmanı hatası (çevrimdışı, DNS, CORS). fetch yalnızca burada reject
+    // eder; HTTP hata kodları aşağıda ele alınıyor.
+    throw new Error(`Sunucuya ulaşılamadı: ${err.message}`, { cause: err })
   }
-  const p = {
-    ad,
-    soyad,
-    ad_soyad: `${ad} ${soyad}`.trim(),
-    telefon,
-    email,
-    konu,
-    mesaj: mesaj || '—',
+
+  // Gövde JSON olmayabilir (sunucu hata sayfası döndürdüyse) — patlamasın.
+  let govde = null
+  try {
+    govde = await yanit.json()
+  } catch {
+    // JSON çözülemedi; govde null kalır ve aşağıdaki kontrol bunu ele alır.
   }
-  // 1) Satisa bildirim (To alani panelde satis e-postasina ayarli)
-  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAD, p, {
-    publicKey: EMAILJS_PUBLIC_KEY,
-  })
-  // 2) Musteriye konuya ozel otomatik yanit (To alani panelde {{email}}'e ayarli)
-  await emailjs.send(
-    EMAILJS_SERVICE_ID,
-    EMAILJS_TEMPLATE_REPLY,
-    // Object.hasOwn: duz indeksleme prototip zinciri anahtarlarinda
-    // (constructor, toString...) beklenmedik deger dondururdu.
-    { ...p, oto_yanit: Object.hasOwn(OTO_YANIT, konu) ? OTO_YANIT[konu] : '' },
-    { publicKey: EMAILJS_PUBLIC_KEY },
-  )
+
+  if (!yanit.ok || !govde?.ok) {
+    throw new Error(govde?.hata ?? `Gönderim başarısız (HTTP ${yanit.status}).`)
+  }
 }
