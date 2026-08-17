@@ -89,5 +89,10 @@
   Require all denied
 </FilesMatch>
 
+# Ölçüm verisi web'den ASLA okunmamalı. olcum.php klasörü oluştururken içine
+# kendi .htaccess'ini de yazıyor, ama o dosya ancak ilk istekten sonra oluşur —
+# bu kural ilk andan itibaren geçerli.
+RedirectMatch 404 ^/olcum-veri/
+
 # Dizin listelemesi kapalı — klasör içeriği görünmesin.
 Options -Indexes

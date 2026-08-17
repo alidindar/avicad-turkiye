@@ -98,8 +98,11 @@ const DesignVideo = () => {
   )
 }
 
+// section'daki id yalnizca olcum icin: bu bolum donusume en yakin yerlerden
+// biri ve ziyaretcinin buraya inip inmedigini bilmek degerli. Nav'da bu bolume
+// link yok, dolayisiyla id eklemek gezinmeyi etkilemiyor.
 const Compare = () => (
-  <section className="compare" aria-label="AViCAD ve AutoCAD LT karşılaştırması">
+  <section id="karsilastirma" className="compare" aria-label="AViCAD ve AutoCAD LT karşılaştırması">
     <header className="compare-header">
       <p className="compare-eyebrow">KARŞILAŞTIRMA</p>
       <Ornament />

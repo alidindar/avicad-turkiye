@@ -14,6 +14,8 @@
 // `submitContact` imzası BİLEREK korundu — Contact.jsx yalnızca bu fonksiyonu
 // tanıyor, form/doğrulama/KVKK akışının hiçbiri değişmedi.
 
+import { olcumFormOlayi } from './olcum.js'
+
 // BASE_URL ile kuruluyor: vite.config.js `base` değeri değişirse (alt dizinde
 // yayın) yol kendiliğinden doğru kalır.
 const ENDPOINT = `${import.meta.env.BASE_URL}iletisim.php`
@@ -47,6 +49,11 @@ export async function submitContact({ ad, soyad, telefon, email, konu, mesaj }) 
   }
 
   if (!yanit.ok || !govde?.ok) {
+    // Başarısız gönderimler de sayılıyor: sessiz lead kaybı bu projede daha
+    // önce yaşandı (835122c). Sayaçta hata birikiyorsa haberimiz olmalı.
+    olcumFormOlayi('hata')
     throw new Error(govde?.hata ?? `Gönderim başarısız (HTTP ${yanit.status}).`)
   }
+
+  olcumFormOlayi('basarili')
 }
