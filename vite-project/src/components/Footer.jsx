@@ -37,10 +37,13 @@ const legalMetinleri = () => ({
       // DEGIL, m.5/2-(c) ve m.5/2-(f)'ye dayaniyor; boylece hizmet acik riza
       // sartina baglanmis olmuyor (bkz. Kurul 2023/1041).
       'Toplama Yöntemi ve Hukuki Sebep: Kişisel verileriniz, internet sitemizdeki iletişim/demo formunu doldurmanız yoluyla, tamamen otomatik olmayan yollarla ve elektronik ortamda toplanır. Hukuki sebep, 6698 sayılı KVKK m.5/2-(c) uyarınca talebinizle kurulacak sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması ile m.5/2-(f) uyarınca meşru menfaatimizdir; bu işleme açık rızanıza dayanmaz.',
-      // Teblig m.4/(c): "kimlere VE hangi amacla" ayrik yaziliyor. Yurt disina
-      // aktarim icin dayanak formda AYRICA alinan acik riza — bu metin rizayi
-      // TESKIL ETMEZ, yalnizca bilgilendirir (Teblig m.5 ayrim kurali).
-      'Aktarım: Form gönderiminizin satış ekibimize ulaştırılması amacıyla, e-posta iletim altyapısı hizmet sağlayıcımız EmailJS (ABD) ile paylaşılır. EmailJS yurt dışında bulunduğundan bu paylaşım yurt dışına aktarım niteliğindedir ve KVKK m.9 uyarınca, formda bu amaçla ayrıca verdiğiniz açık rızaya dayanır. Bunun dışında verileriniz, yasal yükümlülükler saklı kalmak üzere üçüncü kişilerle paylaşılmaz.',
+      // Teblig m.4/(c): "kimlere VE hangi amacla" ayrik yaziliyor.
+      //
+      // 2026-08-17: Form gonderimi EmailJS'ten (ABD) kendi sunucumuza tasindi.
+      // Yurt disina aktarim ORTADAN KALKTI; dolayisiyla KVKK m.9 acik rizasi
+      // da gereksizlesti ve formdaki riza kutusu kaldirildi. Bu maddeyi eski
+      // haline dondurmeyin — metin gercek altyapiyi anlatmali.
+      'Aktarım: Kişisel verileriniz yurt dışına aktarılmaz. Form gönderimleriniz doğrudan Türkiye’de bulunan kendi sunucumuza iletilir ve yalnızca satış ekibimize ulaştırılır. Barındırma hizmeti aldığımız yurt içi hizmet sağlayıcımız verilere, yalnızca altyapı hizmetinin gerektirdiği ölçüde ve veri işleyen sıfatıyla erişebilir. Bunun dışında verileriniz, yasal yükümlülükler saklı kalmak üzere üçüncü kişilerle paylaşılmaz.',
       `Haklarınız (KVKK m.11): Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işleme amacını öğrenme, yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmişse düzeltilmesini, şartları oluştuğunda silinmesini veya yok edilmesini isteme, işleme faaliyetine itiraz etme ve zarara uğramanız hâlinde zararın giderilmesini talep etme haklarına sahipsiniz. Başvurularınızı ${EPOSTA} adresine iletebilirsiniz.`,
       'Saklama Süresi: Verileriniz, işleme amacının gerektirdiği süre ve ilgili mevzuatta öngörülen süreler boyunca saklanır; bu sürelerin sonunda silinir, yok edilir veya anonim hâle getirilir.',
     ],
@@ -52,8 +55,9 @@ const legalMetinleri = () => ({
       'Topladığımız Veriler: Yalnızca iletişim/demo formunu doldurduğunuzda ilettiğiniz ad-soyad, telefon, e-posta ve mesaj bilgileri.',
       'Kullanım: Bu bilgiler yalnızca talebinizi karşılamak, size demo/fiyat/destek konusunda dönüş yapmak ve sizinle iletişim kurmak için kullanılır; pazarlama amacıyla üçüncü kişilere satılmaz.',
       // KVKK metnindeki "Aktarim" maddesiyle AYNI bilgiyi vermeli; iki metin
-      // celismesin (rizanin formda ayrica alindigi dahil).
-      'Üçüncü Taraf Hizmetler: Form gönderimleri, e-posta iletimi için ABD merkezli EmailJS hizmeti üzerinden iletilir; bu nedenle verileriniz yurt dışına aktarılmaktadır. Aktarım, formu gönderirken bu amaçla ayrıca verdiğiniz açık rızaya dayanır.',
+      // celismesin. Ikisi de 2026-08-17'de kendi sunucumuza gecise gore
+      // guncellendi.
+      'Üçüncü Taraf Hizmetler: Form gönderimleri üçüncü taraf bir servise değil, doğrudan Türkiye’de bulunan kendi sunucumuza iletilir; verileriniz yurt dışına aktarılmaz. Sitede reklam veya takip amaçlı üçüncü taraf hizmeti kullanılmaz.',
       'Çerezler: Sitemiz yalnızca çalışması için gerekli minimum tarayıcı depolamasını kullanır; üçüncü taraf reklam/takip çerezi kullanılmaz.',
       // Onizleme gorseli artik kendi sunucumuzda, dolayisiyla sayfa acilisinda
       // ucuncu taraf istegi yok. Ancak oynat'a basilinca YouTube devreye
