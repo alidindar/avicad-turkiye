@@ -463,7 +463,13 @@ const Hero = () => {
           {/* Nav */}
           <nav className="got-nav" aria-label="Ana menü">
             <div className="got-nav-logo">
-              <img className="got-nav-logo-img" src={`${import.meta.env.BASE_URL}logo.png`} alt="AviCAD Türkiye" />
+              {/* width/height SART: olculdu, uc gorselin hicbirinde yoktu ve
+                  tarayici yer ayiramadigi icin gorsel yuklenince duzen
+                  ziplyordu (CLS — Core Web Vitals siralama sinyali).
+                  Dosya 144px: nav'da en fazla 42px gosteriliyor, DPR 3'te bile
+                  yetiyor. Eskiden 576px'lik PNG iniyordu (8 kat fazla veri). */}
+              <img className="got-nav-logo-img" src={`${import.meta.env.BASE_URL}logo.webp`}
+                   width="144" height="147" alt="AviCAD Türkiye" />
               <span className="got-nav-logo-text">AviCAD Türkiye</span>
             </div>
 

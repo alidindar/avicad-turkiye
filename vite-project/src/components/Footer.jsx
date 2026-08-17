@@ -117,7 +117,8 @@ const Footer = () => {
       <div className="footer-grid">
         <div className="footer-col footer-brand">
           <div className="footer-logo">
-            <img className="footer-logo-img" src={`${import.meta.env.BASE_URL}logo.png`} alt="AviCAD Türkiye" />
+            <img className="footer-logo-img" src={`${import.meta.env.BASE_URL}logo.webp`}
+                 width="144" height="147" alt="AviCAD Türkiye" />
             <span className="footer-logo-text">AviCAD Türkiye</span>
           </div>
           <p className="footer-blurb">

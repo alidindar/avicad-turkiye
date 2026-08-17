@@ -86,8 +86,9 @@ const DesignVideo = () => {
   return (
     <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label="Videoyu oynat">
       <img
-        src={`${import.meta.env.BASE_URL}video-onizleme.jpg`}
+        src={`${import.meta.env.BASE_URL}video-onizleme.webp`}
         alt="AViCAD tanıtım videosu önizlemesi"
+        width="1280" height="720"
         loading="lazy"
       />
       <span className="video-play" aria-hidden="true">
