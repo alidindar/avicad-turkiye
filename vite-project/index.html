@@ -159,14 +159,55 @@
          Birini degistirirken digerini de guncelleyin. Stiller satir ici:
          React'e bagli sinif adlari burada ise yaramaz. -->
     <noscript>
-      <div style="max-width:640px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#0e1621">
+      <div style="max-width:680px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#0e1621">
         <h1 style="font-size:24px;margin:0 0 8px">AviCAD Türkiye</h1>
         <p style="margin:0 0 24px;color:#5c6675">
           DWG uyumlu profesyonel 2B/3B CAD çözümü — AViCAD'in resmi Türkiye distribütörü.
         </p>
-        <p style="margin:0 0 24px;padding:12px 16px;background:#fff4d6;border-radius:8px">
-          Bu sitenin tamamını görüntülemek için JavaScript gerekiyor.
-          Tarayıcınızda JavaScript kapalı görünüyor — aşağıdaki kanallardan bize doğrudan ulaşabilirsiniz.
+
+        <!-- Asagidaki bolumler React ile gelen icerigin metin karsiligidir.
+             Prerender YERINE bu tercih edildi: hero GSAP scroll-scrub ile
+             calisiyor ve prerender, animasyonun ara durumunu (olculdu: 85
+             satir ici transform) HTML'e gomup duzeni bozuyordu. Bu blok ise
+             JS'siz her istemciye gercek icerigi verir, calisan sayfaya hic
+             dokunmaz. Metinler Section1.jsx ve SSS bolumuyle AYNI kalmali —
+             birini degistirirken digerini de guncelleyin. -->
+        <h2 style="font-size:19px;margin:32px 0 12px">Neden AViCAD?</h2>
+        <ul style="margin:0 0 24px;padding-left:20px;color:#48525f">
+          <li style="margin-bottom:10px"><strong>DWG uyumu:</strong> .dwg ve .dxf dosyalarını dönüştürmeden doğrudan açar ve kaydeder; katmanlarınız, bloklarınız ve çizim geometriniz korunur.</li>
+          <li style="margin-bottom:10px"><strong>Tanıdık arayüz:</strong> Komut satırı, kısayollar ve menüler AutoCAD'e çok benzer; ekibiniz yeniden eğitime gerek kalmadan çalışmaya başlar.</li>
+          <li style="margin-bottom:10px"><strong>2B ve 3B tasarım:</strong> Teknik çizimden 3B modellemeye kadar mimari, makine ve mühendislik projelerini tek ortamda tamamlarsınız.</li>
+          <li style="margin-bottom:10px"><strong>Uygun lisans:</strong> Kalıcı (süresiz) lisans seçeneği vardır; abonelik zorunlu değildir.</li>
+          <li style="margin-bottom:10px"><strong>Yerel destek:</strong> Kurulum, eğitim, lisanslama ve teknik sorunlarda Türkçe destek sağlıyoruz.</li>
+          <li><strong>Hızlı geçiş:</strong> Tanıdık arayüz ve DWG uyumu sayesinde AutoCAD'den geçiş sorunsuzdur; 30 gün ücretsiz deneyebilirsiniz.</li>
+        </ul>
+
+        <h2 style="font-size:19px;margin:0 0 12px">AViCAD ile AutoCAD LT farkı</h2>
+        <p style="margin:0 0 24px;color:#48525f">
+          AutoCAD LT'nin yaptığı her şeye ek olarak AViCAD; 3B modelleme, AutoLISP ile
+          otomasyon, dahili mühendislik araçları (Mech-Q), 20.000'den fazla blok kütüphanesi
+          ve kalıcı lisans seçeneği sunar. AutoCAD®, Autodesk, Inc.'in tescilli markasıdır;
+          bu karşılaştırma genel bilgilendirme amaçlıdır.
+        </p>
+
+        <h2 style="font-size:19px;margin:0 0 12px">Sıkça sorulan sorular</h2>
+        <dl style="margin:0 0 28px;color:#48525f">
+          <dt style="font-weight:600;margin-bottom:4px">Mevcut .dwg dosyalarım sorunsuz açılır mı?</dt>
+          <dd style="margin:0 0 14px 0">Evet. AViCAD .dwg ve .dxf dosyalarını dönüştürmeye gerek kalmadan açar ve kaydeder.</dd>
+          <dt style="font-weight:600;margin-bottom:4px">Geçiş zor mu, yeniden eğitim gerekir mi?</dt>
+          <dd style="margin:0 0 14px 0">Hayır. Komutlar ve menüler AutoCAD'e benzer; çoğu kullanıcı ilk günden verimli çalışır.</dd>
+          <dt style="font-weight:600;margin-bottom:4px">Lisans kalıcı mı, abonelik mi?</dt>
+          <dd style="margin:0 0 14px 0">İkisi de mevcut. Tek seferlik ödemeyle süresiz lisans alabilir ya da abonelik seçebilirsiniz.</dd>
+          <dt style="font-weight:600;margin-bottom:4px">Satın almadan önce deneyebilir miyim?</dt>
+          <dd style="margin:0 0 14px 0">Evet, 30 gün boyunca ücretsiz ve taahhütsüz deneyebilirsiniz.</dd>
+          <dt style="font-weight:600;margin-bottom:4px">Destek Türkçe mi?</dt>
+          <dd style="margin:0">Evet. Türkiye distribütörü olarak kurulumdan lisanslamaya kadar yerel ve Türkçe destek veriyoruz.</dd>
+        </dl>
+        <h2 style="font-size:19px;margin:0 0 12px">İletişim</h2>
+        <p style="margin:0 0 20px;padding:12px 16px;background:#fff4d6;border-radius:8px">
+          Sitenin tamamını (tanıtım videosu ve iletişim formu dahil) görüntülemek için
+          JavaScript gerekiyor. Tarayıcınızda kapalı görünüyor — aşağıdaki kanallardan
+          bize doğrudan ulaşabilirsiniz.
         </p>
         <p style="margin:0 0 6px"><strong>Telefon:</strong> <a href="tel:+905369280059">+90 (536) 928 00 59</a></p>
         <p style="margin:0 0 6px"><strong>WhatsApp:</strong> <a href="https://wa.me/905369280059">+90 (536) 928 00 59</a></p>
