@@ -1,0 +1,93 @@
+# AviCAD Türkiye — Apache yapılandırması
+#
+# index.html'de bir CSP meta etiketi var ve kaynak direktiflerini (script-src,
+# connect-src, frame-src…) host'tan bağımsız uyguluyor. Ancak bazı başlıklar
+# meta ile ÇALIŞMAZ, sunucudan verilmek zorundadır — aşağıdakiler onlar.
+#
+# Sunucudan gelen CSP meta'dakini EZMEZ; ikisi birlikte uygulanır ve en
+# kısıtlayıcısı kazanır. Bu yüzden burada yalnızca frame-ancestors var,
+# kaynak direktifleri meta'da kalıyor.
+
+<IfModule mod_headers.c>
+  # Clickjacking: sayfanın başka bir sitede çerçevelenmesini engeller.
+  Header always set X-Frame-Options "DENY"
+  Header always set Content-Security-Policy "frame-ancestors 'none'"
+
+  # MIME sniffing kapalı.
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Dış sitelere tam URL sızdırma.
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Site bu API'lerin hiçbirini kullanmıyor; kapalı tutuyoruz.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+  # ─── HSTS ────────────────────────────────────────────────────────────────
+  # 2026-08-17'de açıldı: SSL aktif edildi ve https:// dışarıdan doğrulandı.
+  # Tarayıcıya "bu siteye artık yalnızca HTTPS ile gel" der; araya girip
+  # HTTP'ye düşürme saldırılarını kapatır.
+  #
+  # BİLİNÇLİ OLARAK ölçülü bir başlangıç:
+  #   - max-age 1 yıl (2 yıl değil)
+  #   - includeSubDomains YOK: webmail gibi alt alan adlarını da HTTPS'e
+  #     mahkûm ederdi; onların sertifika durumu ayrıca doğrulanmadı.
+  #   - preload YOK: preload listesine giren alan adını çıkarmak aylar sürer.
+  # Site bir süre sorunsuz çalıştıktan ve alt alan adları da HTTPS'e
+  # geçtikten sonra bu üçü kademeli olarak güçlendirilebilir.
+  Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# ─── HTTP -> HTTPS yönlendirmesi ─────────────────────────────────────────────
+# Bu blok da SSL aktif edildikten SONRA açılmalı. Sertifika yokken açılırsa
+# ziyaretçi sonsuz yönlendirmeye ya da sertifika hatasına düşer.
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ─── Sıkıştırma ──────────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+  # woff2 ve mp4 zaten sıkıştırılmış — tekrar sıkıştırmak CPU harcar, kazanç yok.
+</IfModule>
+
+# ─── Önbellek ────────────────────────────────────────────────────────────────
+# Vite, JS/CSS/font dosyalarını içerik hash'iyle adlandırıyor (index-a1b2c3.js),
+# yani içerik değişince dosya ADI değişir. Bu yüzden uzun önbellek güvenli.
+# index.html hash'siz: her zaman taze alınmalı, yoksa ziyaretçi eski sürümün
+# artık var olmayan dosyalarını istemeye devam eder.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                 "access plus 1 year"
+  ExpiresByType application/javascript   "access plus 1 year"
+  ExpiresByType font/woff2               "access plus 1 year"
+  ExpiresByType image/png                "access plus 6 months"
+  ExpiresByType image/jpeg               "access plus 6 months"
+  ExpiresByType image/svg+xml            "access plus 6 months"
+  ExpiresByType video/mp4                "access plus 6 months"
+  ExpiresByType text/html                "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ─── Erişim kısıtları ────────────────────────────────────────────────────────
+# Kaynak haritaları ve gizli dosyalar dışarı açılmasın.
+<FilesMatch "\.(map|log|ini|sh|bak)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Dizin listelemesi kapalı — klasör içeriği görünmesin.
+Options -Indexes

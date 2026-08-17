@@ -1,3 +1,6 @@
 # Videolar GitHub 100MB limitini astigi icin repoda tutulmuyor.
 # Nasil uretilecegi README'de anlatiliyor.
 *.mp4
+
+# Sunucuya yuklemek icin uretilen paket — build ciktisi, kaynak degil.
+deploy/
