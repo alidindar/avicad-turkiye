@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './Contact.css'
 import { submitContact } from '../emailService'
 import {
-  TELEFON_GORUNEN, TELEFON_HREF, EPOSTA,
+  TELEFON_GORUNEN, EPOSTA,
   ADRES, CALISMA_SAATLERI, whatsappHref, DEMO_INDIRME_URL,
 } from '../siteConfig'
 
@@ -311,14 +311,10 @@ const Contact = () => {
 
       {/* İletişim bilgileri — degerler siteConfig.js'ten gelir (✦ süsünden sonra) */}
       <div ref={infoRef} className="contact-info fade-up">
-        <a className="contact-info-item" href={TELEFON_HREF}>
-          <span className="contact-info-icon" aria-hidden="true">{ICON.phone}</span>
-          <span className="contact-info-body">
-            <span className="contact-info-label">Telefon</span>
-            <span className="contact-info-value">{TELEFON_GORUNEN}</span>
-          </span>
-        </a>
-
+        {/* Telefon kartı kullanıcı isteğiyle kaldırıldı. WhatsApp + E-posta +
+            Adres üç öğe kaldı; ızgara kendiliğinden yeniden dizilir. Telefon
+            numarası WhatsApp ve tel: linkiyle floating buton üzerinden hâlâ
+            erişilebilir, sadece bu blokta görünmüyor. */}
         <a className="contact-info-item" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
           <span className="contact-info-icon" aria-hidden="true">{ICON.chat}</span>
           <span className="contact-info-body">

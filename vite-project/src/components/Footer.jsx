@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './Footer.css'
 import {
-  TELEFON_GORUNEN, TELEFON_HREF, EPOSTA, ADRES,
+  TELEFON_GORUNEN, EPOSTA, ADRES,
   whatsappHref, YASAL_UNVAN,
 } from '../siteConfig'
 
@@ -142,7 +142,9 @@ const Footer = () => {
         <div className="footer-col">
           <h3 className="footer-head">İletişim</h3>
           <ul className="footer-links">
-            <li><a href={TELEFON_HREF}>{TELEFON_GORUNEN}</a></li>
+            {/* Telefon satırı kullanıcı isteğiyle kaldırıldı (İletişim bölümü
+                kartıyla birlikte). Numara WhatsApp ve tel: linkleriyle hâlâ
+                erişilebilir; yalnızca düz metin olarak gösterilmiyor. */}
             <li><a href={whatsappHref()} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
             <li><a href={`mailto:${EPOSTA}`}>{EPOSTA}</a></li>
             <li className="footer-adres">{ADRES}</li>
