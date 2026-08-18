@@ -13,7 +13,7 @@
  */
 declare(strict_types=1);
 
-const ANAHTAR      = 'BURAYA_UZUN_BIR_ANAHTAR_YAZIN';
+const ANAHTAR      = 'avicad-DLUpuq-jNCgLF-qdxh9y';
 const VERI_KLASORU = __DIR__ . '/olcum-veri';
 const GUN_SAYISI   = 30;
 
@@ -82,6 +82,9 @@ $BOLUM_ADI = [
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <title>Ölçüm Paneli — AviCAD Türkiye</title>
 <style>
   /* Tek seri grafikler: marka mavisi tek hue yeterli, kategorik palet yok.
@@ -112,7 +115,10 @@ $BOLUM_ADI = [
     font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   .kap { max-width: 940px; margin: 0 auto; }
-  h1 { font-size: 21px; margin: 0 0 4px; }
+  .panel-baslik { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+  .panel-logo { width: 46px; height: auto; flex: none; }
+  .panel-marka { font-size: 12px; color: var(--soluk); letter-spacing: 0.14em; text-transform: uppercase; margin: 2px 0 0; }
+  h1 { font-size: 21px; margin: 0; }
   .alt { color: var(--soluk); font-size: 13px; margin: 0 0 26px; }
   h2 { font-size: 15px; margin: 0 0 14px; font-weight: 600; }
 
@@ -155,7 +161,13 @@ $BOLUM_ADI = [
 </head>
 <body>
 <div class="kap">
-  <h1>Ölçüm Paneli</h1>
+  <div class="panel-baslik">
+    <img class="panel-logo" src="/logo.webp" width="144" height="147" alt="AviCAD Türkiye" />
+    <div>
+      <h1>Ölçüm Paneli</h1>
+      <p class="panel-marka">AviCAD Türkiye</p>
+    </div>
+  </div>
   <p class="alt">
     Son <?= GUN_SAYISI ?> gün · avicad.com.tr ·
     çerez kullanılmıyor, IP kaydedilmiyor, botlar sayılmıyor

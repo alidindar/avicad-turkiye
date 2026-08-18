@@ -305,11 +305,15 @@ body {
   width: 1200px;
   z-index: -1;
   pointer-events: none;
+  /* 2026: Perde belirgin bir koyu leke bırakıyordu; kullanıcı isteğiyle çok
+     hafifletildi (0.9 → 0.55). Kaybolan kontrast, metne eklenen SIKI gölgelerle
+     (.got-title/.got-subtitle/.got-body text-shadow) telafi edildi — böylece
+     video üstündeki koyu kutu belirginliği azaldı ama yazı okunur kaldı. */
   background: linear-gradient(
     to top,
-    rgba(4, 10, 18, 0.9) 0%,
-    rgba(4, 10, 18, 0.9) 62%,
-    rgba(4, 10, 18, 0.72) 82%,
+    rgba(4, 10, 18, 0.55) 0%,
+    rgba(4, 10, 18, 0.5) 58%,
+    rgba(4, 10, 18, 0.32) 80%,
     rgba(4, 10, 18, 0) 100%
   );
   -webkit-mask-image: linear-gradient(to right, #000 0 730px, transparent 1180px);
@@ -335,6 +339,8 @@ body {
   text-transform: uppercase;
   margin-bottom: 16px;
   display: block;
+  /* Perde hafifledi; sıkı gölge yerel kontrastı korur. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .got-title {
@@ -343,7 +349,9 @@ body {
   font-weight: 700;
   line-height: 1.18;
   color: var(--parchment);
-  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.9), 0 0 80px rgba(6, 147, 227, 0.15);
+  /* Sıkı (3px) + yayvan (40px) iki katman: perde hafifleyince yerel kontrastı
+     sıkı gölge taşır, yayvan katman sinematik hissi korur. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.92), 0 2px 40px rgba(0, 0, 0, 0.6), 0 0 80px rgba(6, 147, 227, 0.15);
   margin-bottom: 20px;
   letter-spacing: 0.02em;
 }
@@ -355,7 +363,7 @@ body {
   color: var(--ash);
   max-width: 480px;
   font-style: italic;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.92), 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* ── CTA buttons ── */

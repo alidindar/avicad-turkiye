@@ -19,8 +19,15 @@
 declare(strict_types=1);
 
 // ─── Ayarlar ────────────────────────────────────────────────────────────────
-const SATIS_EPOSTA   = 'info@avicad.com.tr';  // lead'in düşeceği kutu
-const GONDEREN       = 'info@avicad.com.tr';  // From — domainle aynı olmalı (SPF)
+// Lead yönlendirmesi konuya göre:
+//   Fiyat Talebi + Demo Talebi -> satış ekibi (satis@)
+//   Destek Talebi + Diğer       -> info@
+// NOT: satis@avicad.com.tr KUTUSU hosting panelinde OLUŞTURULMUŞ olmalı (ya da
+// info@'ya alias). Yoksa yerel Postfix RCPT TO'yu reddeder ve Demo/Fiyat
+// lead'leri iletilmez (form ziyaretçiye hata gösterir, sebep error_log'a düşer).
+const SATIS_EPOSTA   = 'satis@avicad.com.tr'; // Fiyat + Demo Talebi
+const DESTEK_EPOSTA  = 'info@avicad.com.tr';  // Destek + Diğer
+const GONDEREN       = 'info@avicad.com.tr';  // From (müşteriye görünen) — domainle aynı (SPF)
 const SITE_ADI       = 'AviCAD Türkiye';
 const ARALIK_SN      = 30;    // aynı IP'den iki gönderim arasında en az
 const SAATLIK_SINIR  = 5;     // aynı IP'den saatte en fazla
@@ -277,9 +284,14 @@ Gönderim: {$_SERVER['HTTP_HOST']} · tarih:
 METIN;
 $leadGovde .= date('d.m.Y H:i');
 
+// Konuya göre hedef kutu. Reply-To müşteriye ayarlı kalır: satış/destek
+// kutudan doğrudan "yanıtla" deyince cevap müşteriye gider.
+$leadAlici = in_array($konu, ['Fiyat Talebi', 'Demo Talebi'], true)
+    ? SATIS_EPOSTA
+    : DESTEK_EPOSTA;
 $leadBaslik = array_merge($ortakBaslik, ['Reply-To: ' . $baslik($adSoyad) . ' <' . $emailTemiz . '>']);
 [$leadGonderildi, $leadTani] = smtpYolla(
-    SATIS_EPOSTA,
+    $leadAlici,
     $baslik("[Web] {$konuTemiz} — {$adSoyad}"),
     $leadGovde,
     $leadBaslik
