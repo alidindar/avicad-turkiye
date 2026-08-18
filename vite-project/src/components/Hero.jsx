@@ -280,6 +280,45 @@ const Hero = () => {
     }
   }, [])
 
+  // ─── iOS kare kilidi (scroll-scrub'ın iPhone'da çalışma şartı) ──────────────
+  // iOS Safari, video bir KULLANICI HAREKETİYLE play() edilene kadar
+  // currentTime değişimlerinde ekrandaki kareyi yeniden ÇİZMEZ: scroll
+  // currentTime'ı içeride ilerletir ama görüntü poster'da donar. Belirti tam
+  // olarak buydu (iPhone: "sabit resim vardı, oynamadı"); masaüstünde bu kısıt
+  // olmadığı için orada scrub sorunsuz çalışıyor. playsInline + muted gerekli
+  // ama YETERLİ DEĞİL — ilk dokunuşta bir kez play()/pause() ile videoyu
+  // "etkinleştirmek" kilidi açar, sonraki scrub'lar normal boyanır.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    // Yalnızca dokunmatik (coarse pointer): masaüstünde bu kilit sorunu yok ve
+    // gereksiz bir play/pause tetiklemeye gerek yok.
+    if (!window.matchMedia('(pointer: coarse)').matches) return
+
+    let acildi = false
+    const kilidiAc = () => {
+      if (acildi) return
+      acildi = true
+      // muted + playsInline olduğu için bu play() iOS'ta izinli; hemen pause
+      // ediyoruz, video oynamaz — yalnızca kare çizimi etkinleşir. Hata
+      // (ör. düşük güç modu) sessizce yutulur; en kötü ihtimalle eski davranış.
+      const p = video.play()
+      if (p && typeof p.then === 'function') {
+        p.then(() => video.pause()).catch(() => {})
+      } else {
+        try { video.pause() } catch { /* yok */ }
+      }
+    }
+    // İlk gerçek kullanıcı hareketinde bir kez çalışır, sonra kendini kaldırır.
+    const secenek = { once: true, passive: true }
+    window.addEventListener('touchstart', kilidiAc, secenek)
+    window.addEventListener('pointerdown', kilidiAc, secenek)
+    return () => {
+      window.removeEventListener('touchstart', kilidiAc, secenek)
+      window.removeEventListener('pointerdown', kilidiAc, secenek)
+    }
+  }, [])
+
   // ─── GSAP ScrollTrigger ───────────────────────────────────────────────────
   useEffect(() => {
     if (!videoReady) return
