@@ -8,6 +8,11 @@
 # kısıtlayıcısı kazanır. Bu yüzden burada yalnızca frame-ancestors var,
 # kaynak direktifleri meta'da kalıyor.
 
+# Özel 404 sayfası: varsayılan Plesk/LiteSpeed hata sayfası "error_docs" ve
+# "Server Error" ibareleriyle altyapı ipucu veriyordu (güvenlik denetimi
+# düşük madde). Markalı, indekslenmeyen kendi sayfamızla değiştirildi.
+ErrorDocument 404 /404.html
+
 <IfModule mod_headers.c>
   # Sunucu yazılımı ifşasını kaldır (güvenlik denetimi düşük öncelikli bulgu):
   # PHP/Plesk varsayılan olarak "X-Powered-By: PleskLin" gönderiyordu; saldırgana
