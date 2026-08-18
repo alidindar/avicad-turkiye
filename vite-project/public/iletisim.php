@@ -19,15 +19,19 @@
 declare(strict_types=1);
 
 // ─── Ayarlar ────────────────────────────────────────────────────────────────
-// Lead yönlendirmesi konuya göre:
-//   Fiyat Talebi + Demo Talebi -> satış ekibi (satis@)
-//   Destek Talebi + Diğer       -> info@
-// NOT: satis@avicad.com.tr KUTUSU hosting panelinde OLUŞTURULMUŞ olmalı (ya da
-// info@'ya alias). Yoksa yerel Postfix RCPT TO'yu reddeder ve Demo/Fiyat
-// lead'leri iletilmez (form ziyaretçiye hata gösterir, sebep error_log'a düşer).
-const SATIS_EPOSTA   = 'satis@avicad.com.tr'; // Fiyat + Demo Talebi
-const DESTEK_EPOSTA  = 'info@avicad.com.tr';  // Destek + Diğer
-const GONDEREN       = 'info@avicad.com.tr';  // From (müşteriye görünen) — domainle aynı (SPF)
+// Konuya göre DEPARTMAN yönlendirmesi (departman() fonksiyonu aşağıda):
+//   İndirme (Demo) + Fiyat Talebi -> satis@   (lead + oto-yanıt satıştan)
+//   Destek Talebi                 -> destek@  (lead + oto-yanıt destekten)
+//   Diğer                         -> info@    (genel)
+// Hem lead hem müşteriye giden oto-yanıt, ilgili departman kutusundan (From)
+// gönderilir; müşteri "yanıtla" dediğinde doğru departmana ulaşır.
+// NOT: satis@ VE destek@ kutuları hosting panelinde OLUŞTURULMUŞ olmalı. Yoksa
+// yerel Postfix RCPT TO'yu reddeder ve o konudaki lead iletilmez (form
+// ziyaretçiye hata gösterir, sebep error_log'a düşer). Tüm From adresleri
+// @avicad.com.tr olduğu için SPF/DKIM/DMARC hizası korunur.
+const SATIS_EPOSTA   = 'satis@avicad.com.tr';  // İndirme (Demo) + Fiyat Talebi
+const DESTEK_EPOSTA  = 'destek@avicad.com.tr'; // Destek Talebi
+const GENEL_EPOSTA   = 'info@avicad.com.tr';   // Diğer + yedek
 const SITE_ADI       = 'AviCAD Türkiye';
 const ARALIK_SN      = 30;    // aynı IP'den iki gönderim arasında en az
 const SAATLIK_SINIR  = 5;     // aynı IP'den saatte en fazla
@@ -151,17 +155,32 @@ $konuTemiz   = $temizle($konu);
 // UTF-8 konu başlığı: kodlanmazsa Türkçe karakterler bozulur.
 $baslik = static fn(string $s): string => '=?UTF-8?B?' . base64_encode($s) . '?=';
 
-$OTO_YANIT = [
-    'Fiyat Talebi'  => 'Fiyat teklifi talebiniz bize ulaştı. Satış ekibimiz, ihtiyaçlarınıza uygun paket ve fiyat bilgisiyle en kısa sürede sizi arayacak.',
-    'Demo Talebi'   => '30 günlük ücretsiz demo talebiniz alındı. Kurulum ve deneme süreci için ekibimiz kısa süre içinde sizinle iletişime geçecek.',
-    'Destek Talebi' => 'Destek talebiniz bize ulaştı. Konuyla ilgili ekibimiz en kısa sürede size dönüş yapacak.',
-];
+// Konuya göre departman: [kutu, From görünen ad, imza satırı, oto-yanıt metni].
+// Hem lead hem oto-yanıt bu kutudan gider; müşteri "yanıtla" deyince buraya döner.
+[$departmanEposta, $departmanAd, $departmanImza, $otoMetin] = match ($konu) {
+    'Demo Talebi' => [
+        SATIS_EPOSTA, 'AViCAD Türkiye Satış', 'AViCAD Türkiye Satış Ekibi',
+        '30 günlük ücretsiz AViCAD deneme talebiniz bize ulaştı. Satış ekibimiz kurulum ve deneme süreci için en kısa sürede sizinle iletişime geçecek. Sorularınız için bu e-postayı doğrudan yanıtlayabilirsiniz.',
+    ],
+    'Fiyat Talebi' => [
+        SATIS_EPOSTA, 'AViCAD Türkiye Satış', 'AViCAD Türkiye Satış Ekibi',
+        'Fiyat teklifi talebiniz bize ulaştı. Satış ekibimiz, ihtiyaçlarınıza uygun paket ve güncel fiyat bilgisiyle en kısa sürede sizinle iletişime geçecek.',
+    ],
+    'Destek Talebi' => [
+        DESTEK_EPOSTA, 'AViCAD Türkiye Destek', 'AViCAD Türkiye Destek Ekibi',
+        'Destek talebiniz bize ulaştı. Teknik ekibimiz konuyu inceleyip en kısa sürede size dönüş yapacak. Acil durumlarda telefonla da ulaşabilirsiniz.',
+    ],
+    default => [
+        GENEL_EPOSTA, 'AViCAD Türkiye', 'AViCAD Türkiye',
+        'Mesajınız bize ulaştı. Ekibimiz en kısa sürede size dönüş yapacak.',
+    ],
+};
 
 $ortakBaslik = [
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
-    'From: ' . $baslik(SITE_ADI) . ' <' . GONDEREN . '>',
+    'From: ' . $baslik($departmanAd) . ' <' . $departmanEposta . '>',
 ];
 
 /**
@@ -170,7 +189,7 @@ $ortakBaslik = [
  * Dönüş: [başarılı, tanılama]. Tanılama YALNIZCA sunucu günlüğüne yazılır,
  * istemciye asla dönmez — ham SMTP yanıtları altyapı hakkında bilgi sızdırır.
  */
-function smtpYolla(string $alici, string $konu, string $govde, array $baslikSatirlari): array
+function smtpYolla(string $alici, string $konu, string $govde, array $baslikSatirlari, string $gonderen): array
 {
     $soket = @fsockopen(SMTP_SUNUCU, SMTP_KAPI, $eno, $estr, 10);
     if (!$soket) {
@@ -229,7 +248,7 @@ function smtpYolla(string $alici, string $konu, string $govde, array $baslikSati
         }
     }
 
-    $y = $komut('MAIL FROM:<' . GONDEREN . '>');
+    $y = $komut('MAIL FROM:<' . $gonderen . '>');
     if ($kod($y) !== 250) {
         $kapat();
         return [false, 'MAIL FROM reddedildi: ' . trim($y)];
@@ -284,17 +303,16 @@ Gönderim: {$_SERVER['HTTP_HOST']} · tarih:
 METIN;
 $leadGovde .= date('d.m.Y H:i');
 
-// Konuya göre hedef kutu. Reply-To müşteriye ayarlı kalır: satış/destek
-// kutudan doğrudan "yanıtla" deyince cevap müşteriye gider.
-$leadAlici = in_array($konu, ['Fiyat Talebi', 'Demo Talebi'], true)
-    ? SATIS_EPOSTA
-    : DESTEK_EPOSTA;
+// Hedef kutu = departman (yukarıda match ile belirlendi). Reply-To müşteri:
+// departman kutudan "yanıtla" deyince cevap müşteriye gider. Envelope sender
+// de departman kutusu (bounce'lar oraya döner).
 $leadBaslik = array_merge($ortakBaslik, ['Reply-To: ' . $baslik($adSoyad) . ' <' . $emailTemiz . '>']);
 [$leadGonderildi, $leadTani] = smtpYolla(
-    $leadAlici,
+    $departmanEposta,
     $baslik("[Web] {$konuTemiz} — {$adSoyad}"),
     $leadGovde,
-    $leadBaslik
+    $leadBaslik,
+    $departmanEposta
 );
 if (!$leadGonderildi) {
     // Tek teşhis izi bu. İstemciye ham SMTP yanıtı DÖNMÜYOR; sunucu günlüğüne
@@ -302,27 +320,28 @@ if (!$leadGonderildi) {
     error_log('[iletisim.php] lead gonderilemedi -> ' . $leadTani);
 }
 
-// 2) Müşteriye otomatik yanıt. Bu BAŞARISIZ olsa bile lead gittiyse istek
-//    başarılıdır — ziyaretçinin talebi kaydedilmiştir, asıl mesele odur.
-$otoMetin = $OTO_YANIT[$konu] ?? 'Talebiniz bize ulaştı. Ekibimiz en kısa sürede size dönüş yapacak.';
+// 2) Müşteriye otomatik yanıt — İLGİLİ DEPARTMAN kutusundan (From) ve o
+//    departmanın imzasıyla. $otoMetin ve imza yukarıdaki match ile belirlendi.
+//    Bu BAŞARISIZ olsa bile lead gittiyse istek başarılıdır.
 $yanitGovde = <<<METIN
 Merhaba {$adSoyad},
 
 {$otoMetin}
 
-Bu arada bize doğrudan da ulaşabilirsiniz:
+Dilerseniz bu e-postayı doğrudan yanıtlayabilir ya da bize ulaşabilirsiniz:
 Telefon : +90 (536) 928 00 59
-E-posta : info@avicad.com.tr
+E-posta : {$departmanEposta}
 
 İyi çalışmalar dileriz.
-AviCAD Türkiye
+{$departmanImza}
 METIN;
 
 [$yanitGonderildi, $yanitTani] = smtpYolla(
     $emailTemiz,
-    $baslik('Talebiniz alındı — AviCAD Türkiye'),
+    $baslik('Talebiniz alındı — AViCAD Türkiye'),
     $yanitGovde,
-    $ortakBaslik
+    $ortakBaslik,
+    $departmanEposta
 );
 if (!$yanitGonderildi) {
     error_log('[iletisim.php] oto-yanit gonderilemedi -> ' . $yanitTani);
