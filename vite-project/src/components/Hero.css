@@ -708,10 +708,17 @@ body {
     left: 0;
     right: 0;
     max-width: none;
-    padding: 20px 28px 28px;
+    padding: 20px 28px 34px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* ALTA sabitle, ortalama DEĞİL. `center` ile içerik yüksekliğine göre
+       konum değişiyordu: son bölümün başlığı en kısa olduğu için merkez
+       yeniden hesaplanıp CTA (animasyonsuz) aniden zıplıyordu — "son bölüme
+       inince butonlar bozuluyor" bundandı. `flex-end` ile CTA her bölümde
+       ekranın altında AYNI yerde durur; başlık onun üstünde değişir. Üst
+       sınır (top) videoya binmeyi zaten engelliyor, içerik de (body gizli)
+       en kısa ekrana sığacak kadar kısa, o yüzden üstten taşma da olmaz. */
+    justify-content: flex-end;
   }
 
   /* Uzun açıklama paragrafı dikey mobilde gizli: video bandı + tam içerik kısa
