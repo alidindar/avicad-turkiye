@@ -696,7 +696,30 @@ body {
   /* Metin artık videonun üstünde değil; arkasındaki perdeye de gerek yok. */
   .got-content::before { display: none; }
 
-  .got-title { font-size: 21px; line-height: 1.18; }
+  /* İçeriği video bandının TAM ALTINA sabitle. `top` sınırı koyulduğu için
+     içerik yukarı doğru büyüyüp videoya BİNEMEZ (ölçüldü: eski halinde kısa
+     ekranda — SE, Safari çubuğu açıkken — içerik videonun üstüne çıkıyordu ve
+     bölüm geçişlerinde "keşfet" kısmı bozuk görünüyordu). Kalan alanda dikey
+     ortalanır; kısa bölümde dengeli durur, uzun bölümde bile video sınırının
+     altında kalır. 56.25vw = 100vw × 9/16 (video bandının yüksekliği). */
+  .got-content {
+    top: calc(64px + 56.25vw + 10px);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: none;
+    padding: 20px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Uzun açıklama paragrafı dikey mobilde gizli: video bandı + tam içerik kısa
+     ekranlarda sığmıyordu. Mobil hero için başlık + CTA yeterli; tam açıklama
+     masaüstünde ve JS'siz <noscript> içeriğinde korunuyor. */
+  .got-body { display: none; }
+
+  .got-title { font-size: 21px; line-height: 1.18; margin-bottom: 14px; }
 }
 
 /* ── Kisa ekran: yatay telefon + kucuk pencere ──
