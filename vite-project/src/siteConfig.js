@@ -24,7 +24,7 @@ export const DEMO_INDIRME_URL  = 'https://avicad.com/dloads/AviCAD-Download.exe'
 //   Sirketi"). Kaynak: vergi levhasi / MERSIS (mersis.ticaret.gov.tr) /
 //   Ticaret Sicili Gazetesi kurulus ilani; en hizlisi mali musavire sormak.
 //   Aydinlatma metni bunu `${YASAL_UNVAN} ("AviCAD Turkiye")` diye kuruyor.
-export const YASAL_UNVAN = '[YASAL ÜNVAN]'
+export const YASAL_UNVAN = 'AEC İnşaat Bilişim ve Danışmanlık'
 
 // VERBIS NUMARASI BILEREK YOK — eksik degil.
 // Kayit yukumlulugunden istisna kriterleri (2026, ucu birlikte saglanmali):
