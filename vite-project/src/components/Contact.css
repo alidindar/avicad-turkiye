@@ -84,18 +84,19 @@
   max-width: 760px;
   margin: 44px auto 0;
   display: grid;
-  /* Onceki hal 860px kapta minmax(200px) ile 4 sutun uretiyordu; icerik sigmayip
-     telefon "…928 00 / 59", e-posta "info@avicad. / com.tr" diye kiriliyordu.
-     4 sutun bu metinleri asla sigdiramaz (en uzun deger ~187px + ikon/padding ~70px
-     -> sutun basina ~257px, 4 sutun icin >1070px kap gerekirdi; forma gore cok genis).
-     Bu yuzden 2x2: 760px kapta 2 sutun (~373px) — hem metinler tek satirda, hem
-     dizilim simetrik (3+1 birakildiginda adres karti altta tek basina kaliyordu). */
-  /* min(330px, 100%) — cıplak minmax(330px,…) dar ekranda TASIYOR: auto-fit
-     330px'lik minimumun altina inemez, 343px viewport'ta (kap 295px) kart
-     24+330=354px'te bitip ekrandan cikiyordu. min(…,100%) izi kaba sigdirir;
-     genis ekranda davranis aynen korunur (760px kapta yine 2 sutun). */
-  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
+  /* Telefon kartı (en genişi, ~187px değer) kaldırıldıktan sonra 3 öğe kaldı:
+     WhatsApp / E-posta / Adres. Kullanıcı isteğiyle geniş ekranda ÜÇÜ YAN YANA,
+     dar ekranda alt alta (tek sütun). En uzun değer artık e-posta (~135px) +
+     ikon/padding ~70px ≈ 205px/kart; 760px kapta 3 sütun (~244px) rahat sığar,
+     metinler tek satırda kalır. Auto-fit yerine sabit sütun: orta genişlikte
+     2+1 dengesiz dizilimi (kullanıcının şikâyet ettiği görüntü) hiç oluşmaz. */
+  grid-template-columns: 1fr;
   gap: 14px;
+}
+
+/* Geniş ekran: üç bilgi kartı yan yana. 768px altında tek sütun (alt alta). */
+@media (min-width: 768px) {
+  .contact-info { grid-template-columns: repeat(3, 1fr); }
 }
 
 .contact-info-item {
