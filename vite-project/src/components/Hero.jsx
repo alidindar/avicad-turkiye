@@ -448,6 +448,11 @@ const Hero = () => {
       {/* Uc durum: terminal hata (kirmizi), yavas yukleniyor (notlu, cubuk devam),
           normal yukleniyor. Yalnizca terminal hata cubugu gizler. */}
       <div className={`got-loading ${videoReady ? 'hidden' : ''}`}>
+        {/* Gerçek logo: giriş ekranı yalnızca yazıyla çok sadeydi. alt boş —
+            hemen altındaki metin zaten "AviCAD Türkiye" diyor, ekran okuyucuya
+            tekrar okutmayalım (dekoratif). width/height CLS'i önler. */}
+        <img className="got-loading-mark" src={`${import.meta.env.BASE_URL}logo.webp`}
+             width="144" height="147" alt="" aria-hidden="true" />
         <div className="got-loading-logo">AviCAD Türkiye</div>
         <div className={videoError ? 'got-loading-error' : 'got-loading-sub'}>
           {videoError

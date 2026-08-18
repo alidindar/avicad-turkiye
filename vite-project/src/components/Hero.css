@@ -597,6 +597,12 @@ body {
   pointer-events: none;
 }
 
+.got-loading-mark {
+  width: 84px;
+  height: auto;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+}
+
 .got-loading-logo {
   font-family: var(--font-display);
   font-size: 22px;
@@ -658,6 +664,39 @@ body {
   .got-rune-bar       { left: 28px; right: 28px; }
   .got-corner         { display: none; }
   .got-title          { font-size: 26px; }
+}
+
+/* ── Dikey telefon: videoyu TAM göster (üst bant) ──
+   16:9 yatay video, dikey ekrana `object-fit: cover` ile sığdırıldığında
+   yanlarından ciddi biçimde kırpılıyordu; ölçüldü: 854px genişlikteki karenin
+   yalnızca ~%26'sı görünüyordu. Kullanıcı videonun TAMAMINI görmek istedi.
+   Çözüm: dikey modda video ekranı kaplamak yerine üstte kendi 16:9 oranıyla
+   tam olarak duruyor (kutu 16:9 + video 16:9 = kırpma yok), altında başlık ve
+   CTA koyu zeminde. Yatay modda (orientation: landscape) bu blok çalışmaz;
+   orada ekran zaten geniş, video doğal oturuyor. */
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Video bandının altı ve nav şeridi düz koyu zemin (site tonuyla uyumlu). */
+  .got-sticky { background: #0b1017; }
+
+  .got-video {
+    top: 64px;          /* nav'ın altından başlasın, logo/menü videoyu örtmesin */
+    left: 0; right: 0;
+    bottom: auto;       /* inset:0'ın bottom'ını iptal et ki yükseklik oransal olsun */
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;  /* kutu da 16:9 olduğu için kırpma olmaz — tam kare görünür */
+  }
+
+  /* Karartma katmanları tüm ekranı karartıyordu; B'de metin videonun ÜZERİNDE
+     değil, altta ayrı koyu zeminde. Karartmalar videoyu gereksiz soldururdu. */
+  .got-vignette { display: none; }
+  .got-overlay  { display: none; }
+
+  /* Metin artık videonun üstünde değil; arkasındaki perdeye de gerek yok. */
+  .got-content::before { display: none; }
+
+  .got-title { font-size: 21px; line-height: 1.18; }
 }
 
 /* ── Kisa ekran: yatay telefon + kucuk pencere ──
