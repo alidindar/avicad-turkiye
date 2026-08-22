@@ -106,5 +106,12 @@ ErrorDocument 404 /404.html
 # bu kural ilk andan itibaren geçerli.
 RedirectMatch 404 ^/olcum-veri/
 
+# SMTP şifresi. Dosya PHP olduğu için doğrudan istendiğinde zaten boş gövde
+# döner (2026-08-22'de ölçüldü: /smtp-sifre.php ve varyantları → 200, 0 bayt;
+# kaynak sızmıyor). Yine de iki sebeple kapatıyoruz: (1) 200 dönmesi dosyanın
+# VARLIĞINI ele veriyor, (2) PHP işleyicisi bir gün bozulur/yanlış
+# yapılandırılırsa dosya düz metin olarak servis edilir ve şifre sızar.
+RedirectMatch 404 ^/smtp-sifre\.php
+
 # Dizin listelemesi kapalı — klasör içeriği görünmesin.
 Options -Indexes

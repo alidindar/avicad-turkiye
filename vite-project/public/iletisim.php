@@ -25,9 +25,10 @@ declare(strict_types=1);
 //   Diğer                         -> info@    (genel)
 // Hem lead hem müşteriye giden oto-yanıt, ilgili departman kutusundan (From)
 // gönderilir; müşteri "yanıtla" dediğinde doğru departmana ulaşır.
-// NOT: satis@ VE destek@ kutuları hosting panelinde OLUŞTURULMUŞ olmalı. Yoksa
-// yerel Postfix RCPT TO'yu reddeder ve o konudaki lead iletilmez (form
-// ziyaretçiye hata gösterir, sebep error_log'a düşer). Tüm From adresleri
+// NOT: satis@, destek@ ve info@ kutularının üçü de panelde OLUŞTURULMUŞ olmalı;
+// yoksa yerel Postfix RCPT TO'yu reddeder ve o konudaki lead iletilmez (form
+// ziyaretçiye hata gösterir, sebep mail-hata.log'a düşer). 2026-08-22'de
+// üçünün de var olduğu doğrulandı (RCPT TO → 250). Tüm From adresleri
 // @avicad.com.tr olduğu için SPF/DKIM/DMARC hizası korunur.
 const SATIS_EPOSTA   = 'satis@avicad.com.tr';  // İndirme (Demo) + Fiyat Talebi
 const DESTEK_EPOSTA  = 'destek@avicad.com.tr'; // Destek Talebi
@@ -44,15 +45,22 @@ const MAKS_UZUNLUK   = 2000;  // tek alan için üst sınır
 // yaygın bir ayar. Sunucunun kendi Postfix'i localhost:25 ve :587 üzerinde
 // dinlediği için doğrudan SMTP konuşuyoruz; dış kütüphane gerekmiyor.
 const SMTP_SUNUCU    = 'localhost';
-const SMTP_KAPI      = 25;
+const SMTP_KAPI      = 587;   // submission; 25 kimlik doğrulamasız relay'i reddediyor
+const SMTP_TLS       = true;  // 587'de STARTTLS zorunlu
 const SMTP_KULLANICI = 'info@avicad.com.tr';
 
-// SMTP_SIFRE BOŞ bırakılırsa kimlik doğrulaması denenmez. Yerel Postfix
-// genelde kendi sunucusundan gelen bağlantıya izin verir; önce bu denenmeli.
-// Sunucu "relay access denied" derse buraya info@avicad.com.tr'nin şifresini
-// yazın. Dosya web kökünde olsa da PHP olarak çalıştığı için içeriği dışarıdan
-// okunamaz; yine de şifreyi kimseyle paylaşmayın.
-const SMTP_SIFRE     = '';
+// KİMLİK DOĞRULAMA ZORUNLU — 2026-08-22'de sunucuda ölçüldü:
+// doğrulamasız gönderimde yerel kutular (satis@ / destek@ / info@) kabul
+// ediliyor ama harici adres "554 5.7.1 Relay access denied" dönüyor. Yani
+// lead gidiyor, müşteriye giden oto-yanıt sessizce kayboluyordu.
+//
+// Şifre BU DOSYADA DEĞİL, yanındaki smtp-sifre.php'de durur:
+//     <?php return 'info@ kutusunun sifresi';
+// Sebep: (1) şifre git deposuna girmez, (2) siteyi yeniden dağıtınca
+// üzerine yazılmaz — aksi halde her deploy maili sessizce bozardı.
+// Dosya yoksa gönderim denenmez ve sebep günlüğe yazılır.
+$sifreDosyasi = __DIR__ . '/smtp-sifre.php';
+define('SMTP_SIFRE', is_readable($sifreDosyasi) ? trim((string) require $sifreDosyasi) : '');
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -61,6 +69,28 @@ function bitir(int $kod, array $govde): never {
     http_response_code($kod);
     echo json_encode($govde, JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+/**
+ * Mail hatalarını KENDİ dosyamıza yazar.
+ *
+ * error_log() kullanmıyoruz: bu sunucuda php.ini'de error_log AYARSIZ
+ * (2026-08-22'de ölçüldü, boş dize). O yüzden buraya yazılan teşhisler
+ * hiçbir yere düşmüyordu ve oto-yanıtın neden gitmediği 4 gün görünmedi.
+ *
+ * Hedef klasör olcum-veri/, .htaccess ile web'e kapalı (RedirectMatch 404).
+ */
+function mailGunlugu(string $satir): void
+{
+    $klasor = __DIR__ . '/olcum-veri';
+    if (!is_dir($klasor)) {
+        @mkdir($klasor, 0755, true);
+    }
+    @file_put_contents(
+        $klasor . '/mail-hata.log',
+        date('Y-m-d H:i:s') . ' ' . $satir . "\n",
+        FILE_APPEND | LOCK_EX
+    );
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -191,7 +221,20 @@ $ortakBaslik = [
  */
 function smtpYolla(string $alici, string $konu, string $govde, array $baslikSatirlari, string $gonderen): array
 {
-    $soket = @fsockopen(SMTP_SUNUCU, SMTP_KAPI, $eno, $estr, 10);
+    if (SMTP_SIFRE === '') {
+        return [false, 'smtp-sifre.php yok veya bos — kimlik dogrulamasiz gonderim relay reddi aliyor'];
+    }
+
+    // Sunucu sertifikası kendi ana makine adına (ihsdnsx32.com), biz localhost
+    // üzerinden bağlanıyoruz; ad uyuşmazlığı bağlantıyı düşürmesin diye
+    // doğrulama kapalı. Trafik makineden hiç çıkmıyor.
+    $baglam = stream_context_create(['ssl' => [
+        'verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true,
+    ]]);
+    $soket = @stream_socket_client(
+        'tcp://' . SMTP_SUNUCU . ':' . SMTP_KAPI,
+        $eno, $estr, 10, STREAM_CLIENT_CONNECT, $baglam
+    );
     if (!$soket) {
         return [false, "baglanti kurulamadi: $estr ($eno)"];
     }
@@ -230,22 +273,35 @@ function smtpYolla(string $alici, string $konu, string $govde, array $baslikSati
         return [false, 'EHLO reddedildi: ' . trim($y)];
     }
 
-    // Şifre boşsa auth atlanır — yerel Postfix kendi sunucusundan gelen
-    // bağlantıya genelde izin verir.
-    if (SMTP_SIFRE !== '') {
-        if ($kod($komut('AUTH LOGIN')) !== 334) {
+    // 587 kimlik doğrulamasını TLS arkasında ister; STARTTLS'ten sonra EHLO
+    // tekrarlanmalı, çünkü sunucu yetenek listesini yeniden bildirir.
+    if (SMTP_TLS) {
+        if ($kod($komut('STARTTLS')) !== 220) {
             $kapat();
-            return [false, 'AUTH LOGIN desteklenmiyor'];
+            return [false, 'STARTTLS reddedildi'];
         }
-        if ($kod($komut(base64_encode(SMTP_KULLANICI))) !== 334) {
+        if (!@stream_socket_enable_crypto($soket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
             $kapat();
-            return [false, 'kullanici adi reddedildi'];
+            return [false, 'TLS el sikismasi basarisiz'];
         }
-        $y = $komut(base64_encode(SMTP_SIFRE));
-        if ($kod($y) !== 235) {
+        if ($kod($komut('EHLO ' . $alan)) !== 250) {
             $kapat();
-            return [false, 'kimlik dogrulama basarisiz: ' . trim($y)];
+            return [false, 'TLS sonrasi EHLO reddedildi'];
         }
+    }
+
+    if ($kod($komut('AUTH LOGIN')) !== 334) {
+        $kapat();
+        return [false, 'AUTH LOGIN desteklenmiyor'];
+    }
+    if ($kod($komut(base64_encode(SMTP_KULLANICI))) !== 334) {
+        $kapat();
+        return [false, 'kullanici adi reddedildi'];
+    }
+    $y = $komut(base64_encode(SMTP_SIFRE));
+    if ($kod($y) !== 235) {
+        $kapat();
+        return [false, 'kimlik dogrulama basarisiz: ' . trim($y)];
     }
 
     $y = $komut('MAIL FROM:<' . $gonderen . '>');
@@ -304,8 +360,22 @@ METIN;
 $leadGovde .= date('d.m.Y H:i');
 
 // Hedef kutu = departman (yukarıda match ile belirlendi). Reply-To müşteri:
-// departman kutudan "yanıtla" deyince cevap müşteriye gider. Envelope sender
-// de departman kutusu (bounce'lar oraya döner).
+// departman kutudan "yanıtla" deyince cevap müşteriye gider.
+//
+// ZARF GÖNDEREN = departman kutusu. BU SATIR MÜŞTERİNİN GÖRDÜĞÜ ADRESİ
+// BELİRLİYOR — 2026-08-22'de ölçüldü ve sezgiye aykırı:
+//
+// Üç test maili aynı "From: ... <satis@avicad.com.tr>" başlığıyla, farklı
+// zarf gönderenleriyle atıldı. Gmail'de zarfı info@ olanlar info@'dan,
+// zarfı satis@ olan satis@'tan göründü. Yani sunucu giden mailde From:
+// başlığını zarfa göre YENİDEN YAZIYOR (Plesk sender rewriting); başlığı
+// departman yapmak tek başına YETMEZ, zarf da departman olmalı.
+//
+// Kimlik doğrulaması info@ ile yapılıyor ama sunucu farklı zarf gönderenine
+// izin veriyor (AUTH info@ + MAIL FROM satis@ → 250; sender login mismatch
+// kısıtı yok). Bounce'lar da ilgili departmana döner. Sunucu bu kısıtı
+// ileride açarsa gönderim "MAIL FROM reddedildi" ile düşer ve sebep
+// mail-hata.log'a yazılır.
 $leadBaslik = array_merge($ortakBaslik, ['Reply-To: ' . $baslik($adSoyad) . ' <' . $emailTemiz . '>']);
 [$leadGonderildi, $leadTani] = smtpYolla(
     $departmanEposta,
@@ -317,7 +387,7 @@ $leadBaslik = array_merge($ortakBaslik, ['Reply-To: ' . $baslik($adSoyad) . ' <'
 if (!$leadGonderildi) {
     // Tek teşhis izi bu. İstemciye ham SMTP yanıtı DÖNMÜYOR; sunucu günlüğüne
     // yazılıyor ki saha hatası bildirildiğinde sebebi okunabilsin.
-    error_log('[iletisim.php] lead gonderilemedi -> ' . $leadTani);
+    mailGunlugu('lead gonderilemedi (' . $departmanEposta . ') -> ' . $leadTani);
 }
 
 // 2) Müşteriye otomatik yanıt — İLGİLİ DEPARTMAN kutusundan (From) ve o
@@ -344,7 +414,7 @@ METIN;
     $departmanEposta
 );
 if (!$yanitGonderildi) {
-    error_log('[iletisim.php] oto-yanit gonderilemedi -> ' . $yanitTani);
+    mailGunlugu('oto-yanit gonderilemedi (' . $emailTemiz . ') -> ' . $yanitTani);
 }
 
 if (!$leadGonderildi) {
