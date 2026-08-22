@@ -58,6 +58,20 @@ ErrorDocument 404 /404.html
 #   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # </IfModule>
 
+# ─── www -> apex yönlendirmesi ───────────────────────────────────────────────
+# www.avicad.com.tr aynı içeriği 200 ile sunuyordu (yönlendirme yoktu). Arama
+# motoru bunu ayrı bir site sayar: yinelenen içerik ve bölünmüş bağlantı değeri.
+# Kanonik adres apex; www kalıcı olarak oraya yönleniyor.
+#
+# NOT: HTTP -> HTTPS yönlendirmesini hosting paneli zaten yapıyor (301 doğrulandı),
+# o yüzden yukarıdaki blok kapalı kalıyor. Buradaki kural yalnızca ana adı düzeltir.
+# Sertifika iki adı da kapsıyor, dolayısıyla HTTPS üzerinden yönlendirmek güvenli.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^www\.avicad\.com\.tr$ [NC]
+  RewriteRule ^(.*)$ https://avicad.com.tr/$1 [L,R=301]
+</IfModule>
+
 # ─── Sıkıştırma ──────────────────────────────────────────────────────────────
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml

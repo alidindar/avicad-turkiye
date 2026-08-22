@@ -7,7 +7,7 @@ deploy/
 
 # Sizma testi raporu — tek seferlik uretilen cikti, kaynak degil.
 # Web kokune sizmamasi icin repoda tutulmuyor.
-guvenlik-raporu.html
+guvenlik-*.html
 
 # SMTP sifresi SUNUCUDA durur (httpdocs/smtp-sifre.php), depoda asla.
 smtp-sifre.php

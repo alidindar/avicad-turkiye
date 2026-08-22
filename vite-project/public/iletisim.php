@@ -78,12 +78,33 @@ function bitir(int $kod, array $govde): never {
 }
 
 /**
+ * E-posta adresini teşhis için yeterli, kimlik için yetersiz hâle getirir.
+ *   ahmet.yilmaz@ornek.com  ->  ah***@ornek.com
+ *
+ * Günlük web'e kapalı ama süresiz birikiyor; müşteri adreslerini düz metin
+ * saklamak, bu projenin kendi gizlilik duruşuyla çelişiyordu (olcum.php IP'yi
+ * bilerek kaydetmiyor, hız sınırı IP'yi hash'liyor). Alan adı korunuyor çünkü
+ * teslimat sorunları genelde alan bazlı (gmail, kurumsal sunucu vb.).
+ */
+function epostaMaskele(string $eposta): string
+{
+    $at = strrpos($eposta, '@');
+    if ($at === false || $at === 0) {
+        return '***';
+    }
+    $yerel = substr($eposta, 0, $at);
+    $alan  = substr($eposta, $at);
+    return (mb_strlen($yerel) <= 2 ? mb_substr($yerel, 0, 1) : mb_substr($yerel, 0, 2)) . '***' . $alan;
+}
+
+/**
  * Mail hatalarını KENDİ dosyamıza yazar.
  *
  * error_log() kullanmıyoruz: bu sunucuda php.ini'de error_log AYARSIZ
  * (2026-08-22'de ölçüldü, boş dize). O yüzden buraya yazılan teşhisler
  * hiçbir yere düşmüyordu ve oto-yanıtın neden gitmediği 4 gün görünmedi.
  *
+ * Müşteri adresleri epostaMaskele()'den geçirilerek yazılır.
  * Hedef klasör olcum-veri/, .htaccess ile web'e kapalı (RedirectMatch 404).
  */
 function mailGunlugu(string $satir): void
@@ -520,7 +541,7 @@ if ($otoKonu === null) {
         $departmanEposta
     );
     if (!$yanitGonderildi) {
-        mailGunlugu('oto-yanit gonderilemedi (' . $emailTemiz . ') -> ' . $yanitTani);
+        mailGunlugu('oto-yanit gonderilemedi (' . epostaMaskele($emailTemiz) . ') -> ' . $yanitTani);
     }
 }
 
