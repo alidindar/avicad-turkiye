@@ -18,6 +18,16 @@ const OVERLAY_SCRUB    = 2      // overlay crossfade yumusatmasi
 // Asil guvence: stall TERMINAL degil — video gec de olsa hazir olunca onReady
 // toparlar ve scrub devreye girer (asagidaki setup effect).
 const STALL_TIMEOUT_MS = 8000
+// DOKUNMATIK CIHAZDA COK DAHA KISA. Sebep: iOS Safari, video verisini
+// KULLANICI DOKUNANA KADAR indirmiyor — preload="auto" orada yok sayiliyor.
+// Dolayisiyla loadeddata hic gelmiyor ve giris ekrani 8 saniyenin SONUNA KADAR
+// acik kaliyordu; iPhone'da "site gec aciliyor" sikayetinin sebebi tam olarak
+// buydu (2026-08-23'te kullanici dogruladi). Beklemenin bir faydasi da yok:
+// video zaten ilk dokunusa kadar gelmeyecek, dokunus geldiginde ise asagidaki
+// "iOS kare kilidi" efekti onu etkinlestirip scrub'i devreye aliyor.
+// Android'de video ~300ms'de hazir oldugu icin bu sureye hic girilmiyor,
+// overlay normal sekilde loadeddata ile kalkiyor.
+const STALL_TIMEOUT_TOUCH_MS = 1200
 const RUNE_TICKS       = 80
 
 // ─── Chapter data ────────────────────────────────────────────────────────────
@@ -256,15 +266,19 @@ const Hero = () => {
     // sonradan gelirse asagidaki loadeddata/canplay dinleyicileri scrub'i normal
     // sekilde devreye alir (onReady idempotent degil ama settled zaten true
     // oldugundan zararsiz; scrub effect'i videoReady'ye bagli calisir).
+    const dokunmatik = window.matchMedia('(pointer: coarse)').matches
     const stallTimer = setTimeout(() => {
       if (settled) return
       if (video.error || video.networkState === 3 /* NETWORK_NO_SOURCE */) {
         failTerminal()
       } else if (video.readyState < 2) {
-        setVideoSlow(true)
+        // Dokunmatikte bu BEKLENEN yol (iOS videoyu dokunusa kadar cekmiyor),
+        // bir aksaklik degil — "Video yükleniyor, bu biraz sürebilir…" notunu
+        // gostermiyoruz. Masaustunde ise gercekten yavas bir yukleme demektir.
+        if (!dokunmatik) setVideoSlow(true)
         setVideoReady(true)   // <- overlay kalkar, site kullanilabilir olur
       }
-    }, STALL_TIMEOUT_MS)
+    }, dokunmatik ? STALL_TIMEOUT_TOUCH_MS : STALL_TIMEOUT_MS)
 
     video.addEventListener('loadeddata', onReady)
     video.addEventListener('canplay', onReady)
