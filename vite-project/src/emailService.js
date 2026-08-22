@@ -68,4 +68,11 @@ export async function submitContact({ ad, soyad, telefon, email, konu, mesaj }) 
   }
 
   olcumFormOlayi('basarili')
+
+  // otoYanit: müşteriye giden mail gitti mi. Demo talebinde indirme
+  // bağlantısını yalnızca o mail taşıyor, gitmediyse ziyaretçiye söylemek
+  // gerekiyor. Eski sunucu sürümü bu alanı hiç göndermez; undefined'ı
+  // "gitti" saymak doğru varsayılan, aksi halde her gönderimde yanlış uyarı
+  // çıkardı.
+  return { otoYanit: govde.otoYanit !== false }
 }

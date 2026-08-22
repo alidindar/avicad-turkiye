@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './Contact.css'
 import { submitContact } from '../emailService'
 import {
-  TELEFON_GORUNEN, EPOSTA,
-  ADRES, CALISMA_SAATLERI, whatsappHref, DEMO_INDIRME_URL,
+  EPOSTA, ADRES, CALISMA_SAATLERI, whatsappHref,
 } from '../siteConfig'
 
 const prefersReducedMotion = () =>
@@ -42,17 +41,10 @@ const telefonFormatla = (val) => {
 // Gecerli TR numara: 0 ile baslayan 11 hane (cep + sabit hat).
 const telefonGecerli = (val) => /^0\d{10}$/.test(val.replace(/\D/g, ''))
 
-// Demo kurulum dosyasini indir. .exe tarayicida acilamadigi icin dogrudan
-// indirilir; gizli <a> tiklamasi sayfadan cikmadan indirmeyi baslatir.
-const tetikleDemoIndir = () => {
-  const a = document.createElement('a')
-  a.href = DEMO_INDIRME_URL
-  a.rel = 'noopener'
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-}
-
+// Demo indirmesi ARTIK SITEDEN BASLAMIYOR. Kurulum dosyasinin baglantisi
+// yalnizca satis@'tan giden oto-yanit mailinde veriliyor; boylece her indirme
+// dogrulanmis bir e-posta adresine bagli oluyor. Onceki surumde gizli bir <a>
+// tiklamasiyla .exe dogrudan iniyordu.
 const Contact = () => {
   const sectionRef = useRef(null)
   const headerRef  = useRef(null)
@@ -136,8 +128,9 @@ const Contact = () => {
     // buna bagli DEGIL.
     let leadOk = true
     let sunucuMesaji = null
+    let sonuc = null
     try {
-      await submitContact({ ad, soyad, telefon, email, konu, mesaj })
+      sonuc = await submitContact({ ad, soyad, telefon, email, konu, mesaj })
     } catch (err) {
       leadOk = false
       // Dogrulama/hiz siniri mesajlari ziyaretciye AYNEN gosterilir; sunucu
@@ -149,33 +142,29 @@ const Contact = () => {
       console.error('[iletisim] Lead gönderilemedi:', err)
     }
 
-    // Demo talebinde: zorunlu alanlar dolu + telefon gecerli → demoyu indir.
-    // Indirme bilerek leadOk'a bagli DEGIL: e-posta gitmese de ziyaretci
-    // istedigi dosyayi almali.
-    if (demoTalebi) tetikleDemoIndir()
-
     // ONEMLI: basari mesaji YALNIZCA lead gercekten gittiyse gosterilir.
     // Eskiden kosul `demoTalebi || leadOk` idi; demo talebinde e-posta
     // basarisiz olsa bile "Talebiniz alindi" yazip formu temizliyordu ->
     // ziyaretci kaydoldugunu saniyor, satisa hicbir sey ulasmiyordu
     // (sitenin en degerli donusumunde sessiz lead kaybi).
     if (leadOk) {
+      // Demo indirmesi artik yalnizca oto-yanit mailindeki baglantiyla
+      // yapiliyor. O mail gitmediyse ziyaretcinin elinde HICBIR SEY kalmiyor,
+      // bu yuzden "gonderdik" demek yerine alternatif kanal veriyoruz.
+      const yanitGitti = sonuc?.otoYanit !== false
       setDurum({
-        ok: true,
+        ok: yanitGitti,
         text: demoTalebi
-          ? 'Talebiniz alındı. AviCAD demo indirmeniz başlıyor…'
-          : 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.',
+          ? (yanitGitti
+              ? 'Talebiniz alındı. Demo indirme bağlantısını e-posta adresinize gönderdik — gelen kutunuzu (gerekirse spam klasörünü) kontrol edin.'
+              : `Talebiniz alındı, ancak indirme bağlantısını içeren e-postayı gönderemedik. WhatsApp'tan yazın ya da ${EPOSTA} adresine e-posta atın, bağlantıyı hemen iletelim.`)
+          : (yanitGitti
+              ? 'Talebiniz alındı. En kısa sürede size dönüş yapacağız.'
+              : 'Talebiniz alındı, en kısa sürede size dönüş yapacağız. (Onay e-postası gönderilemedi, talebiniz bize ulaştı.)'),
       })
       // Form yalnizca basarida temizlenir; hatada girilen veri korunur ki
       // ziyaretci bastan yazmak zorunda kalmadan tekrar deneyebilsin.
       setAd(''); setSoyad(''); setEmail(''); setTelefon(''); setKonu(''); setMesaj(''); setTelefonHata('')
-    } else if (demoTalebi) {
-      // Indirme basladi ama talep kaydedilemedi — bunu saklamak yerine
-      // ziyaretciye alternatif kanal veriyoruz.
-      setDurum({
-        ok: false,
-        text: `Demo indirmeniz başlıyor. Ancak talebinizi kaydedemedik — size dönebilmemiz için lütfen bizi arayın: ${TELEFON_GORUNEN}`,
-      })
     } else {
       // "Telefonla arayın" DEMİYORUZ: telefon numarası 944ecfb ile görünür
       // bloklardan kaldırıldı, sayfada hiçbir yerde yazmıyor. Ziyaretçiyi

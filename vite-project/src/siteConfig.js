@@ -16,7 +16,11 @@ export const ADRES             = 'İstanbul, Türkiye'
 export const CALISMA_SAATLERI  = 'Hafta içi 09:00 – 18:00'
 
 // Konu "Demo Talebi" secilip form gonderilince baslatilan demo kurulum indirmesi.
-export const DEMO_INDIRME_URL  = 'https://avicad.com/dloads/AviCAD-Download.exe'
+// DEMO INDIRME BAGLANTISI ARTIK BURADA DEGIL: site otomatik indirme yapmiyor,
+// baglanti yalnizca demo talebine giden oto-yanit mailinde veriliyor. Adres
+// public/iletisim.php icindeki DEMO_INDIRME_URL sabitinde durur; degistirmek
+// gerekirse orayi guncelleyin. Burada bir kopya tutmak iki adresin birbirinden
+// sessizce ayrilmasina yol acardi.
 
 // KVKK / yasal (footer + aydinlatma metni).
 // TODO: Ticaret sicilinde KAYITLI TAM UNVANI yazin — marka adi ("AviCAD

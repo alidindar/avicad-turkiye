@@ -20,9 +20,10 @@ declare(strict_types=1);
 
 // ─── Ayarlar ────────────────────────────────────────────────────────────────
 // Konuya göre DEPARTMAN yönlendirmesi (departman() fonksiyonu aşağıda):
-//   İndirme (Demo) + Fiyat Talebi -> satis@   (lead + oto-yanıt satıştan)
-//   Destek Talebi                 -> destek@  (lead + oto-yanıt destekten)
-//   Diğer                         -> info@    (genel)
+//   Demo Talebi   -> satis@   (lead + oto-yanıt satıştan)
+//   Fiyat Talebi  -> satis@   (YALNIZCA lead — oto-yanıt istenmiyor)
+//   Destek Talebi -> destek@  (lead + oto-yanıt destekten)
+//   Diğer         -> info@    (genel)
 // Hem lead hem müşteriye giden oto-yanıt, ilgili departman kutusundan (From)
 // gönderilir; müşteri "yanıtla" dediğinde doğru departmana ulaşır.
 // NOT: satis@, destek@ ve info@ kutularının üçü de panelde OLUŞTURULMUŞ olmalı;
@@ -34,6 +35,11 @@ const SATIS_EPOSTA   = 'satis@avicad.com.tr';  // İndirme (Demo) + Fiyat Talebi
 const DESTEK_EPOSTA  = 'destek@avicad.com.tr'; // Destek Talebi
 const GENEL_EPOSTA   = 'info@avicad.com.tr';   // Diğer + yedek
 const SITE_ADI       = 'AviCAD Türkiye';
+
+// Demo kurulum dosyası. Site artık otomatik indirme YAPMIYOR — müşteri dosyaya
+// yalnızca oto-yanıt mailindeki bu bağlantıdan ulaşıyor, yani bu satır
+// indirmenin tek yolu. Adres değişirse mail de kırılır.
+const DEMO_INDIRME_URL = 'https://avicad.com/dloads/AviCAD-Download.exe';
 const ARALIK_SN      = 30;    // aynı IP'den iki gönderim arasında en az
 const SAATLIK_SINIR  = 5;     // aynı IP'den saatte en fazla
 const MAKS_UZUNLUK   = 2000;  // tek alan için üst sınır
@@ -187,24 +193,106 @@ $konuTemiz   = $temizle($konu);
 // UTF-8 konu başlığı: kodlanmazsa Türkçe karakterler bozulur.
 $baslik = static fn(string $s): string => '=?UTF-8?B?' . base64_encode($s) . '?=';
 
-// Konuya göre departman: [kutu, From görünen ad, imza satırı, oto-yanıt metni].
+/**
+ * Demo talebinin oto-yanıt gövdesi.
+ *
+ * Diğer konulardan farklı olarak paylaşılan şablonu KULLANMAZ: kendi konu
+ * satırı, kendi tanıtım metni ve indirme bağlantısı var. Site otomatik
+ * indirmeyi kaldırdığı için bu mail dosyaya ulaşmanın tek yolu.
+ */
+function demoOtoYanitGovdesi(): string
+{
+    $link = DEMO_INDIRME_URL;
+    return <<<METIN
+Merhaba,
+
+AViCAD deneme sürümü talebiniz için teşekkür ederiz.
+
+AViCAD, profesyonel CAD kullanıcılarının mevcut çalışma alışkanlıklarını koruyarak hızlı, kolay ve maliyet odaklı bir şekilde yeni bir CAD ortamına geçiş yapabilmesi için geliştirilmiş güçlü bir tasarım çözümüdür.
+
+Tam DWG uyumluluğu, tanıdık komut yapısı ve AutoCAD benzeri arayüzü sayesinde mevcut projelerinizi hiçbir veri kaybı yaşamadan açabilir, adaptasyon süreciyle zaman kaybetmeden hemen çalışmaya başlayabilirsiniz.
+
+Neden AViCAD Kullanmalısınız?
+
+- Birebir Komut ve Arayüz Uyumluluğu: AutoCAD alışkanlıklarınızla doğrudan kullanım
+- Eksiksiz DWG ve DXF Desteği: Mevcut projelerinizle %100 uyumlu çalışma
+- Gelişmiş Çözüm Araçları: Profesyonel 2D teknik çizim ve 3D modelleme
+- Yerleşik Mühendislik Modülü: Entegre Mech-Q mekanik ve tesisat araç seti
+- AEC ve Mimari Çözümler: Hızlı ve pratik mimari çizim araçları
+- Gelişmiş Yazılım Destekleri: AutoLISP ve Visual LISP desteği
+- Geniş Dosya Formatı Desteği: PDF, STEP ve IGES gibi formatlarla sorunsuz veri aktarımı
+- Ekonomik Lisanslama: Yüksek yazılım maliyetlerini optimize eden esnek lisans seçenekleri
+
+AViCAD'ı Kendi Projelerinizle Deneyin
+
+Yazılımın performansını ve kullanım kolaylığını bizzat test etmek için deneme sürümünü indirip kendi DWG dosyalarınız üzerinde hemen çalışmaya başlayabilirsiniz.
+
+AViCAD Demo İndir:
+{$link}
+
+CAD yazılım maliyetlerinizi düşürürken verimliliğinizden ve alışkanlıklarınızdan ödün vermeyin.
+
+Ürün seçimi, lisanslama, kurulum ve teknik destek süreçlerinin tamamında AVICAD Türkiye Distribütörü ekibi olarak yanınızdayız.
+
+Saygılarımızla,
+AVICAD Türkiye Distribütörü
+METIN;
+}
+
+/**
+ * Destek talebinin oto-yanıt gövdesi.
+ *
+ * Demo gibi bu da paylaşılan şablonu kullanmaz: kendi konu satırı ve kendi
+ * imzası var (AEC Teknik Destek Ekibi). Müşteriden ekran görüntüsü/hata kodu
+ * isteniyor, o yüzden "bu e-postayı yanıtlayın" çağrısı metnin kendi içinde.
+ */
+function destekOtoYanitGovdesi(): string
+{
+    return <<<METIN
+Merhaba,
+
+AVICAD teknik destek talebiniz başarıyla alınmıştır.
+
+Talebiniz uzman teknik ekibimize iletilmiş olup, en kısa sürede incelenerek sizinle iletişime geçilecektir.
+
+Destek sürecini hızlandırmak adına, karşılaştığınız durumla ilgili varsa ekran görüntüsü veya hata kodlarını bu e-postaya yanıt olarak ekleyebilirsiniz.
+
+Saygılarımızla,
+
+AEC Teknik Destek Ekibi
+AVICAD Türkiye Distribütörü
+METIN;
+}
+
+// Konuya göre departman:
+//   [kutu, From görünen ad, imza, oto-yanıt metni, oto-yanıt konu satırı,
+//    tam gövde (null ise paylaşılan şablon kullanılır)].
+// KONU SATIRI null ise o talepte müşteriye HİÇ oto-yanıt gönderilmez.
 // Hem lead hem oto-yanıt bu kutudan gider; müşteri "yanıtla" deyince buraya döner.
-[$departmanEposta, $departmanAd, $departmanImza, $otoMetin] = match ($konu) {
+[$departmanEposta, $departmanAd, $departmanImza, $otoMetin, $otoKonu, $otoGovdeTam] = match ($konu) {
     'Demo Talebi' => [
-        SATIS_EPOSTA, 'AViCAD Türkiye Satış', 'AViCAD Türkiye Satış Ekibi',
-        '30 günlük ücretsiz AViCAD deneme talebiniz bize ulaştı. Satış ekibimiz kurulum ve deneme süreci için en kısa sürede sizinle iletişime geçecek. Sorularınız için bu e-postayı doğrudan yanıtlayabilirsiniz.',
+        SATIS_EPOSTA, 'AViCAD Türkiye Satış', 'AVICAD Türkiye Distribütörü',
+        '',   // paylaşılan şablon kullanılmıyor
+        'AViCAD Ücretsiz Deneme Sürümünüz Hazır – AutoCAD Alışkanlıklarınızı Değiştirmeden Keşfedin!',
+        demoOtoYanitGovdesi(),
     ],
+    // Fiyat Talebi: müşteriye OTOMATİK YANIT GİTMEZ (konu satırı null).
+    // Teklif kişiye özel hazırlandığı için ilk teması satış ekibi kendisi
+    // kuruyor. Lead yine satis@ kutusuna düşer.
     'Fiyat Talebi' => [
         SATIS_EPOSTA, 'AViCAD Türkiye Satış', 'AViCAD Türkiye Satış Ekibi',
-        'Fiyat teklifi talebiniz bize ulaştı. Satış ekibimiz, ihtiyaçlarınıza uygun paket ve güncel fiyat bilgisiyle en kısa sürede sizinle iletişime geçecek.',
+        '', null, null,
     ],
     'Destek Talebi' => [
-        DESTEK_EPOSTA, 'AViCAD Türkiye Destek', 'AViCAD Türkiye Destek Ekibi',
-        'Destek talebiniz bize ulaştı. Teknik ekibimiz konuyu inceleyip en kısa sürede size dönüş yapacak. Acil durumlarda telefonla da ulaşabilirsiniz.',
+        DESTEK_EPOSTA, 'AViCAD Türkiye Destek', 'AEC Teknik Destek Ekibi',
+        '',   // paylaşılan şablon kullanılmıyor
+        'AVICAD Destek Talebiniz Alındı',
+        destekOtoYanitGovdesi(),
     ],
     default => [
         GENEL_EPOSTA, 'AViCAD Türkiye', 'AViCAD Türkiye',
         'Mesajınız bize ulaştı. Ekibimiz en kısa sürede size dönüş yapacak.',
+        'Talebiniz alındı — AViCAD Türkiye', null,
     ],
 };
 
@@ -408,15 +496,32 @@ E-posta : {$departmanEposta}
 {$departmanImza}
 METIN;
 
-[$yanitGonderildi, $yanitTani] = smtpYolla(
-    $emailTemiz,
-    $baslik('Talebiniz alındı — AViCAD Türkiye'),
-    $yanitGovde,
-    $ortakBaslik,
-    $departmanEposta
-);
-if (!$yanitGonderildi) {
-    mailGunlugu('oto-yanit gonderilemedi (' . $emailTemiz . ') -> ' . $yanitTani);
+// Konusuna özel tam gövdesi olan talepler (Demo, Destek) şablonu atlar.
+if ($otoGovdeTam !== null) {
+    $yanitGovde = $otoGovdeTam;
+}
+
+if ($otoKonu === null) {
+    // Bu konuda müşteriye otomatik yanıt İSTENMİYOR (Fiyat Talebi): teklif
+    // kişiye özel hazırlandığı için satış ekibi doğrudan yazıyor, önden giden
+    // kalıp mail süreci soğutuyordu.
+    //
+    // "Gönderilemedi" ile karıştırılmamalı: gönderilmesi zaten istenmediği için
+    // başarılı sayıyoruz, aksi halde ziyaretçi boş yere "e-posta gönderilemedi"
+    // uyarısı görürdü ve günlüğe sahte hata düşerdi.
+    $yanitGonderildi = true;
+    $yanitTani = 'gonderilmedi (bu konuda oto-yanit kapali)';
+} else {
+    [$yanitGonderildi, $yanitTani] = smtpYolla(
+        $emailTemiz,
+        $baslik($otoKonu),
+        $yanitGovde,
+        $ortakBaslik,
+        $departmanEposta
+    );
+    if (!$yanitGonderildi) {
+        mailGunlugu('oto-yanit gonderilemedi (' . $emailTemiz . ') -> ' . $yanitTani);
+    }
 }
 
 if (!$leadGonderildi) {
@@ -425,4 +530,8 @@ if (!$leadGonderildi) {
     bitir(502, ['ok' => false, 'hata' => 'Talep şu anda iletilemedi.']);
 }
 
-bitir(200, ['ok' => true]);
+// otoYanit: müşteriye giden mail gerçekten gitti mi. Demo talebinde bu mail
+// indirme bağlantısının TEK taşıyıcısı (site otomatik indirmeyi kaldırdı), o
+// yüzden başarısızlığını ziyaretçiden saklamıyoruz — Contact.jsx bu bayrağa
+// bakıp alternatif kanal öneriyor. Lead gittiği için istek başarılı sayılır.
+bitir(200, ['ok' => true, 'otoYanit' => $yanitGonderildi]);
