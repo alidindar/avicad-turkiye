@@ -132,13 +132,18 @@ const Contact = () => {
     const demoTalebi = konu === 'Demo Talebi'
     setGonderiliyor(true)
 
-    // Lead yakalama (satisa bildirim + musteriye oto-yanit). EmailJS henuz
-    // yapilandirilmadiysa hata verir; demo indirmesi buna bagli DEGIL.
+    // Lead yakalama (satisa bildirim + musteriye oto-yanit). Demo indirmesi
+    // buna bagli DEGIL.
     let leadOk = true
+    let sunucuMesaji = null
     try {
       await submitContact({ ad, soyad, telefon, email, konu, mesaj })
     } catch (err) {
       leadOk = false
+      // Dogrulama/hiz siniri mesajlari ziyaretciye AYNEN gosterilir; sunucu
+      // ne yapmasi gerektigini zaten soyluyor ("biraz bekleyip tekrar deneyin").
+      // Digerlerinde null kalir ve asagidaki genel mesaj devreye girer.
+      sunucuMesaji = err.ziyaretciMesaji ?? null
       // Sessizce yutma: tek teshis izi bu. Ziyaretci konsolu gormez ama
       // saha hatasi bildirildiginde sebebi buradan okunur.
       console.error('[iletisim] Lead gönderilemedi:', err)
@@ -172,7 +177,15 @@ const Contact = () => {
         text: `Demo indirmeniz başlıyor. Ancak talebinizi kaydedemedik — size dönebilmemiz için lütfen bizi arayın: ${TELEFON_GORUNEN}`,
       })
     } else {
-      setDurum({ ok: false, text: 'Gönderilemedi, lütfen tekrar deneyin veya bizi telefonla arayın.' })
+      // "Telefonla arayın" DEMİYORUZ: telefon numarası 944ecfb ile görünür
+      // bloklardan kaldırıldı, sayfada hiçbir yerde yazmıyor. Ziyaretçiyi
+      // bulamayacağı bir kanala yönlendirmek çıkmaz sokaktı. WhatsApp ve
+      // e-posta iletişim kartlarında duruyor, ikisi de tıklanabilir.
+      setDurum({
+        ok: false,
+        text: sunucuMesaji
+          ?? `Gönderilemedi. Lütfen tekrar deneyin ya da WhatsApp'tan veya ${EPOSTA} adresinden bize ulaşın.`,
+      })
     }
     setGonderiliyor(false)
   }

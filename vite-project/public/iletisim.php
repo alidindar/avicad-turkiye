@@ -167,7 +167,9 @@ if ($gecmis !== [] && $simdi - max($gecmis) < ARALIK_SN) {
     bitir(429, ['ok' => false, 'hata' => 'Çok sık gönderim. Lütfen biraz bekleyip tekrar deneyin.']);
 }
 if (count($gecmis) >= SAATLIK_SINIR) {
-    bitir(429, ['ok' => false, 'hata' => 'Saatlik gönderim sınırına ulaşıldı. Lütfen telefonla ulaşın.']);
+    // Telefon numarası sitede görünmüyor (944ecfb), o yüzden ziyaretçiyi
+    // gerçekten ulaşabileceği kanallara yönlendiriyoruz.
+    bitir(429, ['ok' => false, 'hata' => 'Saatlik gönderim sınırına ulaşıldı. Lütfen WhatsApp veya ' . GENEL_EPOSTA . ' üzerinden ulaşın.']);
 }
 $gecmis[] = $simdi;
 @file_put_contents($iz, json_encode($gecmis), LOCK_EX);

@@ -52,7 +52,19 @@ export async function submitContact({ ad, soyad, telefon, email, konu, mesaj }) 
     // Başarısız gönderimler de sayılıyor: sessiz lead kaybı bu projede daha
     // önce yaşandı (835122c). Sayaçta hata birikiyorsa haberimiz olmalı.
     olcumFormOlayi('hata')
-    throw new Error(govde?.hata ?? `Gönderim başarısız (HTTP ${yanit.status}).`)
+    const hata = new Error(govde?.hata ?? `Gönderim başarısız (HTTP ${yanit.status}).`)
+
+    // 422 (doğrulama) ve 429 (hız sınırı) metinleri ziyaretçi için yazıldı ve
+    // EYLEME DÖNÜŞTÜRÜLEBİLİR: "Geçersiz e-posta adresi", "Çok sık gönderim,
+    // biraz bekleyip tekrar deneyin". Bunları genel mesajın altında yutmak
+    // ziyaretçiyi çıkmaza sokuyordu — hız sınırına takılan kişi "tekrar
+    // deneyin" görüp tekrar deniyor ve yine sınıra çarpıyordu.
+    // Diğer kodlarda (500/502/JSON gelmedi) sunucu metni teknik olabilir ya da
+    // hiç olmayabilir; orada Contact.jsx kendi genel mesajını gösterir.
+    if (yanit.status === 422 || yanit.status === 429) {
+      hata.ziyaretciMesaji = govde?.hata ?? null
+    }
+    throw hata
   }
 
   olcumFormOlayi('basarili')
